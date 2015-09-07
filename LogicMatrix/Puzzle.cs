@@ -16,9 +16,9 @@ namespace LogicMatrix
         public PuzzleRow[] m_MarkerRows;
         private Random m_Rand;
         public ArrayList m_Clues;
-        public ArrayList m_GivenClues;
-        public ArrayList m_VeritcalClues;
-        public ArrayList m_HorizontalClues;
+        public List<Clue> m_GivenClues;
+        public List<Clue> m_VeritcalClues;
+        public List<Clue> m_HorizontalClues;
 
         public Puzzle(int iSeed, int iSize, int iDifficulty)
         {
@@ -269,9 +269,9 @@ namespace LogicMatrix
 
         private void BuildClueLists()
         {
-            m_GivenClues = new ArrayList();
-            m_VeritcalClues = new ArrayList();
-            m_HorizontalClues = new ArrayList();
+            m_GivenClues = new List<Clue>();
+            m_VeritcalClues = new List<Clue>();
+            m_HorizontalClues = new List<Clue>();
             for (int i = 0; i < m_Clues.Count; i++)
             {
                 Clue c = (Clue)m_Clues[i];
@@ -304,13 +304,13 @@ namespace LogicMatrix
             {
                 for (int i = 0; i < m_VeritcalClues.Count; i++)
                 {
-                    Clue c = (Clue)m_VeritcalClues[i];
+                    Clue c = m_VeritcalClues[i];
                     c.Analyze(this);
                 }
 
                 for (int i = 0; i < m_HorizontalClues.Count; i++)
                 {
-                    Clue c = (Clue)m_HorizontalClues[i];
+                    Clue c = m_HorizontalClues[i];
                     c.Analyze(this);
                 }
 
@@ -349,13 +349,13 @@ namespace LogicMatrix
             {
                 for (int i = 0; i < m_VeritcalClues.Count; i++)
                 {
-                    Clue c = (Clue)m_VeritcalClues[i];
+                    Clue c = m_VeritcalClues[i];
                     c.Analyze(this);
                 }
 
                 for (int i = 0; i < m_HorizontalClues.Count; i++)
                 {
-                    Clue c = (Clue)m_HorizontalClues[i];
+                    Clue c = m_HorizontalClues[i];
                     c.Analyze(this);
                 }
 
@@ -746,5 +746,17 @@ namespace LogicMatrix
 
             return hRet;
         }
+
+        #region Accessors
+        public Clue[] HorizontalClues
+        {
+            get { return m_HorizontalClues.ToArray(); }
+        }
+
+        public Clue[] VerticalClues
+        {
+            get { return m_VeritcalClues.ToArray(); }
+        }
+        #endregion
     }
 }

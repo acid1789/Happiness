@@ -1,0 +1,11 @@
+-- Mobile Port -- 
+Implement Cell Dialog
+Button based interface for game functions
+Rewrite Main Menu
+Rewrite Pause Menu
+
+Progression
+Audio
+Leaderboards
+Monetization
+Self Marketing

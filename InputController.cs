@@ -15,78 +15,95 @@ namespace Happiness
         private int m_iDragY;
         private MouseState m_LastMouseState;
         private KeyboardState m_LastKeyboardState;
-        //private XboxController[] m_aControllers;
 
         public int m_iMouseX;
         public int m_iMouseY;
+
+        const int m_DragThreshold = 5;
+        int m_MousePressedX;
+        int m_MousePressedY;
+        bool m_bDragging;
+        DragArgs m_DragArgs;
+
+        public event EventHandler<DragArgs> OnDragBegin;
+        public event EventHandler<DragArgs> OnDrag;
+        public event EventHandler<DragArgs> OnDragEnd;
+        public event EventHandler<DragArgs> OnClick;
 
         public InputController()
         {
             m_bLeftButtonPressed = false;
             m_bRightButtonPressed = false;
 
+            m_DragArgs = new DragArgs();
+
             m_LastKeyboardState = Keyboard.GetState();
-
-            //m_aControllers = new XboxController[4];
-            //m_aControllers[0] = new XboxController(PlayerIndex.One);
-            //m_aControllers[1] = new XboxController(PlayerIndex.Two);
-            //m_aControllers[2] = new XboxController(PlayerIndex.Three);
-            //m_aControllers[3] = new XboxController(PlayerIndex.Four);
-        }
-
-        public bool IsControllerConnected()
-        {
-            //for (int i = 0; i < m_aControllers.Length; i++)
-            //{
-            //    if (m_aControllers[i].IsConnected())
-            //        return true;
-            //}
-            return false;
-        }
-
-        public void SetRepeatDelay(double dfDelay)
-        {
-            //for (int i = 0; i < m_aControllers.Length; i++)
-            //{
-            //    m_aControllers[i].m_dfRepeatDelay = dfDelay;
-            //}
-        }
-
-        public bool IsAControllerHoldingLeft()
-        {
-            //for (int i = 0; i < m_aControllers.Length; i++)
-            //{
-            //    if (m_aControllers[i].m_bHoldingLeft)
-            //        return true;
-            //}
-            return false;
-        }
-
-        public bool IsAControllerHoldingRight()
-        {
-            //for (int i = 0; i < m_aControllers.Length; i++)
-            //{
-            //    if (m_aControllers[i].m_bHoldingRight)
-            //        return true;
-            //}
-            return false;
+            m_LastMouseState = Mouse.GetState();
         }
 
         public void Update(Happiness theGame, GameTime time, PlayerIndex Primary)
         {
             if (theGame.IsActive)
             {
-                UpdateKeyboardMouse(theGame);
-
-                //for (int i = 0; i < m_aControllers.Length; i++)
-                //{
-                //    if (!m_aControllers[i].Update(theGame, time, Primary))
-                //    {
-                        // Primary Controller disconnected
-                //        theGame.Pause();
-                //    }
-                //}
+                //UpdateKeyboardMouse(theGame);
+                UpdateMouse();
             }
+        }
+
+        void UpdateMouse()
+        {
+            MouseState state = Mouse.GetState();
+
+            if (state.LeftButton == ButtonState.Pressed && m_LastMouseState.LeftButton == ButtonState.Released)
+            {
+                // Left button press
+                m_MousePressedX = state.X;
+                m_MousePressedY = state.Y;
+                m_bDragging = false;
+            }
+            else if (state.LeftButton == ButtonState.Released && m_LastMouseState.LeftButton == ButtonState.Pressed)
+            {
+                // Left button release
+                m_DragArgs.CurrentX = state.X;
+                m_DragArgs.CurrentY = state.Y;
+                if (m_bDragging)
+                {
+                    OnDragEnd(this, m_DragArgs);
+                    m_bDragging = false;
+                }
+                else
+                {
+                    // Normal click
+                    OnClick(this, m_DragArgs);
+                }
+            }
+            else if (state.LeftButton == ButtonState.Pressed)
+            {
+                // Left button still pressed
+                int deltaX = state.X - m_MousePressedX;
+                int deltaY = state.Y - m_MousePressedY;
+                if (Math.Abs(deltaX) > m_DragThreshold || Math.Abs(deltaY) > m_DragThreshold)
+                {
+                    m_DragArgs.CurrentX = state.X;
+                    m_DragArgs.CurrentY = state.Y;
+                    if (!m_bDragging)
+                    {
+                        // Start dragging
+                        m_DragArgs.StartX = m_MousePressedX;
+                        m_DragArgs.StartY = m_MousePressedY;
+
+                        OnDragBegin(this, m_DragArgs);
+                        m_bDragging = true;
+                    }
+                    else
+                    {
+                        // Still dragging
+                        OnDrag(this, m_DragArgs);
+                    }                    
+                }
+            }
+
+            m_LastMouseState = state;
         }
 
         private void UpdateKeyboardMouse(Happiness theGame)
@@ -224,4 +241,12 @@ namespace Happiness
             }
         }
     }
+
+    public class DragArgs : EventArgs 
+    {
+        public int StartX;
+        public int StartY;
+        public int CurrentX;
+        public int CurrentY;
+    }    
 }

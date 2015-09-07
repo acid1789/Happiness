@@ -40,12 +40,16 @@
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="AnimatedSprite.cs" />
+    <Compile Include="CellDialog.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DisplayCell.cs" />
     <Compile Include="DisplayHorizontalClue.cs" />
     <Compile Include="DisplayRow.cs" />
     <Compile Include="DisplayVerticalClue.cs" />
     <Compile Include="EndPuzzleScreen.cs" />
+    <Compile Include="GamePanel.cs" />
     <Compile Include="Happiness.cs" />
+    <Compile Include="HorizontalCluePanel.cs" />
     <Compile Include="InputController.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="Options.cs" />
@@ -54,6 +58,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveGame.cs" />
     <Compile Include="SoundManager.cs" />
+    <Compile Include="UIButton.cs" />
+    <Compile Include="UIPanel.cs" />
+    <Compile Include="VerticalCluePanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">
@@ -67,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

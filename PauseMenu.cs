@@ -400,17 +400,15 @@ namespace Happiness
                         m_Game.m_SoundManager.PlayMenuNavigate();
                     }
                 }
-
-                bool bLeft = m_Game.m_Input.IsAControllerHoldingLeft();
-                bool bRight = m_Game.m_Input.IsAControllerHoldingRight();
-                if (bLeftButtonDown || bLeft || bRight)
+                
+                if (bLeftButtonDown)
                 {
                     if (m_dfScrollTime <= 0)
                         m_dfScrollTime = m_GameTime.TotalGameTime.TotalSeconds;
                     if (m_GameTime.TotalGameTime.TotalSeconds - m_dfScrollTime > 0.8)
                     {
                         const double dfSpeed = 0.04;
-                        if (m_rGotoLeft.Contains(iX, iY) || (m_iGotoSelection == 0 && bLeft))
+                        if (m_rGotoLeft.Contains(iX, iY) || (m_iGotoSelection == 0))
                         {
                             m_iPuzzleNumber -= (int)m_dfScrollSpeed;
                             if (m_iPuzzleNumber < 0)
@@ -418,7 +416,7 @@ namespace Happiness
                             m_dfScrollSpeed += dfSpeed;
                             m_Game.m_SoundManager.PlayMenuNavigate();
                         }
-                        else if (m_rGotoRight.Contains(iX, iY) || (m_iGotoSelection == 0 && bRight))
+                        else if (m_rGotoRight.Contains(iX, iY) || (m_iGotoSelection == 0))
                         {
                             m_iPuzzleNumber += (int)m_dfScrollSpeed;
                             if (m_iPuzzleNumber > 67108863)
@@ -651,14 +649,7 @@ namespace Happiness
             // Draw Background
             spriteBatch.Draw(m_Game.m_HelpBackground, new Rectangle(iX, 0, 980, 720), Color.White);
 
-#if !XBOX
-            iY += DrawMouseControls(spriteBatch, iY);
-#endif
-
-            if (m_Game.m_Input.IsControllerConnected())
-            {
-                DrawControllerControls(spriteBatch, iY);
-            }            
+            iY += DrawMouseControls(spriteBatch, iY);           
         }
 
         private int DrawMouseControls(SpriteBatch spriteBatch, int iY)

@@ -1,0 +1,194 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using LogicMatrix;
+
+namespace Happiness
+{
+    class HorizontalCluePanel : UIPanel
+    {
+        int m_IconSize;
+        int m_ClueSpace;
+
+        float m_ScrollPosition;
+        float m_ScrollMin;
+        float m_ScrollMax;
+        bool m_bCanScroll;
+        bool m_bDragging;
+        float m_DragY;
+
+        public HorizontalCluePanel(Happiness game, Clue[] clues) : base(game)
+        {
+            int screenWidth = m_Game.ScreenWidth;
+            int screenHeight = m_Game.ScreenHeight;
+
+            int marginRight = (int)(Constants.MarginRight * screenWidth);
+            int marginTop = (int)(Constants.MarginTop * screenHeight);
+
+            m_IconSize = (int)(Constants.IconSize * screenHeight);
+            m_ClueSpace = (int)(Constants.ClueSpace * screenHeight);
+            int clueWidth = m_IconSize * 3;
+
+            // Initialize the rectangle
+            int width = clueWidth + marginRight;
+            int x = screenWidth - width;
+            m_Rect = new Rectangle(x, marginTop, width, screenHeight);
+
+            // Setup scroll min/max
+            float totalHeight = ((m_IconSize + m_ClueSpace) * clues.Length) - m_ClueSpace;            
+            m_ScrollMin = (-totalHeight + screenHeight) - marginTop;
+            m_ScrollMax = marginTop;
+            m_ScrollPosition = m_ScrollMax;
+        }
+
+        public override void Click(int x, int y)
+        {
+            base.Click(x, y);
+        }
+
+        public override void DragBegin(DragArgs args)
+        {
+            m_DragY = (float)args.StartY;
+            m_bDragging = true;
+        }
+
+        public override void Drag(DragArgs args)
+        {
+            if (m_bDragging)
+            {
+                float deltaY = m_DragY - args.CurrentY;
+                m_DragY = args.CurrentY;
+
+                if (deltaY != 0)
+                {
+                    m_ScrollPosition -= deltaY;
+                    if (m_ScrollPosition < m_ScrollMin)
+                        m_ScrollPosition = m_ScrollMin;
+                    if (m_ScrollPosition > m_ScrollMax)
+                        m_ScrollPosition = m_ScrollMax;
+                }
+            }
+        }
+
+        public override void DragEnd(DragArgs args)
+        {
+            m_bDragging = false;
+        }        
+
+        public void Draw(SpriteBatch sb, Clue[] clues)
+        {
+            float x = m_Rect.Left;
+            float y = m_ScrollPosition;
+
+            foreach (Clue c in clues)
+            {
+                if ((y + m_IconSize) >= 0)
+                {
+                    // This icon is at least partially visible
+                    bool bHintClue = m_Game.ShouldShowHint(c);
+                    DrawClue(sb, (int)x, (int)y, c, bHintClue);
+                }
+
+                y += m_IconSize + m_ClueSpace;
+                if (y > m_Rect.Height)
+                    break;  // Cant draw anymore, just skip the rest
+            }
+
+            int clueTotalSpace = (clues.Length * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
+            m_bCanScroll = (clueTotalSpace > m_Rect.Height);
+
+            if (m_bCanScroll)
+            {
+                // Draw up arrow
+                if (m_ScrollPosition != m_ScrollMax)
+                {
+                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, 0, m_IconSize, m_IconSize), Color.White);
+                }
+
+                // Draw down arrow
+                if (m_ScrollPosition != m_ScrollMin)
+                {
+                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, m_Rect.Bottom - m_IconSize, m_IconSize, m_IconSize), null, Color.White, 0, Vector2.Zero, SpriteEffects.FlipVertically, 0);
+                }
+            }
+            else
+                m_ScrollPosition = m_Rect.Top;
+        }
+
+        void DrawClue(SpriteBatch sb, int x, int y, Clue c, bool bHintClue)
+        {
+            Rectangle[] rects = new Rectangle[3];
+            rects[0] = new Rectangle(x, y, m_IconSize, m_IconSize);
+            rects[1] = new Rectangle(x + m_IconSize, y, m_IconSize, m_IconSize);
+            rects[2] = new Rectangle(x + (m_IconSize * 2), y, m_IconSize, m_IconSize);
+            Rectangle bounds = new Rectangle(x, y, m_IconSize * 3, m_IconSize);            
+
+            int[] iIcons = new int[3];
+            int[] iRows = c.GetRows();
+            int iNumIcons = c.GetIcons(m_Game.Puzzle, iIcons);
+
+            // Draw the frame
+            //sb.Draw(m_Game.TransGrey, bounds, Color.White);
+            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
+            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, bounds.Bottom, bounds.Width + 6, 3), Color.White);
+            sb.Draw(m_Game.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
+            sb.Draw(m_Game.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);
+
+            // Draw the icons
+            if (c.m_HorizontalType == eHorizontalType.LeftOf || c.m_HorizontalType == eHorizontalType.NotLeftOf)
+            {
+                sb.Draw(m_Game.GetIcon(iRows[0], iIcons[0]), rects[0], Color.White);
+                sb.Draw(m_Game.LeftOfIcon,                   rects[1], Color.White);
+                sb.Draw(m_Game.GetIcon(iRows[1], iIcons[1]), rects[2], Color.White);
+
+                if (bHintClue)
+                {
+                    m_Game.HintSprite.Draw(sb, rects[0], Color.White);
+                    m_Game.HintSprite.Draw(sb, rects[2], Color.White);
+                }
+            }
+            else
+            {
+                for (int j = 0; j < iNumIcons; j++)
+                {
+                    sb.Draw(m_Game.GetIcon(iRows[j], iIcons[j]), rects[j], Color.White);
+                    if (bHintClue)
+                        m_Game.HintSprite.Draw(sb, rects[j], Color.White);
+                }
+            }
+
+            // Draw the operational overlay
+            switch (c.m_HorizontalType)
+            {
+                case eHorizontalType.NextTo:
+                case eHorizontalType.LeftOf:
+                    break;
+                case eHorizontalType.NotLeftOf:
+                case eHorizontalType.NotNextTo:
+                    sb.Draw(m_Game.NotOverlay, rects[1], Color.White);
+                    break;
+                case eHorizontalType.Span:
+                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
+                    break;
+                case eHorizontalType.SpanNotLeft:
+                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
+                    sb.Draw(m_Game.NotOverlay, rects[0], Color.White);
+                    break;
+                case eHorizontalType.SpanNotMid:
+                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
+                    sb.Draw(m_Game.NotOverlay, rects[1], Color.White);
+                    break;
+                case eHorizontalType.SpanNotRight:
+                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
+                    sb.Draw(m_Game.NotOverlay, rects[2], Color.White);
+                    break;
+            }
+        }
+
+        #region Accessors
+        #endregion
+    }
+}

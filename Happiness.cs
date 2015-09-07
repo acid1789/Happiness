@@ -104,7 +104,6 @@ namespace Happiness
         int m_iSelectedRow = -1;
         int m_iSelectedCol = -1;
         int m_iSelectedIcon = -1;
-        double m_dfGameRepeatDelay = 0.15;
 
         bool m_bVerticalScrollBar;
         bool m_bHorizontalScrollBar;
@@ -122,16 +121,26 @@ namespace Happiness
         public bool m_bLetterbox = false;
         public int m_iScreenTop = 0;
         public int m_iScreenWidth = 1280;
-        public int m_iScreenHeight  = 720;
+        public int m_iScreenHeight = 720;
         Viewport m_vpFull;
         Viewport m_vpDraw;
 
         bool m_bDoneLoading = false;
         bool m_bCanLoad = false;
 
+        HorizontalCluePanel m_HorizontalCluePanel;
+        VerticalCluePanel m_VerticalCluePanel;
+        GamePanel m_GamePanel;
+        List<UIPanel> m_UIPanels;
+
         public Happiness()
         {
             m_Input = new InputController();
+            m_Input.OnDragBegin += M_Input_OnDragBegin;
+            m_Input.OnDrag += M_Input_OnDrag;
+            m_Input.OnDragEnd += M_Input_OnDragEnd;
+            m_Input.OnClick += M_Input_OnClick;
+
             m_MainMenu = new MainMenu(this);
             m_PauseMenu = new PauseMenu(this);
             m_EndScreen = new EndPuzzleScreen(this);
@@ -154,6 +163,8 @@ namespace Happiness
             m_iDragRow = -1;
             m_iDragIcon = -1;
         }
+
+        
 
         void FindBogusPuzzle(int iStart)
         {
@@ -183,14 +194,22 @@ namespace Happiness
                 }
             }
             */
-            if( bCreatePuzzle )
+            if (bCreatePuzzle)
                 m_Puzzle = new Puzzle(m_iPuzzleIndex, m_iSize, m_iDifficulty);
+
+            m_UIPanels = new List<UIPanel>();
+            m_HorizontalCluePanel = new HorizontalCluePanel(this, m_Puzzle.HorizontalClues);
+            m_VerticalCluePanel = new VerticalCluePanel(this, m_Puzzle.VerticalClues, ScreenWidth - m_HorizontalCluePanel.Rect.Width);
+            m_GamePanel = new GamePanel(this, new Rectangle(60, 40, ScreenWidth - (m_HorizontalCluePanel.Rect.Width + 66), ScreenHeight - (m_VerticalCluePanel.Rect.Height + 46)));
+            m_UIPanels.Add(m_GamePanel);
+            m_UIPanels.Add(m_HorizontalCluePanel);
+            m_UIPanels.Add(m_VerticalCluePanel);
 
             m_aVisibleVerticalClues = new ArrayList(m_Puzzle.m_VeritcalClues);
             m_aVisibleHorizontalClues = new ArrayList(m_Puzzle.m_HorizontalClues);
 
             m_aHistory = new ArrayList();
-            m_aFuture = new ArrayList();           
+            m_aFuture = new ArrayList();
 
             int iPlayGridHeight = 500;
 
@@ -207,12 +226,12 @@ namespace Happiness
 
             int iGridRightSpace = 8;
             int iTopMargin = 30;
-            int iBottomMargin = 60;            
-            
+            int iBottomMargin = 60;
+
             int iClueIconSize = 38;
             int iVerticalClueSpace = 4;
             int iHorizontalClueSpace = 6;
-            
+
             int iHorizontalClueWidth = (iClueIconSize * 3) + iVerticalClueSpace;
             int iHorizontalClueHeight = iClueIconSize + iHorizontalClueSpace;
 
@@ -236,13 +255,13 @@ namespace Happiness
                 iNumHorizontalClues = m_iNumHorizontalClueColumns * m_iNumHorizontalCluesPerColumn;
                 m_bVerticalScrollBar = true;
             }
-            
+
             int iTotalWidth = iGridWidth + ((m_iNumHorizontalClueColumns * iHorizontalClueWidth) - iHorizontalClueSpace);
             int iExtraWidth = (m_iScreenWidth - 60) - iTotalWidth;
             int iLeftMargin = 30 + (iExtraWidth / 2);
             int iRightMargin = 30 + (iExtraWidth / 2);
 
-            int iX = (iLeftMargin + iRowWidth) + iGridRightSpace;            
+            int iX = (iLeftMargin + iRowWidth) + iGridRightSpace;
 
             int iY = iTopMargin;
             for (int i = 0; i < m_iSize; i++)
@@ -252,7 +271,7 @@ namespace Happiness
 
                 iY += iRowHeight;
             }
-                        
+
             iX = iLeftMargin + iGridWidth;
             m_aHorizontalClues = new DisplayHorizontalClue[iNumHorizontalClues];
             for (int i = 0; i < m_iNumHorizontalClueColumns; i++)
@@ -276,7 +295,7 @@ namespace Happiness
             {
                 iX = iLeftMargin;
             }
-            m_aVerticalClues = new DisplayVerticalClue[iNumVerticalClues];            
+            m_aVerticalClues = new DisplayVerticalClue[iNumVerticalClues];
             iY = (iTopMargin + iPlayGridHeight) + 4;
             for (int i = 0; i < m_aVerticalClues.Length; i++)
             {
@@ -286,7 +305,7 @@ namespace Happiness
 
             if (m_Puzzle.m_VeritcalClues.Count > iNumVerticalClues)
                 m_bHorizontalScrollBar = true;
-            
+
 
             if (m_bRandomizeIcons)
             {
@@ -306,7 +325,7 @@ namespace Happiness
                     aAllIcons[48 + i] = m_aSimpsons[iScatterArray[i]];
                     aAllIcons[56 + i] = m_aSuperheros[iScatterArray[i]];
                 }
-                                
+
                 Puzzle.RandomDistribution(rand, iScatterArray);
                 for (int i = 0; i < 8; i++)
                 {
@@ -337,9 +356,7 @@ namespace Happiness
             m_iFirstVisibleVerticalClue = 0;
 
             m_dfSeconds = 0;
-
-            m_Input.SetRepeatDelay(m_dfGameRepeatDelay);
-
+            
             m_SoundManager.PlayGameMusic();
 
             if (m_SaveGame != null)
@@ -534,15 +551,6 @@ namespace Happiness
             // TODO: Unload any non ContentManager content here
         }
 
-#if XBOX
-        private bool IsPlayerSignedIn()
-        {
-            if (m_CurrentGamer != null && m_CurrentGamer.IsSignedInToLive)
-                return true;
-            return false;
-        }
-#endif
-
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -596,7 +604,6 @@ namespace Happiness
                     if (m_Puzzle.IsCompleted())
                     {
                         m_bEndScreen = true;
-                        m_Input.SetRepeatDelay(0.15);
                         m_EndScreen.m_bSuccess = m_Puzzle.IsSolved();
                         if (m_EndScreen.m_bSuccess)
                             m_SoundManager.PlayPuzzleComplete();
@@ -616,7 +623,6 @@ namespace Happiness
             {
                 m_PauseMenu.Init();
                 m_PauseMenu.m_iPuzzleNumber = GetDisplayPuzzleNumber();
-                m_Input.SetRepeatDelay(0.15);
                 m_bPauseMenu = true;
                 m_SoundManager.PlayMenuAccept();
             }
@@ -991,37 +997,41 @@ namespace Happiness
             iToY -= m_iScreenTop;
             if (!m_bMainMenu && !m_bPauseMenu && !m_bEndScreen)
             {
-                int iFromRow = GetClickedRow(iFromX, iFromY);
-                int iToRow = GetClickedRow(iToX, iToY);
-                if (iFromRow >= 0 && iToRow >= 0)
+                
                 {
-                    int iFromIcon = GetClickedIcon(iFromX, iFromY);
-                    int iToCol = GetClickedCol(iToX, iToY);
-                    if (iFromIcon >= 0 && iToCol >= 0)
+                    // Main Game area
+                    int iFromRow = GetClickedRow(iFromX, iFromY);
+                    int iToRow = GetClickedRow(iToX, iToY);
+                    if (iFromRow >= 0 && iToRow >= 0)
                     {
-                        if (m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_iFinalIcon >= 0)
+                        int iFromIcon = GetClickedIcon(iFromX, iFromY);
+                        int iToCol = GetClickedCol(iToX, iToY);
+                        if (iFromIcon >= 0 && iToCol >= 0)
                         {
-                            bool bGiven = false;
-                            for (int i = 0; i < m_Puzzle.m_GivenClues.Count; i++)
+                            if (m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_iFinalIcon >= 0)
                             {
-                                Clue given = (Clue)m_Puzzle.m_GivenClues[i];
-                                if (given.m_iRow == iToRow && given.m_iCol == iToCol)
+                                bool bGiven = false;
+                                for (int i = 0; i < m_Puzzle.m_GivenClues.Count; i++)
                                 {
-                                    bGiven = true;
-                                    break;
+                                    Clue given = (Clue)m_Puzzle.m_GivenClues[i];
+                                    if (given.m_iRow == iToRow && given.m_iCol == iToCol)
+                                    {
+                                        bGiven = true;
+                                        break;
+                                    }
+                                }
+
+                                if (!bGiven)
+                                {
+                                    m_Puzzle.m_Rows[iToRow].Reset(iToCol);
+                                    if (m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_iFinalIcon >= 0)
+                                        m_Puzzle.ResetRow(iToRow);
                                 }
                             }
-
-                            if (!bGiven)
+                            else if (!m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_bValues[iFromIcon])
                             {
-                                m_Puzzle.m_Rows[iToRow].Reset(iToCol);
-                                if (m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_iFinalIcon >= 0)
-                                    m_Puzzle.ResetRow(iToRow);
+                                DoAction(eActionType.eAT_RestoreIcon, iToRow, iToCol, iFromIcon);
                             }
-                        }
-                        else if (!m_Puzzle.m_Rows[iToRow].m_Cells[iToCol].m_bValues[iFromIcon])
-                        {
-                            DoAction(eActionType.eAT_RestoreIcon, iToRow, iToCol, iFromIcon);
                         }
                     }
                 }
@@ -1033,8 +1043,11 @@ namespace Happiness
             iFromY -= m_iScreenTop;
             if (!m_bMainMenu && !m_bPauseMenu && !m_bEndScreen)
             {
-                m_iDragRow = GetClickedRow(iFromX, iFromY);
-                m_iDragIcon = GetClickedIcon(iFromX, iFromY);
+                {
+                    // Game area drag
+                    m_iDragRow = GetClickedRow(iFromX, iFromY);
+                    m_iDragIcon = GetClickedIcon(iFromX, iFromY);
+                }
             }
         }
 
@@ -1074,7 +1087,7 @@ namespace Happiness
             }
         }
 
-        private void DoAction(eActionType type, int iRow, int iCol, int iIcon)
+        public void DoAction(eActionType type, int iRow, int iCol, int iIcon)
         {
             switch (type)
             {
@@ -1833,12 +1846,7 @@ namespace Happiness
 
         private void ShowMainMenu()
         {            
-#if XBOX
-            if (m_CurrentGamer != null)
-                m_CurrentGamer.Presence.PresenceMode = GamerPresenceMode.AtMenu;
-#endif
             m_SoundManager.PlayMainMenuMusic();
-            m_Input.SetRepeatDelay(0.15);
             m_bMainMenu = true;
         }
 
@@ -1869,39 +1877,11 @@ namespace Happiness
                     this.Exit();
                     break;
             }
-
-#if XBOX
-            if (m_CurrentGamer != null)
-            {
-                int iDifficulty = (m_iSize - 3) + m_iDifficulty;
-                switch (iDifficulty)
-                {
-                    case 0:
-                    case 1:
-                        m_CurrentGamer.Presence.PresenceMode = GamerPresenceMode.DifficultyEasy;
-                        break;
-                    case 2:
-                    case 3:
-                        m_CurrentGamer.Presence.PresenceMode = GamerPresenceMode.DifficultyMedium;
-                        break;
-                    case 4:
-                    case 5:
-                        m_CurrentGamer.Presence.PresenceMode = GamerPresenceMode.DifficultyHard;
-                        break;
-                    case 6:
-                    case 7:
-                    default:
-                        m_CurrentGamer.Presence.PresenceMode = GamerPresenceMode.DifficultyExtreme;
-                        break;
-                }
-            }
-#endif
         }
 
         private void HandlePauseMenuExit()
         {
             m_bPauseMenu = false;
-            m_Input.SetRepeatDelay(m_dfGameRepeatDelay);
             switch (m_PauseMenu.m_iSelection)
             {
                 case 1: // Reset Puzzle
@@ -1939,7 +1919,6 @@ namespace Happiness
         private void HandleEndScreenExit()
         {
             m_bEndScreen = false;
-            m_Input.SetRepeatDelay(m_dfGameRepeatDelay);
             switch (m_EndScreen.m_iSelection)
             {
                 case 0: // Next Puzzle
@@ -2015,6 +1994,158 @@ namespace Happiness
             return -1;
         }
 
+        #region Input
+        private void M_Input_OnClick(object sender, DragArgs e)
+        {
+            int iX = e.CurrentX;
+            int iY = e.CurrentY;
+            if (m_bOptionsDialog)
+            {
+                if (!m_Options.HandleClick(iX, iY))
+                {
+                    m_bOptionsDialog = false;
+                    if (m_SaveGame != null)
+                        m_SaveGame.SaveOptions(m_bAutoArangeClues, m_bShowClueDescriptions, m_bShowClock, m_bShowPuzzleNumber, m_bRandomizeIcons, m_SoundManager.m_fSoundVolume, m_SoundManager.m_fMusicVolume);
+
+                    if (m_bAutoArangeClues)
+                    {
+                        if (m_aVisibleVerticalClues != null)
+                        {
+                            for (int i = m_aVisibleVerticalClues.Count - 1; i >= 0; i--)
+                            {
+                                Clue C = (Clue)m_aVisibleVerticalClues[i];
+                                if (C == null)
+                                    m_aVisibleVerticalClues.RemoveAt(i);
+                            }
+                        }
+
+                        if (m_aVisibleHorizontalClues != null)
+                        {
+                            for (int i = m_aVisibleHorizontalClues.Count - 1; i >= 0; i--)
+                            {
+                                Clue C = (Clue)m_aVisibleHorizontalClues[i];
+                                if (C == null)
+                                    m_aVisibleHorizontalClues.RemoveAt(i);
+                            }
+                        }
+                    }
+                }
+            }
+            else if (m_bMainMenu)
+            {
+                if (!m_MainMenu.HandleClick(iX, iY))
+                {
+                    HandleMainMenuExit();
+                }
+            }
+            else if (m_bPauseMenu)
+            {
+                if (!m_PauseMenu.HandleClick(iX, iY))
+                {
+                    HandlePauseMenuExit();
+                }
+            }
+            else if (m_bEndScreen)
+            {
+                if (!m_EndScreen.HandleClick(iX, iY))
+                {
+                    HandleEndScreenExit();
+                }
+            }
+            else
+            {
+                /*
+                iY -= m_iScreenTop;
+                // Main game
+                if (m_bVerticalScrollBar)
+                {
+                    if (m_rVerticalScrollBarUp.Contains(iX, iY))
+                    {
+                        ScrollUp();
+                        return;
+                    }
+                    if (m_rVerticalScrollBarDown.Contains(iX, iY))
+                    {
+                        ScrollDown();
+                        return;
+                    }
+                }
+                if (m_bHorizontalScrollBar)
+                {
+                    if (m_rHorizontalScrollBarLeft.Contains(iX, iY))
+                    {
+                        ScrollLeft();
+                        return;
+                    }
+                    if (m_rHorizontalScrollBarRight.Contains(iX, iY))
+                    {
+                        ScrollRight();
+                        return;
+                    }
+                }
+
+                SetFinalIcon(iX, iY);
+                */
+
+                foreach (UIPanel p in m_UIPanels)
+                {
+                    if (p.Contains(e.CurrentX, e.CurrentY))
+                    {
+                        p.Click(e.CurrentX, e.CurrentY);
+                        break;
+                    }
+                }
+            }
+
+            
+        }
+
+        private void M_Input_OnDragEnd(object sender, DragArgs e)
+        {
+            if (m_UIPanels != null)
+            {
+                foreach (UIPanel p in m_UIPanels)
+                {
+                    if (p.Rect.Contains(e.StartX, e.StartY))
+                    {
+                        p.DragEnd(e);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void M_Input_OnDrag(object sender, DragArgs e)
+        {
+            if (m_UIPanels != null)
+            {
+                foreach (UIPanel p in m_UIPanels)
+                {
+                    if (p.Rect.Contains(e.StartX, e.StartY))
+                    {
+                        p.Drag(e);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void M_Input_OnDragBegin(object sender, DragArgs e)
+        {
+            if (m_UIPanels != null)
+            {
+                foreach (UIPanel p in m_UIPanels)
+                {
+                    if (p.Rect.Contains(e.StartX, e.StartY))
+                    {
+                        p.DragBegin(e);
+                        break;
+                    }
+                }
+            }
+        }
+        #endregion
+
         #region Drawing
         /// <summary>
         /// This is called when the game should draw itself.
@@ -2024,6 +2155,7 @@ namespace Happiness
         {
             GraphicsDevice.Viewport = m_vpFull;
             GraphicsDevice.Clear(Color.Black);
+            
 
             if (m_bLetterbox)
             {
@@ -2034,7 +2166,7 @@ namespace Happiness
             }
 
             spriteBatch.Begin(SpriteSortMode.Immediate);
-
+            
             if (m_bDoneLoading)
             {
                 if (m_bMainMenu)
@@ -2049,11 +2181,21 @@ namespace Happiness
                 {
                     spriteBatch.Draw(m_Background, new Rectangle(0, 0, m_iScreenWidth, m_iScreenHeight), Color.White);
 
-                    DrawGrid();
-                    DrawVerticalClues();
-                    DrawHorizontalClues();
-                    DrawScrollBars();
 
+                    //DrawGrid();
+                    //DrawVerticalClues();
+                    //DrawHorizontalClues();
+                    m_VerticalCluePanel.Draw(spriteBatch, m_Puzzle.VerticalClues);
+                    m_HorizontalCluePanel.Draw(spriteBatch, m_Puzzle.HorizontalClues);
+                    m_GamePanel.Draw(spriteBatch);
+
+                    if (m_bEndScreen)
+                    {
+                        m_EndScreen.Draw(gameTime, spriteBatch);
+                    }
+                    //DrawScrollBars();
+
+                    /*
                     if (m_bShowPuzzleNumber)
                         DrawPuzzleNumber();
                     if (m_bShowClock)
@@ -2073,6 +2215,8 @@ namespace Happiness
 
                         DrawDragIcon();
                     }
+                    
+                    */
                 }
 
                 if (m_bOptionsDialog)
@@ -2395,7 +2539,7 @@ namespace Happiness
 
                 // Draw bottom arrow
                 m_rVerticalScrollBarDown = new Rectangle(iX, iBottom - 16, 16, 16);
-                spriteBatch.Draw(m_ScrollArrow, m_rVerticalScrollBarDown, null, Color.White, 0, new Vector2(0, 0), SpriteEffects.FlipVertically, 0);
+                spriteBatch.Draw(m_ScrollArrow, m_rVerticalScrollBarDown, null, Color.White, 0, new Vector2(0, 0), SpriteEffects.FlipVertically, 0);                
             }
 
             if (m_bHorizontalScrollBar)
@@ -2771,6 +2915,88 @@ namespace Happiness
             {
                 spriteBatch.Draw(m_aIcons[m_iDragRow, m_iDragIcon], new Rectangle(m_Input.m_iMouseX, m_Input.m_iMouseY - m_iScreenTop, 30, 30), Color.White);
             }
+        }
+        #endregion
+
+        #region Access Functions
+        public Texture2D GetIcon(int row, int col)
+        {
+            return m_aIcons[row, col];
+        }
+
+        public bool ShouldShowHint(Clue c)
+        {
+            bool bHintClue = false;
+            if (m_Hint != null && m_Hint.ShouldDraw(c))
+                bHintClue = true;
+            return bHintClue;
+        }
+        #endregion
+
+        #region Acccessors
+        public int ScreenWidth
+        {
+            get { return m_iScreenWidth; }
+        }
+
+        public int ScreenHeight
+        {
+            get { return m_iScreenHeight; }
+        }
+
+        public Puzzle Puzzle
+        {
+            get { return m_Puzzle; }
+        }
+
+        public Texture2D LeftOfIcon
+        {
+            get { return m_LeftOfIcon; }
+        }
+
+        public Texture2D NotOverlay
+        {
+            get { return m_NotOverlay; }
+        }
+
+        public Texture2D EitherOrOverlay
+        {
+            get { return m_EitherOrOverlay; }
+        }
+
+        public Texture2D SpanOverlay
+        {
+            get { return m_SpanOverlay; }
+        }
+
+        public Texture2D TransGrey
+        {
+            get { return m_TransGrey; }
+        }
+
+        public Texture2D GoldBarHorizontal
+        {
+            get { return m_GoldBarHorizontal; }
+        }
+
+        public Texture2D GoldBarVertical
+        {
+            get { return m_GoldBarVertical; }
+        }
+
+        public Texture2D ScrollArrow
+        {
+            get { return m_ScrollArrow; }
+        }
+
+        public Texture2D TransparentBox
+        {
+            get { return m_Transparent; }
+        }
+
+        public AnimatedSprite HintSprite
+        {
+            get { return m_HintSprite; }
         }
         #endregion
     }

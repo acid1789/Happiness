@@ -221,16 +221,14 @@ namespace Happiness
                 }
                 else
                 {
-                    bool bLeft = m_Game.m_Input.IsAControllerHoldingLeft();
-                    bool bRight = m_Game.m_Input.IsAControllerHoldingRight();
-                    if (bLeftButtonDown || bLeft || bRight)
+                    if (bLeftButtonDown)
                     {
                         if (m_dfScrollTime <= 0)
                             m_dfScrollTime = m_GameTime.TotalGameTime.TotalSeconds;
                         if (m_GameTime.TotalGameTime.TotalSeconds - m_dfScrollTime > 0.8)
                         {
                             const double dfSpeed = 0.04;
-                            if (m_aNewGameBoxes[0].Contains(iX, iY) || (m_iNewGameSelection == 0 && bLeft))
+                            if (m_aNewGameBoxes[0].Contains(iX, iY) || (m_iNewGameSelection == 0))
                             {
                                 m_iPuzzleNumber -= (int)m_dfScrollSpeed;
                                 if (m_iPuzzleNumber < 0)
@@ -238,7 +236,7 @@ namespace Happiness
                                 m_dfScrollSpeed += dfSpeed;
                                 m_Game.m_SoundManager.PlayMenuNavigate();
                             }
-                            else if (m_aNewGameBoxes[1].Contains(iX, iY) || (m_iNewGameSelection == 0 && bRight))
+                            else if (m_aNewGameBoxes[1].Contains(iX, iY) || (m_iNewGameSelection == 0))
                             {
                                 m_iPuzzleNumber += (int)m_dfScrollSpeed;
                                 if (m_iPuzzleNumber > 67108863)

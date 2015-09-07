@@ -1321,18 +1321,4 @@
 /processorParam:Quality=Best
 /build:Audio/usb_desk.wav
 
-#begin Audio/EffectBank.xwb
-/copy:Audio/EffectBank.xwb
-
-#begin Audio/Happiness.xgs
-/copy:Audio/Happiness.xgs
-
-#begin Audio/MusicBank.xwb
-/copy:Audio/MusicBank.xwb
-
-#begin Audio/Sound Bank.xsb
-/copy:Audio/Sound Bank.xsb
-
-#begin Audio/WaveBank.xwb
-/copy:Audio/WaveBank.xwb
 
