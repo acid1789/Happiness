@@ -168,7 +168,7 @@ namespace Happiness
                     break;
                 case ButtonID.Confirm:
                     m_iLargeIcon = m_iSelectedIcon;
-                    m_iSelectedIcon = -1;
+                    SelectIcon(-1);
                     break;
                 case ButtonID.Eliminate:
                     m_bIconStatus[m_iSelectedIcon] = !m_bIconStatus[m_iSelectedIcon];

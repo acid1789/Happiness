@@ -49,6 +49,7 @@
     <Compile Include="EndPuzzleScreen.cs" />
     <Compile Include="GamePanel.cs" />
     <Compile Include="Happiness.cs" />
+    <Compile Include="HelpPanel.cs" />
     <Compile Include="HorizontalCluePanel.cs" />
     <Compile Include="InputController.cs" />
     <Compile Include="MainMenu.cs" />

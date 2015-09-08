@@ -25,6 +25,8 @@ namespace Happiness
         public static float CellDialog_ButtonHeight = 40f / 720f;
 
         public static float CellDialog_CancelButtonX = 34f / 1280f;
-        public static float CellDialog_CancelButtonY = 38f / 720f;        
+        public static float CellDialog_CancelButtonY = 38f / 720f; 
+        
+        public static float HelpClueIconSize = 30f / 720f;
     }
 }

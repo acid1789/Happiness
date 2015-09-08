@@ -105,7 +105,7 @@ namespace Happiness
         }
 
         #region Drawing
-        public void Draw(SpriteBatch sb)
+        public override void Draw(SpriteBatch sb)
         {
             // Draw Background
             sb.Draw(m_Game.TransGrey, m_Rect, Color.White);

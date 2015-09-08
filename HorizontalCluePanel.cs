@@ -20,8 +20,13 @@ namespace Happiness
         bool m_bDragging;
         float m_DragY;
 
+        Clue[] m_Clues;
+        int m_iSelectedIndex;
+
         public HorizontalCluePanel(Happiness game, Clue[] clues) : base(game)
         {
+            m_iSelectedIndex = -1;
+            m_Clues = clues;
             int screenWidth = m_Game.ScreenWidth;
             int screenHeight = m_Game.ScreenHeight;
 
@@ -46,7 +51,15 @@ namespace Happiness
 
         public override void Click(int x, int y)
         {
-            base.Click(x, y);
+            float virtY = y - m_ScrollPosition;
+            m_iSelectedIndex = (int)(virtY / (m_IconSize + m_ClueSpace));
+
+            m_Game.SelectClue(m_Clues[m_iSelectedIndex], this);
+        }
+
+        public void ClearSelected()
+        {
+            m_iSelectedIndex = -1;
         }
 
         public override void DragBegin(DragArgs args)
@@ -78,12 +91,12 @@ namespace Happiness
             m_bDragging = false;
         }        
 
-        public void Draw(SpriteBatch sb, Clue[] clues)
+        public override void Draw(SpriteBatch sb)
         {
             float x = m_Rect.Left;
             float y = m_ScrollPosition;
 
-            foreach (Clue c in clues)
+            foreach (Clue c in m_Clues)
             {
                 if ((y + m_IconSize) >= 0)
                 {
@@ -97,7 +110,15 @@ namespace Happiness
                     break;  // Cant draw anymore, just skip the rest
             }
 
-            int clueTotalSpace = (clues.Length * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
+            if (m_iSelectedIndex >= 0)
+            {
+                int ypos = (int)m_ScrollPosition + (m_iSelectedIndex * (m_IconSize + m_ClueSpace) - 3);
+
+                Rectangle rect = new Rectangle(m_Rect.Left - 3, ypos, (m_IconSize * 3) + 6, m_IconSize + 6);
+                sb.Draw(m_Game.SelectionIconWide, rect, Color.White);
+            }
+
+            int clueTotalSpace = (m_Clues.Length * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
             m_bCanScroll = (clueTotalSpace > m_Rect.Height);
 
             if (m_bCanScroll)

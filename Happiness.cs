@@ -131,6 +131,7 @@ namespace Happiness
         HorizontalCluePanel m_HorizontalCluePanel;
         VerticalCluePanel m_VerticalCluePanel;
         GamePanel m_GamePanel;
+        HelpPanel m_HelpPanel;
         List<UIPanel> m_UIPanels;
 
         public Happiness()
@@ -201,9 +202,11 @@ namespace Happiness
             m_HorizontalCluePanel = new HorizontalCluePanel(this, m_Puzzle.HorizontalClues);
             m_VerticalCluePanel = new VerticalCluePanel(this, m_Puzzle.VerticalClues, ScreenWidth - m_HorizontalCluePanel.Rect.Width);
             m_GamePanel = new GamePanel(this, new Rectangle(60, 40, ScreenWidth - (m_HorizontalCluePanel.Rect.Width + 66), ScreenHeight - (m_VerticalCluePanel.Rect.Height + 46)));
+            m_HelpPanel = new HelpPanel(this, new Rectangle(60, 0, m_GamePanel.Rect.Width, m_GamePanel.Rect.Top));
             m_UIPanels.Add(m_GamePanel);
             m_UIPanels.Add(m_HorizontalCluePanel);
             m_UIPanels.Add(m_VerticalCluePanel);
+            m_UIPanels.Add(m_HelpPanel);
 
             m_aVisibleVerticalClues = new ArrayList(m_Puzzle.m_VeritcalClues);
             m_aVisibleHorizontalClues = new ArrayList(m_Puzzle.m_HorizontalClues);
@@ -2186,8 +2189,9 @@ namespace Happiness
                     //DrawVerticalClues();
                     //DrawHorizontalClues();
                     m_VerticalCluePanel.Draw(spriteBatch, m_Puzzle.VerticalClues);
-                    m_HorizontalCluePanel.Draw(spriteBatch, m_Puzzle.HorizontalClues);
+                    m_HorizontalCluePanel.Draw(spriteBatch);
                     m_GamePanel.Draw(spriteBatch);
+                    m_HelpPanel.Draw(spriteBatch);
 
                     if (m_bEndScreen)
                     {
@@ -2933,6 +2937,19 @@ namespace Happiness
         }
         #endregion
 
+        public void SelectClue(Clue clue, UIPanel panel)
+        {
+            if (panel == m_HorizontalCluePanel)
+            {
+                m_VerticalCluePanel.ClearSelected();
+            }
+            else
+            {
+                m_HorizontalCluePanel.ClearSelected();
+            }
+            m_HelpPanel.SelectedClue = clue;
+        }
+
         #region Acccessors
         public int ScreenWidth
         {
@@ -2997,6 +3014,21 @@ namespace Happiness
         public AnimatedSprite HintSprite
         {
             get { return m_HintSprite; }
+        }
+
+        public SpriteFont DialogFont
+        {
+            get { return m_DialogFont; }
+        }
+
+        public Texture2D SelectionIconWide
+        {
+            get { return m_SelectionIconWide; }
+        }
+
+        public Texture2D SelectionIconTall
+        {
+            get { return m_SelectionIcon3Tall; }
         }
         #endregion
     }
