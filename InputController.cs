@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace Happiness
 {
@@ -15,6 +16,7 @@ namespace Happiness
         private int m_iDragY;
         private MouseState m_LastMouseState;
         private KeyboardState m_LastKeyboardState;
+        TouchCollection m_LastTouchState;
 
         public int m_iMouseX;
         public int m_iMouseY;
@@ -47,6 +49,64 @@ namespace Happiness
             {
                 //UpdateKeyboardMouse(theGame);
                 UpdateMouse();
+                UpdateTouch();
+            }
+        }
+
+        void UpdateTouch()
+        {
+            TouchCollection touches = TouchPanel.GetState();
+            if( touches.Count > 0 )
+            {
+                TouchLocation tl = touches[0];
+                m_DragArgs.CurrentX = (int)tl.Position.X;
+                m_DragArgs.CurrentY = (int)tl.Position.Y;
+                switch (tl.State)
+                {
+                    case TouchLocationState.Pressed:
+                        m_MousePressedX = m_DragArgs.CurrentX;
+                        m_MousePressedY = m_DragArgs.CurrentY;
+                        m_bDragging = false;
+                        break;
+                    case TouchLocationState.Moved:
+                        break;
+                    case TouchLocationState.Released:
+                        break;
+                }
+                if (tl.State == TouchLocationState.Released)
+                {
+                    if (m_bDragging)
+                    {
+                        OnDragEnd(this, m_DragArgs);
+                        m_bDragging = false;
+                    }
+                    else
+                    {
+                        OnClick(this, m_DragArgs);
+                    }
+                }
+                else if (tl.State == TouchLocationState.Moved)
+                {
+                    int deltaX = m_DragArgs.CurrentX - m_MousePressedX;
+                    int deltaY = m_DragArgs.CurrentY - m_MousePressedY;
+                    if (Math.Abs(deltaX) > m_DragThreshold || Math.Abs(deltaY) > m_DragThreshold)
+                    {
+                        if (!m_bDragging)
+                        {
+                            // Start dragging
+                            m_DragArgs.StartX = m_MousePressedX;
+                            m_DragArgs.StartY = m_MousePressedY;
+
+                            OnDragBegin(this, m_DragArgs);
+                            m_bDragging = true;
+                        }
+                        else
+                        {
+                            // Still dragging
+                            OnDrag(this, m_DragArgs);
+                        }
+                    }
+                }
             }
         }
 

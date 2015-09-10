@@ -117,8 +117,7 @@ namespace Happiness
 
         float m_fTempSoundVol = 1.0f;
         float m_fTempMusicVol = 1.0f;
-
-        public bool m_bLetterbox = false;
+        
         public int m_iScreenTop = 0;
         public int m_iScreenWidth = 1280;
         public int m_iScreenHeight = 720;
@@ -149,8 +148,8 @@ namespace Happiness
 
             graphics = new GraphicsDeviceManager(this);
 
-            graphics.PreferredBackBufferWidth = m_iScreenWidth;
-            graphics.PreferredBackBufferHeight = m_iScreenHeight;
+            //graphics.PreferredBackBufferWidth = m_iScreenWidth;
+            //graphics.PreferredBackBufferHeight = m_iScreenHeight;            
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -407,6 +406,7 @@ namespace Happiness
             m_vpFull = GraphicsDevice.Viewport;
 
 #if !XBOX
+            /*
             if (GraphicsDevice.DisplayMode.Width < m_iScreenWidth)
             {                
                 m_bLetterbox = true;
@@ -417,6 +417,7 @@ namespace Happiness
                 graphics.ApplyChanges();
                 graphics.ToggleFullScreen();
             }
+            */
 #endif
 
             // Create a new SpriteBatch, which can be used to draw textures.
@@ -561,6 +562,9 @@ namespace Happiness
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            m_iScreenWidth = graphics.GraphicsDevice.Viewport.Width;
+            m_iScreenHeight = graphics.GraphicsDevice.Viewport.Height;
+
             if (!m_bDoneLoading)
             {
                 if (m_bCanLoad)
@@ -2158,15 +2162,7 @@ namespace Happiness
         {
             GraphicsDevice.Viewport = m_vpFull;
             GraphicsDevice.Clear(Color.Black);
-            
-
-            if (m_bLetterbox)
-            {
-                m_vpDraw = m_vpFull;
-                m_vpDraw.Y = m_iScreenTop;
-                m_vpDraw.Height = m_iScreenHeight;
-                GraphicsDevice.Viewport = m_vpDraw;
-            }
+                        
 
             spriteBatch.Begin(SpriteSortMode.Immediate);
             

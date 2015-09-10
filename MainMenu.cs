@@ -37,7 +37,7 @@ namespace Happiness
             m_aNewGameBoxes = new Rectangle[6];
 
             m_iSelection = 0;
-            m_bNewGameDialog = false;
+            m_bNewGameDialog = true;
 
             m_iPuzzleNumber = 0;            // 0 - 67,108,863
             m_iSize = 6;                    // 3 - 9

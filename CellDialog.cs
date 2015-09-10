@@ -192,6 +192,11 @@ namespace Happiness
                 else
                     m_Buttons[(int)ButtonID.Eliminate].Text = "Restore";
             }
+            else
+            {
+                m_Buttons[(int)ButtonID.Confirm].Enabled = false;
+                m_Buttons[(int)ButtonID.Eliminate].Enabled = false;
+            }
         }
 
         void Commit()
