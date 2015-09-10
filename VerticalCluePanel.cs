@@ -19,13 +19,13 @@ namespace Happiness
         bool m_bDragging;
         bool m_bCanScroll;
         float m_DragX;
-
-        Clue[] m_Clues;
+        
+        List<Clue> m_Clues;
         int m_iSelectedIndex;
 
         public VerticalCluePanel(Happiness game, Clue[] clues, int width) : base(game)
         {
-            m_Clues = clues;
+            m_Clues = new List<Clue>(clues);
             m_iSelectedIndex = -1;
             int screenHeight = m_Game.ScreenHeight;
 
@@ -59,6 +59,15 @@ namespace Happiness
             m_iSelectedIndex = -1;
         }
 
+        public void HideSelectedClue()
+        {
+            if (m_iSelectedIndex >= 0)
+            {
+                m_Clues.RemoveAt(m_iSelectedIndex);
+                m_iSelectedIndex = -1;
+            }
+        }
+
         public override void DragBegin(DragArgs args)
         {
             m_DragX = (float)args.StartX;
@@ -83,13 +92,13 @@ namespace Happiness
             }
         }
 
-        public void Draw(SpriteBatch sb, Clue[] clues)
+        public override void Draw(SpriteBatch sb)
         {
             float x = m_ScrollPosition;
             float y = m_Rect.Top;
 
             // Draw Clues
-            foreach (Clue c in clues)
+            foreach (Clue c in m_Clues)
             {
                 if ((x + m_IconSize) >= 0)
                 {
@@ -111,7 +120,7 @@ namespace Happiness
                 sb.Draw(m_Game.SelectionIconTall, rect, Color.White);
             }
 
-            int clueTotalSpace = (clues.Length * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
+            int clueTotalSpace = (m_Clues.Count * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
             m_bCanScroll = (clueTotalSpace > m_Rect.Width);
 
             if (m_bCanScroll)

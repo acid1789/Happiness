@@ -122,7 +122,6 @@ namespace Happiness
         public int m_iScreenWidth = 1280;
         public int m_iScreenHeight = 720;
         Viewport m_vpFull;
-        Viewport m_vpDraw;
 
         bool m_bDoneLoading = false;
         bool m_bCanLoad = false;
@@ -131,6 +130,7 @@ namespace Happiness
         VerticalCluePanel m_VerticalCluePanel;
         GamePanel m_GamePanel;
         HelpPanel m_HelpPanel;
+        ButtonPanel m_ButtonPanel;
         List<UIPanel> m_UIPanels;
 
         public Happiness()
@@ -148,8 +148,8 @@ namespace Happiness
 
             graphics = new GraphicsDeviceManager(this);
 
-            //graphics.PreferredBackBufferWidth = m_iScreenWidth;
-            //graphics.PreferredBackBufferHeight = m_iScreenHeight;            
+            graphics.PreferredBackBufferWidth = m_iScreenWidth;
+            graphics.PreferredBackBufferHeight = m_iScreenHeight;            
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -162,9 +162,7 @@ namespace Happiness
 
             m_iDragRow = -1;
             m_iDragIcon = -1;
-        }
-
-        
+        }       
 
         void FindBogusPuzzle(int iStart)
         {
@@ -202,10 +200,12 @@ namespace Happiness
             m_VerticalCluePanel = new VerticalCluePanel(this, m_Puzzle.VerticalClues, ScreenWidth - m_HorizontalCluePanel.Rect.Width);
             m_GamePanel = new GamePanel(this, new Rectangle(60, 40, ScreenWidth - (m_HorizontalCluePanel.Rect.Width + 66), ScreenHeight - (m_VerticalCluePanel.Rect.Height + 46)));
             m_HelpPanel = new HelpPanel(this, new Rectangle(60, 0, m_GamePanel.Rect.Width, m_GamePanel.Rect.Top));
+            m_ButtonPanel = new ButtonPanel(this, new Rectangle(0, 0, 60, m_VerticalCluePanel.Rect.Top));
             m_UIPanels.Add(m_GamePanel);
             m_UIPanels.Add(m_HorizontalCluePanel);
             m_UIPanels.Add(m_VerticalCluePanel);
             m_UIPanels.Add(m_HelpPanel);
+            m_UIPanels.Add(m_ButtonPanel);
 
             m_aVisibleVerticalClues = new ArrayList(m_Puzzle.m_VeritcalClues);
             m_aVisibleHorizontalClues = new ArrayList(m_Puzzle.m_HorizontalClues);
@@ -2184,10 +2184,11 @@ namespace Happiness
                     //DrawGrid();
                     //DrawVerticalClues();
                     //DrawHorizontalClues();
-                    m_VerticalCluePanel.Draw(spriteBatch, m_Puzzle.VerticalClues);
+                    m_VerticalCluePanel.Draw(spriteBatch);
                     m_HorizontalCluePanel.Draw(spriteBatch);
                     m_GamePanel.Draw(spriteBatch);
                     m_HelpPanel.Draw(spriteBatch);
+                    m_ButtonPanel.Draw(spriteBatch);
 
                     if (m_bEndScreen)
                     {
@@ -2944,6 +2945,14 @@ namespace Happiness
                 m_HorizontalCluePanel.ClearSelected();
             }
             m_HelpPanel.SelectedClue = clue;
+            m_ButtonPanel.HideClueEnabled = clue != null;
+        }
+
+        public void HideSelectedClue()
+        {
+            m_VerticalCluePanel.HideSelectedClue();
+            m_HorizontalCluePanel.HideSelectedClue();
+            m_HelpPanel.SelectedClue = null;
         }
 
         #region Acccessors

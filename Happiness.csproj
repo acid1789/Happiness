@@ -33,13 +33,14 @@
     <DefineConstants>TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Action.cs" />
     <Compile Include="AnimatedSprite.cs" />
+    <Compile Include="ButtonPanel.cs" />
     <Compile Include="CellDialog.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DisplayCell.cs" />
@@ -72,7 +73,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
     <Content Include="TODO.txt" />

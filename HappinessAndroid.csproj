@@ -61,6 +61,7 @@
     <Compile Include="Action.cs" />
     <Compile Include="Activity1.cs" />
     <Compile Include="AnimatedSprite.cs" />
+    <Compile Include="ButtonPanel.cs" />
     <Compile Include="CellDialog.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DisplayCell.cs" />

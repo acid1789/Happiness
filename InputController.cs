@@ -16,7 +16,6 @@ namespace Happiness
         private int m_iDragY;
         private MouseState m_LastMouseState;
         private KeyboardState m_LastKeyboardState;
-        TouchCollection m_LastTouchState;
 
         public int m_iMouseX;
         public int m_iMouseY;
