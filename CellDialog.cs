@@ -20,7 +20,7 @@ namespace Happiness
             Last
         }
 
-        Happiness m_Game;
+        GameScene m_Game;
         Rectangle m_Rect;
         int m_iRow;
         int m_iCol;
@@ -33,18 +33,18 @@ namespace Happiness
 
         UIButton[] m_Buttons;       
 
-        public CellDialog(Happiness game, int row, int col)
+        public CellDialog(GameScene game, int row, int col)
         {
             m_Game = game;
             m_iRow = row;
             m_iCol = col;
             m_iSelectedIcon = -1;
 
-            int width = (int)(game.ScreenWidth * Constants.CellDialogWidth);
-            int height = (int)(game.ScreenHeight * Constants.CellDialogHeight);
+            int width = (int)(game.Game.ScreenWidth * Constants.CellDialogWidth);
+            int height = (int)(game.Game.ScreenHeight * Constants.CellDialogHeight);
 
-            int midScreenX = game.ScreenWidth >> 1;
-            int midScreenY = game.ScreenHeight >> 1;
+            int midScreenX = game.Game.ScreenWidth >> 1;
+            int midScreenY = game.Game.ScreenHeight >> 1;
             int dialogHalfWidth = (width >> 1);
             int dialogHalfHeight = (height >> 1);
 
@@ -59,7 +59,7 @@ namespace Happiness
             // Setup large icon
             {
                 m_iLargeIcon = m_Game.Puzzle.m_Rows[m_iRow].m_Cells[m_iCol].m_iFinalIcon;
-                int largeIconSize = (int)(game.ScreenHeight * Constants.CellDialogLargeIconSize);
+                int largeIconSize = (int)(game.Game.ScreenHeight * Constants.CellDialogLargeIconSize);
                 int halfLargeIconSize = largeIconSize >> 1;
                 m_LargeIconRect = new Rectangle(m_Rect.Left + dialogHalfWidth - halfLargeIconSize, dialogHalfHeight - halfLargeIconSize, largeIconSize, largeIconSize);
             }
@@ -76,7 +76,7 @@ namespace Happiness
                     topRowCount++;
                     botRowCount--;
                 }
-                int iconSize = (int)(game.ScreenHeight * Constants.CellDialogSmallIconSize);
+                int iconSize = (int)(game.Game.ScreenHeight * Constants.CellDialogSmallIconSize);
 
                 // Setup the top row
                 int halfTopRow = topRowCount >> 1;
@@ -97,12 +97,12 @@ namespace Happiness
 
             // Setup Buttons
             {
-                int cancelButtonX = (int)(m_Game.ScreenWidth * Constants.CellDialog_CancelButtonX);
-                int cancelButtonY = (int)(m_Game.ScreenHeight * Constants.CellDialog_CancelButtonY);
-                int smallButtonWidth = (int)(m_Game.ScreenWidth * Constants.CellDialog_SmallButtonWidth);
-                int smallButtonHeight = (int)(m_Game.ScreenHeight * Constants.CellDialog_SmallButtonHeight);
-                int buttonWidth = (int)(m_Game.ScreenWidth * Constants.CellDialog_ButtonWidth);
-                int buttonHeight = (int)(m_Game.ScreenHeight * Constants.CellDialog_ButtonHeight);
+                int cancelButtonX = (int)(m_Game.Game.ScreenWidth * Constants.CellDialog_CancelButtonX);
+                int cancelButtonY = (int)(m_Game.Game.ScreenHeight * Constants.CellDialog_CancelButtonY);
+                int smallButtonWidth = (int)(m_Game.Game.ScreenWidth * Constants.CellDialog_SmallButtonWidth);
+                int smallButtonHeight = (int)(m_Game.Game.ScreenHeight * Constants.CellDialog_SmallButtonHeight);
+                int buttonWidth = (int)(m_Game.Game.ScreenWidth * Constants.CellDialog_ButtonWidth);
+                int buttonHeight = (int)(m_Game.Game.ScreenHeight * Constants.CellDialog_ButtonHeight);
 
                 int bottomAreaHeight = m_Rect.Bottom - m_IconRects[m_IconRects.Length - 1].Bottom;
                 int centerOfBottomArea = bottomAreaHeight >> 1;
@@ -112,12 +112,12 @@ namespace Happiness
                 int outerButtonX = ((innerButtonX - m_Rect.Left) >> 1) - (buttonWidth >> 1);
 
                 m_Buttons = new UIButton[(int)ButtonID.Last];
-                Texture2D buttonTex = m_Game.m_ScrollBar;
-                m_Buttons[(int)ButtonID.Cancel]    = new UIButton((int)ButtonID.Cancel,   "<",       m_Game.m_MenuFont, new Rectangle(m_Rect.Left + cancelButtonX, m_Rect.Top + cancelButtonY, smallButtonWidth, smallButtonHeight), buttonTex);
-                m_Buttons[(int)ButtonID.Done]      = new UIButton((int)ButtonID.Done,     ">",       m_Game.m_MenuFont, new Rectangle(m_Rect.Right - (cancelButtonX + smallButtonWidth), m_Rect.Top + cancelButtonY, smallButtonWidth, smallButtonHeight) , buttonTex);
-                m_Buttons[(int)ButtonID.Reset]     = new UIButton((int)ButtonID.Reset,    "Reset All",    m_Game.m_MenuFont, new Rectangle(innerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
-                m_Buttons[(int)ButtonID.Confirm]   = new UIButton((int)ButtonID.Confirm,  "Confirm",      m_Game.m_MenuFont, new Rectangle(m_Rect.Left + outerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
-                m_Buttons[(int)ButtonID.Eliminate] = new UIButton((int)ButtonID.Eliminate,"Eliminate",    m_Game.m_MenuFont, new Rectangle(m_Rect.Right - (outerButtonX + buttonWidth), m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
+                Texture2D buttonTex = Assets.ScrollBar;
+                m_Buttons[(int)ButtonID.Cancel]    = new UIButton((int)ButtonID.Cancel,   "<",          Assets.MenuFont, new Rectangle(m_Rect.Left + cancelButtonX, m_Rect.Top + cancelButtonY, smallButtonWidth, smallButtonHeight), buttonTex);
+                m_Buttons[(int)ButtonID.Done]      = new UIButton((int)ButtonID.Done,     ">",          Assets.MenuFont, new Rectangle(m_Rect.Right - (cancelButtonX + smallButtonWidth), m_Rect.Top + cancelButtonY, smallButtonWidth, smallButtonHeight) , buttonTex);
+                m_Buttons[(int)ButtonID.Reset]     = new UIButton((int)ButtonID.Reset,    "Reset All",  Assets.MenuFont, new Rectangle(innerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
+                m_Buttons[(int)ButtonID.Confirm]   = new UIButton((int)ButtonID.Confirm,  "Confirm",    Assets.MenuFont, new Rectangle(m_Rect.Left + outerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
+                m_Buttons[(int)ButtonID.Eliminate] = new UIButton((int)ButtonID.Eliminate,"Eliminate",  Assets.MenuFont, new Rectangle(m_Rect.Right - (outerButtonX + buttonWidth), m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
 
                 foreach( UIButton b in m_Buttons )
                     b.MainColor = Color.GreenYellow;
@@ -220,9 +220,9 @@ namespace Happiness
         public void Draw(SpriteBatch sb)
         {
             // Draw background/frame
-            sb.Draw(m_Game.TransGrey, m_Rect, Color.White);
-            sb.Draw(m_Game.TransparentBox, m_Rect, Color.SteelBlue);
-            sb.Draw(m_Game.TransparentBox, m_Rect, Color.SteelBlue);
+            sb.Draw(Assets.TransGrey, m_Rect, Color.White);
+            sb.Draw(Assets.TransparentBox, m_Rect, Color.SteelBlue);
+            sb.Draw(Assets.TransparentBox, m_Rect, Color.SteelBlue);
 
             // Draw Icons
             if (m_iLargeIcon >= 0)
@@ -239,7 +239,7 @@ namespace Happiness
                     }
 
                     if( i == m_iSelectedIcon )
-                        m_Game.HintSprite.Draw(sb, m_IconRects[i], Color.White);
+                        Assets.HintSprite.Draw(sb, m_IconRects[i], Color.White);
                 }
             }
 

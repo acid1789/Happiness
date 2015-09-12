@@ -108,14 +108,12 @@ namespace LogicMatrix
 
             Reset();
 
-            Debug.Write("Clue Count after initial generation: ");
-            Debug.WriteLine(m_Clues.Count);
+            Debug.WriteLine("Clue Count after initial generation: " + m_Clues.Count);
 
             // Optimize the clues
             OptimizeClues();
 
-            Debug.Write("Clue Count after optimization: ");
-            Debug.WriteLine(m_Clues.Count);
+            Debug.WriteLine("Clue Count after optimization: " + m_Clues.Count);
 
             // Scramble All the clues
             ScrambleClues();
@@ -340,8 +338,7 @@ namespace LogicMatrix
             }            
 
             // Resolve sorted
-            Debug.Write("Clue Count Before 2nd stage optimization: ");
-            Debug.WriteLine(m_Clues.Count);
+            Debug.WriteLine("Clue Count Before 2nd stage optimization: " + m_Clues.Count);
             BuildClueLists();
             Reset();
             iPass = 0;
@@ -368,8 +365,7 @@ namespace LogicMatrix
                     return;
                 }
             }
-            Debug.Write("Passes: ");
-            Debug.WriteLine(iPass++);
+            Debug.WriteLine("Passes: " + iPass);
 
             // Sort the list based on most used
             m_Clues.Sort();

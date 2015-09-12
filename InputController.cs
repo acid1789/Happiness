@@ -10,12 +10,7 @@ namespace Happiness
 {
     public class InputController
     {
-        public bool m_bLeftButtonPressed;
-        public bool m_bRightButtonPressed;
-        private int m_iDragX;
-        private int m_iDragY;
         private MouseState m_LastMouseState;
-        private KeyboardState m_LastKeyboardState;
 
         public int m_iMouseX;
         public int m_iMouseY;
@@ -33,23 +28,15 @@ namespace Happiness
 
         public InputController()
         {
-            m_bLeftButtonPressed = false;
-            m_bRightButtonPressed = false;
-
             m_DragArgs = new DragArgs();
-
-            m_LastKeyboardState = Keyboard.GetState();
+            
             m_LastMouseState = Mouse.GetState();
         }
 
         public void Update(Happiness theGame, GameTime time, PlayerIndex Primary)
         {
-            if (theGame.IsActive)
-            {
-                //UpdateKeyboardMouse(theGame);
-                UpdateMouse();
-                UpdateTouch();
-            }
+            UpdateMouse();
+            UpdateTouch();
         }
 
         void UpdateTouch()
@@ -127,13 +114,15 @@ namespace Happiness
                 m_DragArgs.CurrentY = state.Y;
                 if (m_bDragging)
                 {
-                    OnDragEnd(this, m_DragArgs);
+                    if( OnDragEnd != null)
+                        OnDragEnd(this, m_DragArgs);
                     m_bDragging = false;
                 }
                 else
                 {
                     // Normal click
-                    OnClick(this, m_DragArgs);
+                    if( OnClick != null )
+                        OnClick(this, m_DragArgs);
                 }
             }
             else if (state.LeftButton == ButtonState.Pressed)
@@ -151,13 +140,15 @@ namespace Happiness
                         m_DragArgs.StartX = m_MousePressedX;
                         m_DragArgs.StartY = m_MousePressedY;
 
-                        OnDragBegin(this, m_DragArgs);
+                        if( OnDragBegin != null )
+                            OnDragBegin(this, m_DragArgs);
                         m_bDragging = true;
                     }
                     else
                     {
                         // Still dragging
-                        OnDrag(this, m_DragArgs);
+                        if( OnDrag != null )
+                            OnDrag(this, m_DragArgs);
                     }                    
                 }
             }
@@ -165,97 +156,7 @@ namespace Happiness
             m_LastMouseState = state;
         }
 
-        private void UpdateKeyboardMouse(Happiness theGame)
-        {
-            MouseState state = Mouse.GetState();
-            m_iMouseX = state.X;
-            m_iMouseY = state.Y;
-
-            if (state.LeftButton == ButtonState.Pressed)
-            {
-                if (!m_bLeftButtonPressed)
-                {
-                    m_iDragX = state.X;
-                    m_iDragY = state.Y;
-                }
-                else
-                {
-                    if (Math.Abs(state.X - m_iDragX) < 10 && Math.Abs(state.Y - m_iDragY) < 10)
-                    {
-                        theGame.DragFrom(m_iDragX, m_iDragY);
-                    }
-                }
-
-                m_bLeftButtonPressed = true;
-            }
-            if (state.RightButton == ButtonState.Pressed)
-            {
-                if (!m_bRightButtonPressed)
-                {
-                    m_iDragX = state.X;
-                    m_iDragY = state.Y;
-                }
-
-                m_bRightButtonPressed = true;
-            }
-
-            if (state.LeftButton == ButtonState.Released && m_bLeftButtonPressed)
-            {
-                theGame.ClearDragIcon();
-                if (Math.Abs(state.X - m_iDragX) < 10 && Math.Abs(state.Y - m_iDragY) < 10)
-                {
-                    // Click in one location
-                    theGame.LeftClick(state.X, state.Y);
-                }
-                else
-                {
-                    // Drag somewhere else
-                    theGame.DragIcon(m_iDragX, m_iDragY, state.X, state.Y);
-                }
-                m_bLeftButtonPressed = false;
-            }
-            if (state.RightButton == ButtonState.Released && m_bRightButtonPressed)
-            {
-                theGame.RightClick(state.X, state.Y);
-                m_bRightButtonPressed = false;
-            }
-
-            int iScrollDelta = state.ScrollWheelValue - m_LastMouseState.ScrollWheelValue;
-            if (iScrollDelta > 0)
-            {
-                theGame.ScrollUp();
-            }
-            else if (iScrollDelta < 0)
-            {
-                theGame.ScrollDown();
-            }
-
-
-            KeyboardState kstate = Keyboard.GetState();
-            Keys[] oldPressed = m_LastKeyboardState.GetPressedKeys();
-            Keys[] newPressed = kstate.GetPressedKeys();
-            for (int i = 0; i < oldPressed.Length; i++)
-            {
-                // See if this key is still pressed
-                bool bStillPressed = false;
-                for (int j = 0; j < newPressed.Length; j++)
-                {
-                    if (oldPressed[i] == newPressed[j])
-                    {
-                        bStillPressed = true;
-                        break;
-                    }
-                }
-                if (!bStillPressed)
-                {
-                    // Key was released, handle it
-                    HandleKeyRelease(theGame, oldPressed[i]);
-                }
-            }
-            m_LastMouseState = state;
-            m_LastKeyboardState = kstate;
-        }
-
+        /*
         private void HandleKeyRelease(Happiness theGame, Keys key)
         {
             switch (key)
@@ -281,23 +182,19 @@ namespace Happiness
                             theGame.Undo();
                     }
                     break;
-                case Keys.Up:       // Previous Selection
-                    theGame.NavigateUp();
-                    break;
-                case Keys.Down:     // Next Selection
-                    theGame.NavigateDown();
-                    break;
-                case Keys.Left:     // Navigate Left
-                    theGame.NavigateLeft();
-                    break;
-                case Keys.Right:    // Navigate Right
-                    theGame.NavigateRight();
-                    break;
-                case Keys.Enter:
-                case Keys.Space:
-                    theGame.SelectItem();
-                    break;
             }
+        }
+        */
+
+        static InputController s_IC;
+        public static InputController IC
+        {
+            get { if (s_IC == null) s_IC = new InputController(); return s_IC; }
+        }
+
+        public static void Update(GameTime time)
+        {
+            IC.Update(null, time, PlayerIndex.One);
         }
     }
 

@@ -23,18 +23,18 @@ namespace Happiness
         List<Clue> m_Clues;
         int m_iSelectedIndex;
 
-        public VerticalCluePanel(Happiness game, Clue[] clues, int width) : base(game)
+        public VerticalCluePanel(GameScene scene, Clue[] clues, int width) : base(scene)
         {
             m_Clues = new List<Clue>(clues);
             m_iSelectedIndex = -1;
-            int screenHeight = m_Game.ScreenHeight;
+            int screenHeight = scene.Game.ScreenHeight;
 
             m_IconSize = (int)(Constants.IconSize * screenHeight);
             m_ClueSpace = (int)(Constants.ClueSpace * screenHeight);
 
             int clueHeight = m_IconSize * 3;
             int bottomMargin = (int)(screenHeight * Constants.MarginBottom);
-            int leftMargin = (int)(m_Game.ScreenWidth * Constants.MarginLeft);
+            int leftMargin = (int)(scene.Game.ScreenWidth * Constants.MarginLeft);
 
             int y = screenHeight - (clueHeight + bottomMargin);
             m_Rect = new Rectangle(leftMargin, y, width, screenHeight - y);
@@ -51,7 +51,7 @@ namespace Happiness
             float virtX = x - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtX / (m_IconSize + m_ClueSpace));
 
-            m_Game.SelectClue(m_Clues[m_iSelectedIndex], this);
+            GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
         }
 
         public void ClearSelected()
@@ -66,6 +66,12 @@ namespace Happiness
                 m_Clues.RemoveAt(m_iSelectedIndex);
                 m_iSelectedIndex = -1;
             }
+        }
+
+        public void UnhideClues(Clue[] clues)
+        {
+            m_Clues = new List<Clue>(clues);
+            ClearSelected();
         }
 
         public override void DragBegin(DragArgs args)
@@ -103,7 +109,7 @@ namespace Happiness
                 if ((x + m_IconSize) >= 0)
                 {
                     // This icon is at least partially visible
-                    bool bHintClue = m_Game.ShouldShowHint(c);
+                    bool bHintClue = GameScene.ShouldShowHint(c);
                     DrawClue(sb, (int)x, (int)y, c, bHintClue);
                 }
 
@@ -117,7 +123,7 @@ namespace Happiness
                 int xpos = (int)m_ScrollPosition + (m_iSelectedIndex * (m_IconSize + m_ClueSpace) - 3);
 
                 Rectangle rect = new Rectangle(xpos, m_Rect.Top - 3, m_IconSize + 6, (m_IconSize * 3) + 6);
-                sb.Draw(m_Game.SelectionIconTall, rect, Color.White);
+                sb.Draw(Assets.SelectionIconTall, rect, Color.White);
             }
 
             int clueTotalSpace = (m_Clues.Count * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
@@ -128,13 +134,13 @@ namespace Happiness
                 // Draw left arrow
                 if (m_ScrollPosition != m_ScrollMax)
                 {
-                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Left, m_Rect.Top + (m_IconSize * 2), m_IconSize, m_IconSize), null, Color.White, (float)-(Math.PI / 2), new Vector2(0, 0), SpriteEffects.None, 0);
+                    sb.Draw(Assets.ScrollArrow, new Rectangle(m_Rect.Left, m_Rect.Top + (m_IconSize * 2), m_IconSize, m_IconSize), null, Color.White, (float)-(Math.PI / 2), new Vector2(0, 0), SpriteEffects.None, 0);
                 }
 
                 // Draw right arrow
                 if (m_ScrollPosition != m_ScrollMin)
                 {
-                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Right, m_Rect.Top + m_IconSize, m_IconSize, m_IconSize), null, Color.White, (float)-(Math.PI + (Math.PI / 2)), new Vector2(0, 0), SpriteEffects.None, 0);
+                    sb.Draw(Assets.ScrollArrow, new Rectangle(m_Rect.Right, m_Rect.Top + m_IconSize, m_IconSize, m_IconSize), null, Color.White, (float)-(Math.PI + (Math.PI / 2)), new Vector2(0, 0), SpriteEffects.None, 0);
                 }
             }
             else
@@ -151,22 +157,22 @@ namespace Happiness
 
             int[] iIcons = new int[3];
             int[] iRows = c.GetRows();
-            int iNumIcons = c.GetIcons(m_Game.Puzzle, iIcons);
+            int iNumIcons = c.GetIcons(GameScene.Puzzle, iIcons);
 
             // Draw the frame
-            sb.Draw(m_Game.TransGrey, bounds, Color.White);
-            sb.Draw(m_Game.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
-            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
-            sb.Draw(m_Game.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);
-            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, bounds.Bottom, bounds.Width + 6, 3), Color.White);
+            sb.Draw(Assets.TransGrey, bounds, Color.White);
+            sb.Draw(Assets.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
+            sb.Draw(Assets.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
+            sb.Draw(Assets.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);
+            sb.Draw(Assets.GoldBarHorizontal, new Rectangle(x - 3, bounds.Bottom, bounds.Width + 6, 3), Color.White);
 
             // Draw the icons
 
             for (int j = 0; j < iNumIcons; j++)
             {
-                sb.Draw(m_Game.GetIcon(iRows[j], iIcons[j]), rects[j], Color.White);
+                sb.Draw(GameScene.GetIcon(iRows[j], iIcons[j]), rects[j], Color.White);
                 if (bHintClue)
-                    m_Game.HintSprite.Draw(sb, rects[j], Color.White);
+                    Assets.HintSprite.Draw(sb, rects[j], Color.White);
             }
 
             // Draw the operational overlay
@@ -179,24 +185,28 @@ namespace Happiness
                 case eVerticalType.Three:
                     break;
                 case eVerticalType.EitherOr:
-                    sb.Draw(m_Game.EitherOrOverlay, overlayRects[1], Color.White);
+                    sb.Draw(Assets.EitherOrOverlay, overlayRects[1], Color.White);
                     break;
                 case eVerticalType.TwoNot:
-                    sb.Draw(m_Game.NotOverlay, overlayRects[0], Color.White);
+                    sb.Draw(Assets.NotOverlay, overlayRects[0], Color.White);
                     break;
                 case eVerticalType.ThreeTopNot:
-                    sb.Draw(m_Game.NotOverlay, rects[0], Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[0], Color.White);
                     break;
                 case eVerticalType.ThreeMidNot:
-                    sb.Draw(m_Game.NotOverlay, rects[1], Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[1], Color.White);
                     break;
                 case eVerticalType.ThreeBotNot:
-                    sb.Draw(m_Game.NotOverlay, rects[2], Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[2], Color.White);
                     break;
             }
         }
 
         #region Accessors
+        public GameScene GameScene
+        {
+            get { return (GameScene)m_Scene; }
+        }
         #endregion
     }
 }

@@ -42,6 +42,7 @@ namespace Happiness
             m_iSelection = 0;
             SetContextString();
 
+            /*
             m_bChecks[0] = m_Game.m_bAutoArangeClues;
             m_bChecks[1] = m_Game.m_bShowClueDescriptions;
             m_bChecks[2] = m_Game.m_bShowClock;
@@ -49,6 +50,7 @@ namespace Happiness
             m_bChecks[4] = m_Game.m_bRandomizeIcons;
             m_fSoundVolume = m_Game.m_SoundManager.m_fSoundVolume;
             m_fMusicVolume = m_Game.m_SoundManager.m_fMusicVolume;
+            */
         }
 
         public void NavigateDown()
@@ -129,12 +131,14 @@ namespace Happiness
                     m_Game.m_SoundManager.PlayMenuCancel();
                     return false;
                 case 8: // Save
+                    /*
                     m_Game.m_bAutoArangeClues = m_bChecks[0];
                     m_Game.m_bShowClueDescriptions = m_bChecks[1];
                     m_Game.m_bShowClock = m_bChecks[2];
                     m_Game.m_bShowPuzzleNumber = m_bChecks[3];
                     m_Game.m_bRandomizeIcons = m_bChecks[4];
                     m_Game.m_SoundManager.PlayMenuAccept();
+                    */
                     return false;
             }
             return true;
@@ -149,7 +153,6 @@ namespace Happiness
         // Return false if this menu should close
         public bool HandleClick(int iX, int iY)
         {
-            iY -= m_Game.m_iScreenTop;
             bool bRet = true;
             if (m_rCancel.Contains(iX, iY))
             {
@@ -203,7 +206,6 @@ namespace Happiness
 
         public void UpdateMouse(int iX, int iY, bool bLeftButtonDown)
         {
-            iY -= m_Game.m_iScreenTop;
             for (int i = 0; i < m_rCheckBoxes.Length; i++)
             {
                 if (m_rCheckBoxes[i].Contains(iX, iY))
@@ -309,9 +311,9 @@ namespace Happiness
 
             int iX = (iWidth / 2) - 400;
             int iY = 10;
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, 800, 700), Color.DarkGray);
 
             iX += 80;
             iY += 50;
@@ -363,8 +365,8 @@ namespace Happiness
 
         private void DrawString(SpriteBatch spriteBatch, string text, int iX, int iY, Color cColor)
         {
-            spriteBatch.DrawString(m_Game.m_DialogFont, text, new Vector2(iX + 2, iY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, text, new Vector2(iX, iY), cColor);
+            spriteBatch.DrawString(Assets.DialogFont, text, new Vector2(iX + 2, iY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, text, new Vector2(iX, iY), cColor);
         }
 
         private Rectangle DrawCheckbox(SpriteBatch spriteBatch, int iX, int iY, string szText, bool bState, Color cColor)
@@ -378,7 +380,7 @@ namespace Happiness
                 spriteBatch.Draw(m_Game.m_Check, rBoxRect, Color.White);
 
             // Draw the text
-            rBoxRect.Width += 40 + (int)m_Game.m_DialogFont.MeasureString(szText).X;
+            rBoxRect.Width += 40 + (int)Assets.DialogFont.MeasureString(szText).X;
             DrawString(spriteBatch, szText, iX + 40, iY, cColor);
 
             return rBoxRect;
@@ -389,20 +391,20 @@ namespace Happiness
             DrawString(spriteBatch, szText, iX, iY, cTextColor);
             
             // Draw bar
-            spriteBatch.Draw(m_Game.m_ScrollBar, rBarBounds, Color.White);
+            spriteBatch.Draw(Assets.ScrollBar, rBarBounds, Color.White);
 
             // Draw Cursor
             float fX = (float)(rBarBounds.Width - 32) * fValue;
             int iLeft = (int)fX + rBarBounds.Left;
-            spriteBatch.Draw(m_Game.m_ScrollCursor, new Rectangle(iLeft + 24, rBarBounds.Top, 16, 16), null, Color.White, (float)(Math.PI / 2), new Vector2(0, 0), SpriteEffects.None, 0);
+            spriteBatch.Draw(Assets.ScrollCursor, new Rectangle(iLeft + 24, rBarBounds.Top, 16, 16), null, Color.White, (float)(Math.PI / 2), new Vector2(0, 0), SpriteEffects.None, 0);
 
             // Draw left arrow
             rLeftArrow = new Rectangle(rBarBounds.Left, rBarBounds.Top, 16, 16);
-            spriteBatch.Draw(m_Game.m_ScrollArrow, new Rectangle(rBarBounds.Left + 16, rBarBounds.Top, 16, 16), null, Color.White, (float)-(Math.PI / 2), new Vector2(15, 15), SpriteEffects.None, 0);
+            spriteBatch.Draw(Assets.ScrollArrow, new Rectangle(rBarBounds.Left + 16, rBarBounds.Top, 16, 16), null, Color.White, (float)-(Math.PI / 2), new Vector2(15, 15), SpriteEffects.None, 0);
 
             // Draw right arrow
             rRightArrow = new Rectangle(rBarBounds.Right - 16, rBarBounds.Top, 16, 16);
-            spriteBatch.Draw(m_Game.m_ScrollArrow, new Rectangle(rBarBounds.Right, rBarBounds.Top, 16, 16), null, Color.White, (float)-(Math.PI + (Math.PI / 2)), new Vector2(0, 0), SpriteEffects.None, 0);
+            spriteBatch.Draw(Assets.ScrollArrow, new Rectangle(rBarBounds.Right, rBarBounds.Top, 16, 16), null, Color.White, (float)-(Math.PI + (Math.PI / 2)), new Vector2(0, 0), SpriteEffects.None, 0);
         }
     }
 }

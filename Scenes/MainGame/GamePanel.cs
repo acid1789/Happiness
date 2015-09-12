@@ -9,7 +9,6 @@ namespace Happiness
 {
     class GamePanel : UIPanel
     {
-
         int m_iCellWidth;
         int m_iCellHeight;
         int m_iFinalIconSize;
@@ -19,12 +18,12 @@ namespace Happiness
 
         CellDialog m_CellDialog;
 
-        public GamePanel(Happiness game, Rectangle rect) : base(game)
+        public GamePanel(GameScene game, Rectangle rect) : base(game)
         {
             m_Rect = rect;
 
-            m_iCellWidth = rect.Width / game.Puzzle.m_iSize;
-            m_iCellHeight = rect.Height / game.Puzzle.m_iSize;
+            m_iCellWidth = (rect.Width - 6) / game.Puzzle.m_iSize;
+            m_iCellHeight = (rect.Height - 6) / game.Puzzle.m_iSize;
             m_Rect.Width = m_iCellWidth * game.Puzzle.m_iSize;
             m_Rect.Height = m_iCellHeight * game.Puzzle.m_iSize;
 
@@ -77,7 +76,7 @@ namespace Happiness
                 int col = (x - m_Rect.Left) / m_iCellWidth;
 
                 // Show the cell dialog
-                m_CellDialog = new CellDialog(m_Game, row, col);
+                m_CellDialog = new CellDialog(GameScene, row, col);
             }
         }
 
@@ -108,7 +107,7 @@ namespace Happiness
         public override void Draw(SpriteBatch sb)
         {
             // Draw Background
-            sb.Draw(m_Game.TransGrey, m_Rect, Color.White);
+            sb.Draw(Assets.TransGrey, m_Rect, Color.White);
 
             // Draw Icons
             DrawIcons(sb);
@@ -122,34 +121,34 @@ namespace Happiness
 
         void DrawIcons(SpriteBatch sb)
         {
-            for (int y = 0; y < m_Game.Puzzle.m_iSize; y++)
+            for (int y = 0; y < GameScene.Puzzle.m_iSize; y++)
             {
                 int ycoord = m_Rect.Top + (y * m_iCellHeight);
 
-                for (int x = 0; x < m_Game.Puzzle.m_iSize; x++)
+                for (int x = 0; x < GameScene.Puzzle.m_iSize; x++)
                 {
                     int xcoord = m_Rect.Left + (x * m_iCellWidth);
 
 
-                    int iFinal = m_Game.Puzzle.m_Rows[y].m_Cells[x].m_iFinalIcon;
+                    int iFinal = GameScene.Puzzle.m_Rows[y].m_Cells[x].m_iFinalIcon;
                     if (iFinal >= 0)
                     {
                         Rectangle r = m_FinalRect;
                         r.Offset(xcoord, ycoord);
-                        sb.Draw(m_Game.GetIcon(y, iFinal), r, Color.White);
+                        sb.Draw(GameScene.GetIcon(y, iFinal), r, Color.White);
 
                         //if (m_Hint != null && m_Hint.ShouldDraw(iRow, iCol, iFinal))
                         //    m_HintSprite.Draw(spriteBatch, m_aDisplayRows[iRow].m_aCells[iCol].m_rFinal, Color.White);
                     }
                     else
                     {
-                        for (int iIcon = 0; iIcon < m_Game.Puzzle.m_iSize; iIcon++)
+                        for (int iIcon = 0; iIcon < GameScene.Puzzle.m_iSize; iIcon++)
                         {
-                            if (m_Game.Puzzle.m_Rows[y].m_Cells[x].m_bValues[iIcon])
+                            if (GameScene.Puzzle.m_Rows[y].m_Cells[x].m_bValues[iIcon])
                             {
                                 Rectangle r = m_SmallRects[iIcon];
                                 r.Offset(xcoord, ycoord);
-                                sb.Draw(m_Game.GetIcon(y, iIcon), r, Color.White);
+                                sb.Draw(GameScene.GetIcon(y, iIcon), r, Color.White);
 
                                 //if (m_Hint != null && m_Hint.ShouldDraw(iRow, iCol, iIcon))
                                 //    m_HintSprite.Draw(spriteBatch, m_aDisplayRows[iRow].m_aCells[iCol].m_aDisplayRects[iIcon], Color.White);
@@ -162,22 +161,30 @@ namespace Happiness
 
         void DrawBorders(SpriteBatch sb)
         {
-            for (int y = 0; y < m_Game.Puzzle.m_iSize; y++)
+            for (int y = 0; y < GameScene.Puzzle.m_iSize; y++)
             {
                 int ycoord = m_Rect.Top + (y * m_iCellHeight);
 
-                for (int x = 0; x < m_Game.Puzzle.m_iSize; x++)
+                for (int x = 0; x < GameScene.Puzzle.m_iSize; x++)
                 {
                     int xcoord = m_Rect.Left + (x * m_iCellWidth);                    
 
                     // Draw the border
-                    sb.Draw(m_Game.GoldBarVertical, new Rectangle(xcoord - 3, ycoord - 1, 3, m_iCellHeight + 2), Color.White);
-                    sb.Draw(m_Game.GoldBarVertical, new Rectangle(xcoord + m_iCellWidth, ycoord - 1, 3, m_iCellHeight + 2), Color.White);
-                    sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(xcoord, ycoord - 1, m_iCellWidth, 1), Color.White);
-                    sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(xcoord, ycoord + m_iCellHeight, m_iCellWidth, 1), Color.White);
+                    sb.Draw(Assets.GoldBarVertical, new Rectangle(xcoord - 3, ycoord - 1, 3, m_iCellHeight + 2), Color.White);
+                    sb.Draw(Assets.GoldBarVertical, new Rectangle(xcoord + m_iCellWidth, ycoord - 1, 3, m_iCellHeight + 2), Color.White);
+                    sb.Draw(Assets.GoldBarHorizontal, new Rectangle(xcoord, ycoord - 1, m_iCellWidth, 1), Color.White);
+                    sb.Draw(Assets.GoldBarHorizontal, new Rectangle(xcoord, ycoord + m_iCellHeight, m_iCellWidth, 1), Color.White);
                 }
             }
         }
         #endregion
+
+        #region Accessors
+        public GameScene GameScene
+        {
+            get { return (GameScene)m_Scene; }
+        }
+        #endregion
+
     }
 }

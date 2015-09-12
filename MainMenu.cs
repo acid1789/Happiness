@@ -176,9 +176,9 @@ namespace Happiness
                         }
                         break;
                     case 2:         // Options
-                        m_Game.m_Options.Init();
-                        m_Game.m_bOptionsDialog = true;
-                        m_Game.m_SoundManager.PlayMenuAccept();
+                        //m_Game.m_Options.Init();
+                        //m_Game.m_bOptionsDialog = true;
+                        //m_Game.m_SoundManager.PlayMenuAccept();
                         break;
                     case 3:         // Exit
                         return false;
@@ -200,7 +200,7 @@ namespace Happiness
         public void UpdateMouse(int iX, int iY, bool bLeftButtonDown)
         {
             m_iMouseX = iX;
-            m_iMouseY = iY + m_Game.m_iScreenTop;
+            m_iMouseY = iY;
             if (m_bNewGameDialog)
             {
                 if (m_rNewGameAccept.Contains(iX, iY))
@@ -257,7 +257,7 @@ namespace Happiness
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Rectangle r = new Rectangle(m_iTextX - 20, m_Game.m_iScreenTop + m_iTextY + (i * 40), 352, 40);
+                    Rectangle r = new Rectangle(m_iTextX - 20, m_iTextY + (i * 40), 352, 40);
                     if (r.Contains(iX, iY))
                     {
                         if (m_iSelection != i)
@@ -303,7 +303,7 @@ namespace Happiness
             {
                 for (int i = 0; i < 4; i++)
                 {
-                    Rectangle r = new Rectangle(m_iTextX - 20, m_Game.m_iScreenTop + m_iTextY + (i * 40), 352, 40);
+                    Rectangle r = new Rectangle(m_iTextX - 20, m_iTextY + (i * 40), 352, 40);
                     if (r.Contains(iX, iY))
                     {
                         m_iSelection = i;
@@ -349,7 +349,7 @@ namespace Happiness
         {
             int iWidth = m_Game.m_iScreenWidth;
             int iHeight = m_Game.m_iScreenHeight;
-            spriteBatch.Draw(m_Game.m_Background, new Rectangle(0, 0, iWidth, iHeight), Color.White);
+            spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, iWidth, iHeight), Color.White);
 
             int iHalfWidth = iWidth / 2;
             int iHalfSizeW = m_Game.m_Logo.Width / 2;
@@ -359,23 +359,23 @@ namespace Happiness
             m_iTextY = (iHeight - 200);
 
             int iTextY = m_iTextY;
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(m_iTextX - 20, m_iTextY - 10, 352, 190), Color.SteelBlue);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(m_iTextX - 20, m_iTextY - 10, 352, 190), Color.SteelBlue);
 
-            spriteBatch.DrawString(m_Game.m_MenuFont, "New Game", new Vector2(m_iTextX + 2, m_iTextY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_MenuFont, "New Game", new Vector2(m_iTextX, m_iTextY), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.MenuFont, "New Game", new Vector2(m_iTextX + 2, m_iTextY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.MenuFont, "New Game", new Vector2(m_iTextX, m_iTextY), Color.Goldenrod);
 
             iTextY += 40;
             Color cLoadColor = (m_SaveGame != null && m_SaveGame.m_bIsValid) ? Color.Goldenrod : Color.Gray;
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Load Game", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Load Game", new Vector2(m_iTextX, iTextY), cLoadColor);
+            spriteBatch.DrawString(Assets.MenuFont, "Load Game", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.MenuFont, "Load Game", new Vector2(m_iTextX, iTextY), cLoadColor);
 
             iTextY += 40;
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Options", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Options", new Vector2(m_iTextX, iTextY), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.MenuFont, "Options", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.MenuFont, "Options", new Vector2(m_iTextX, iTextY), Color.Goldenrod);
 
             iTextY += 40;
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Exit", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_MenuFont, "Exit", new Vector2(m_iTextX, iTextY), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.MenuFont, "Exit", new Vector2(m_iTextX + 2, iTextY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.MenuFont, "Exit", new Vector2(m_iTextX, iTextY), Color.Goldenrod);
 
             int iArrowY = (iHeight - 210) + (m_iSelection * 40);
             spriteBatch.Draw(m_Game.m_BlueArrow, new Rectangle(m_iTextX - 105, iArrowY, 100, 70), Color.White);
@@ -386,17 +386,17 @@ namespace Happiness
             string szJenkees = "Ronald Jenkees";
             string szJenkeesWeb = "www.ronaldjenkees.com";
 
-            spriteBatch.DrawString(m_Game.m_DialogFont, szMeCredit, new Vector2(57, 642), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szMeCredit, new Vector2(55, 640), Color.White);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szMe, new Vector2(697, 642), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szMe, new Vector2(695, 640), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.DialogFont, szMeCredit, new Vector2(57, 642), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szMeCredit, new Vector2(55, 640), Color.White);
+            spriteBatch.DrawString(Assets.DialogFont, szMe, new Vector2(697, 642), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szMe, new Vector2(695, 640), Color.Goldenrod);
 
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkeesCredit, new Vector2(57, 672), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkeesCredit, new Vector2(55, 670), Color.White);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkees, new Vector2(197, 672), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkees, new Vector2(195, 670), Color.Goldenrod);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkeesWeb, new Vector2(437, 672), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szJenkeesWeb, new Vector2(435, 670), Color.Turquoise);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkeesCredit, new Vector2(57, 672), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkeesCredit, new Vector2(55, 670), Color.White);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkees, new Vector2(197, 672), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkees, new Vector2(195, 670), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkeesWeb, new Vector2(437, 672), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szJenkeesWeb, new Vector2(435, 670), Color.Turquoise);
 
 
             if (m_bNewGameDialog)
@@ -410,10 +410,10 @@ namespace Happiness
             int iX = (iScreenWidth / 2) - (iDialogWidth / 2);
             int iY = ((iScreenHeight / 2) - (iDialogHeight / 2));
 
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, iDialogWidth, iDialogHeight), Color.SteelBlue);
 
             iX += 25;
             iY += 30;
@@ -431,29 +431,29 @@ namespace Happiness
             iY += 50;
             if (m_rNewGameCancel.IsEmpty)
             {
-                Vector2 vSize = m_Game.m_DialogFont.MeasureString("Cancel");
-                m_rNewGameCancel = new Rectangle(iX, m_Game.m_iScreenTop + iY, (int)vSize.X, (int)vSize.Y);
+                Vector2 vSize = Assets.DialogFont.MeasureString("Cancel");
+                m_rNewGameCancel = new Rectangle(iX, iY, (int)vSize.X, (int)vSize.Y);
             }
             Color cCancel = (m_rNewGameCancel.Contains(m_iMouseX, m_iMouseY) || m_iNewGameSelection == 4) ? Color.Turquoise : Color.CornflowerBlue;
-            spriteBatch.DrawString(m_Game.m_DialogFont, "Cancel", new Vector2(iX + 2, iY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, "Cancel", new Vector2(iX, iY), cCancel);
+            spriteBatch.DrawString(Assets.DialogFont, "Cancel", new Vector2(iX + 2, iY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, "Cancel", new Vector2(iX, iY), cCancel);
 
             // Draw Accept
             iX += 150;
             if( m_rNewGameAccept.IsEmpty )
             {
-                Vector2 vSize = m_Game.m_DialogFont.MeasureString("Accept");
-                m_rNewGameAccept = new Rectangle(iX, m_Game.m_iScreenTop + iY, (int)vSize.X, (int)vSize.Y);
+                Vector2 vSize = Assets.DialogFont.MeasureString("Accept");
+                m_rNewGameAccept = new Rectangle(iX, iY, (int)vSize.X, (int)vSize.Y);
             }
             Color cAccept = (m_rNewGameAccept.Contains(m_iMouseX, m_iMouseY) || m_iNewGameSelection == 3) ? Color.Turquoise : Color.CornflowerBlue;
-            spriteBatch.DrawString(m_Game.m_DialogFont, "Accept", new Vector2(iX + 2, iY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, "Accept", new Vector2(iX, iY), cAccept);
+            spriteBatch.DrawString(Assets.DialogFont, "Accept", new Vector2(iX + 2, iY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, "Accept", new Vector2(iX, iY), cAccept);
         }
 
         private void DrawNewGameItem(SpriteBatch spriteBatch, string szText, string szValue, int iX, int iY, int iIndex)
         {
-            spriteBatch.DrawString(m_Game.m_DialogFont, szText, new Vector2(iX + 2, iY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szText, new Vector2(iX, iY), Color.Goldenrod);
+            spriteBatch.DrawString(Assets.DialogFont, szText, new Vector2(iX + 2, iY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szText, new Vector2(iX, iY), Color.Goldenrod);
 
             // Draw the value box
             int iValueBoxWidth = 140;
@@ -461,13 +461,13 @@ namespace Happiness
             int iValueBoxX = iX + 200;
             int iValueBoxY = iY - 4;
             Color cBoxColor = (iIndex == m_iNewGameSelection) ? Color.Yellow : Color.White;
-            spriteBatch.Draw(m_Game.m_Transparent, new Rectangle(iValueBoxX, iValueBoxY, iValueBoxWidth, iValueBoxHeight), cBoxColor);
+            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iValueBoxX, iValueBoxY, iValueBoxWidth, iValueBoxHeight), cBoxColor);
 
             // Draw the value
-            int iValueX = iValueBoxX + (iValueBoxWidth / 2) - ((int)m_Game.m_DialogFont.MeasureString(szValue).X / 2);
+            int iValueX = iValueBoxX + (iValueBoxWidth / 2) - ((int)Assets.DialogFont.MeasureString(szValue).X / 2);
             int iValueY = iY;
-            spriteBatch.DrawString(m_Game.m_DialogFont, szValue, new Vector2(iValueX + 2, iValueY + 2), Color.Black);
-            spriteBatch.DrawString(m_Game.m_DialogFont, szValue, new Vector2(iValueX, iValueY), Color.White);
+            spriteBatch.DrawString(Assets.DialogFont, szValue, new Vector2(iValueX + 2, iValueY + 2), Color.Black);
+            spriteBatch.DrawString(Assets.DialogFont, szValue, new Vector2(iValueX, iValueY), Color.White);
 
             // Draw the left arrow
             int iLeftArrowX = iValueBoxX - 24;
@@ -481,7 +481,6 @@ namespace Happiness
             // Update box
             if (m_aNewGameBoxes[iIndex * 2].IsEmpty)
             {
-                iValueBoxY += m_Game.m_iScreenTop;
                 m_aNewGameBoxes[iIndex * 2] = new Rectangle(iLeftArrowX, iValueBoxY, iArrowWidth, iValueBoxHeight);
                 m_aNewGameBoxes[(iIndex * 2) + 1] = new Rectangle(iRightArrowX, iValueBoxY, iArrowWidth, iValueBoxHeight);
             }

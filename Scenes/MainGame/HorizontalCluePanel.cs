@@ -23,12 +23,12 @@ namespace Happiness
         List<Clue> m_Clues;
         int m_iSelectedIndex;
 
-        public HorizontalCluePanel(Happiness game, Clue[] clues) : base(game)
+        public HorizontalCluePanel(GameScene scene, Clue[] clues) : base(scene)
         {
             m_iSelectedIndex = -1;
             m_Clues = new List<Clue>(clues);
-            int screenWidth = m_Game.ScreenWidth;
-            int screenHeight = m_Game.ScreenHeight;
+            int screenWidth = Scene.Game.ScreenWidth;
+            int screenHeight = Scene.Game.ScreenHeight;
 
             int marginRight = (int)(Constants.MarginRight * screenWidth);
             int marginTop = (int)(Constants.MarginTop * screenHeight);
@@ -54,7 +54,7 @@ namespace Happiness
             float virtY = y - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtY / (m_IconSize + m_ClueSpace));
 
-            m_Game.SelectClue(m_Clues[m_iSelectedIndex], this);
+            GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
         }
 
         public void ClearSelected()
@@ -69,6 +69,12 @@ namespace Happiness
                 m_Clues.RemoveAt(m_iSelectedIndex);
                 m_iSelectedIndex = -1;
             }
+        }
+
+        public void UnhideClues(Clue[] clues)
+        {
+            m_Clues = new List<Clue>(clues);
+            ClearSelected();
         }
 
         public override void DragBegin(DragArgs args)
@@ -110,7 +116,7 @@ namespace Happiness
                 if ((y + m_IconSize) >= 0)
                 {
                     // This icon is at least partially visible
-                    bool bHintClue = m_Game.ShouldShowHint(c);
+                    bool bHintClue = GameScene.ShouldShowHint(c);
                     DrawClue(sb, (int)x, (int)y, c, bHintClue);
                 }
 
@@ -124,7 +130,7 @@ namespace Happiness
                 int ypos = (int)m_ScrollPosition + (m_iSelectedIndex * (m_IconSize + m_ClueSpace) - 3);
 
                 Rectangle rect = new Rectangle(m_Rect.Left - 3, ypos, (m_IconSize * 3) + 6, m_IconSize + 6);
-                sb.Draw(m_Game.SelectionIconWide, rect, Color.White);
+                sb.Draw(Assets.SelectionIconWide, rect, Color.White);
             }
 
             int clueTotalSpace = (m_Clues.Count * (m_IconSize + m_ClueSpace)) - m_ClueSpace;
@@ -135,13 +141,13 @@ namespace Happiness
                 // Draw up arrow
                 if (m_ScrollPosition != m_ScrollMax)
                 {
-                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, 0, m_IconSize, m_IconSize), Color.White);
+                    sb.Draw(Assets.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, 0, m_IconSize, m_IconSize), Color.White);
                 }
 
                 // Draw down arrow
                 if (m_ScrollPosition != m_ScrollMin)
                 {
-                    sb.Draw(m_Game.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, m_Rect.Bottom - m_IconSize, m_IconSize, m_IconSize), null, Color.White, 0, Vector2.Zero, SpriteEffects.FlipVertically, 0);
+                    sb.Draw(Assets.ScrollArrow, new Rectangle(m_Rect.Left + m_IconSize, m_Rect.Bottom - m_IconSize, m_IconSize, m_IconSize), null, Color.White, 0, Vector2.Zero, SpriteEffects.FlipVertically, 0);
                 }
             }
             else
@@ -158,35 +164,35 @@ namespace Happiness
 
             int[] iIcons = new int[3];
             int[] iRows = c.GetRows();
-            int iNumIcons = c.GetIcons(m_Game.Puzzle, iIcons);
+            int iNumIcons = c.GetIcons(GameScene.Puzzle, iIcons);
 
             // Draw the frame
             //sb.Draw(m_Game.TransGrey, bounds, Color.White);
-            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
-            sb.Draw(m_Game.GoldBarHorizontal, new Rectangle(x - 3, bounds.Bottom, bounds.Width + 6, 3), Color.White);
-            sb.Draw(m_Game.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
-            sb.Draw(m_Game.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);
+            sb.Draw(Assets.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
+            sb.Draw(Assets.GoldBarHorizontal, new Rectangle(x - 3, bounds.Bottom, bounds.Width + 6, 3), Color.White);
+            sb.Draw(Assets.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
+            sb.Draw(Assets.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);
 
             // Draw the icons
             if (c.m_HorizontalType == eHorizontalType.LeftOf || c.m_HorizontalType == eHorizontalType.NotLeftOf)
             {
-                sb.Draw(m_Game.GetIcon(iRows[0], iIcons[0]), rects[0], Color.White);
-                sb.Draw(m_Game.LeftOfIcon,                   rects[1], Color.White);
-                sb.Draw(m_Game.GetIcon(iRows[1], iIcons[1]), rects[2], Color.White);
+                sb.Draw(GameScene.GetIcon(iRows[0], iIcons[0]), rects[0], Color.White);
+                sb.Draw(Assets.LeftOfIcon,                      rects[1], Color.White);
+                sb.Draw(GameScene.GetIcon(iRows[1], iIcons[1]), rects[2], Color.White);
 
                 if (bHintClue)
                 {
-                    m_Game.HintSprite.Draw(sb, rects[0], Color.White);
-                    m_Game.HintSprite.Draw(sb, rects[2], Color.White);
+                    Assets.HintSprite.Draw(sb, rects[0], Color.White);
+                    Assets.HintSprite.Draw(sb, rects[2], Color.White);
                 }
             }
             else
             {
                 for (int j = 0; j < iNumIcons; j++)
                 {
-                    sb.Draw(m_Game.GetIcon(iRows[j], iIcons[j]), rects[j], Color.White);
+                    sb.Draw(GameScene.GetIcon(iRows[j], iIcons[j]), rects[j], Color.White);
                     if (bHintClue)
-                        m_Game.HintSprite.Draw(sb, rects[j], Color.White);
+                        Assets.HintSprite.Draw(sb, rects[j], Color.White);
                 }
             }
 
@@ -198,27 +204,31 @@ namespace Happiness
                     break;
                 case eHorizontalType.NotLeftOf:
                 case eHorizontalType.NotNextTo:
-                    sb.Draw(m_Game.NotOverlay, rects[1], Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[1], Color.White);
                     break;
                 case eHorizontalType.Span:
-                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
+                    sb.Draw(Assets.SpanOverlay, bounds, Color.White);
                     break;
                 case eHorizontalType.SpanNotLeft:
-                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
-                    sb.Draw(m_Game.NotOverlay, rects[0], Color.White);
+                    sb.Draw(Assets.SpanOverlay, bounds, Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[0], Color.White);
                     break;
                 case eHorizontalType.SpanNotMid:
-                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
-                    sb.Draw(m_Game.NotOverlay, rects[1], Color.White);
+                    sb.Draw(Assets.SpanOverlay, bounds, Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[1], Color.White);
                     break;
                 case eHorizontalType.SpanNotRight:
-                    sb.Draw(m_Game.SpanOverlay, bounds, Color.White);
-                    sb.Draw(m_Game.NotOverlay, rects[2], Color.White);
+                    sb.Draw(Assets.SpanOverlay, bounds, Color.White);
+                    sb.Draw(Assets.NotOverlay, rects[2], Color.White);
                     break;
             }
         }
 
         #region Accessors
+        public GameScene GameScene
+        {
+            get { return (GameScene)m_Scene; }
+        }
         #endregion
     }
 }

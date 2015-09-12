@@ -9,12 +9,12 @@ namespace Happiness
 {
     public class UIPanel
     {
-        protected Happiness m_Game;
+        protected Scene m_Scene;
         protected Rectangle m_Rect;
 
-        public UIPanel(Happiness game)
+        public UIPanel(Scene scene)
         {
-            m_Game = game;
+            m_Scene = scene;
         }
 
         public virtual void Click(int x, int y) { }
@@ -30,6 +30,11 @@ namespace Happiness
         public Rectangle Rect
         {
             get { return m_Rect; }
+        }
+
+        public Scene Scene
+        {
+            get { return m_Scene; }
         }
         #endregion
     }

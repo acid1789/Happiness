@@ -12,6 +12,9 @@ namespace Happiness
         public static float MarginTop = 10f / 720f;
         public static float MarginBottom = 10f / 720f;
 
+        public static float ButtonPanel_Width = 60f / 1280f;
+        public static float HelpPanel_Height = 40f / 720f;
+
         public static float IconSize = 60f / 720f;
         public static float ClueSpace = 6f / 720f;
 
