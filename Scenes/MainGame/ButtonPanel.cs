@@ -20,8 +20,11 @@ namespace Happiness
             int buttonSpace = (int)(Constants.ButtonPanel_ButtonSpace * Scene.Game.ScreenHeight);
             int buttonsLeft = mid - (buttonSize >> 1);
 
-            m_Buttons = new UIButton[1];
+            int startY = (int)(Constants.HelpPanel_Height * Scene.Game.ScreenHeight);
+
+            m_Buttons = new UIButton[2];
             m_Buttons[0] = new UIButton(0, "HC", Assets.DialogFont, new Rectangle(buttonsLeft, rect.Bottom - (buttonSize + buttonSpace), buttonSize, buttonSize), Assets.ScrollBar);
+            m_Buttons[1] = new UIButton(1, "P", Assets.DialogFont, new Rectangle(buttonsLeft, startY, buttonSize, buttonSize), Assets.ScrollBar);
 
             HideClueEnabled = false;
         }
@@ -45,6 +48,9 @@ namespace Happiness
                 case 0:
                     GameScene.HideSelectedClue();
                     HideClueEnabled = false;
+                    break;
+                case 1:
+                    GameScene.Pause();
                     break;
             }
         }

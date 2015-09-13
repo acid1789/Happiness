@@ -58,9 +58,9 @@ namespace Happiness
         {         
             base.Initialize();
 
-            //m_CurrentScene = new GameScene(this);
-            //((GameScene)m_CurrentScene).Initialize(0, 4);
-            m_CurrentScene = new StartupScene(this);
+            m_CurrentScene = new GameScene(this);
+            ((GameScene)m_CurrentScene).Initialize(0, 4);
+            //m_CurrentScene = new StartupScene(this);
         }
 
         /// <summary>
@@ -89,9 +89,6 @@ namespace Happiness
         {
             m_Logo = Content.Load<Texture2D>("Logo");
             m_BlueArrow = Content.Load<Texture2D>("BlueArrow");
-            m_GoldArrowLeft = Content.Load<Texture2D>("GoldArrowLeft");
-            m_GoldArrowRight = Content.Load<Texture2D>("GoldArrowRight");
-            m_HelpBackground = Content.Load<Texture2D>("HelpBackground");
             m_MouseImage = Content.Load<Texture2D>("Mouse");
             m_ControllerImage = Content.Load<Texture2D>("Controller");
             
@@ -141,29 +138,8 @@ namespace Happiness
             
             m_CurrentScene = nextScene;            
         }
-
-        /*
-        public void Pause()
-        {
-            if (!m_bMainMenu && !m_bPauseMenu && !m_bOptionsDialog)
-            {
-                m_PauseMenu.Init();
-                m_PauseMenu.m_iPuzzleNumber = GetDisplayPuzzleNumber();
-                m_bPauseMenu = true;
-                m_SoundManager.PlayMenuAccept();
-            }
-        }
-        */
-        /*
-        public void SavePuzzle()
-        {
-            if (!m_bMainMenu && !m_bPauseMenu && !m_bOptionsDialog && m_SaveGame != null)
-            {
-                m_SaveGame.SavePuzzle(m_Puzzle);
-                m_SoundManager.PlayGameSave();
-            }
-        }
-        */
+        
+        
         /*        
         public void ShowHint()
         {

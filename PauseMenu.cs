@@ -10,7 +10,6 @@ namespace Happiness
 {
     public class PauseMenu
     {
-        Happiness m_Game;
         public GameTime m_GameTime;
 
         string m_szConfirmText1;
@@ -20,514 +19,165 @@ namespace Happiness
         Rectangle m_rConfirmAccept;
         Rectangle m_rConfirmCancel;
         bool m_bConfirmDialog;
-        int m_iConfirmSelection;
-        SaveGame m_SaveGame = null;
-
-        Rectangle m_rScrollBarUp;
-        Rectangle m_rScrollBarDown;
+        
         int m_iScrollOffset;
-        int m_iScrollAmmount = 50;
-        int m_iScrollMaximum = 1600;
-
-        Rectangle m_rGotoLeft;
-        Rectangle m_rGotoRight;
-        bool m_bGotoDialog;
-        int m_iGotoSelection;
-
-        int m_iTextX;
-        int m_iTextY;
-        int m_iMouseX;
-        int m_iMouseY;
-        double m_dfScrollSpeed = 1.0;
-        double m_dfScrollTime = 0;
-
+        int m_iScrollMaximum = 1800;
+        
         public int m_iSelection;
         public int m_iPuzzleNumber;
 
-        public PauseMenu(Happiness theGame)
+        int m_iScreenWidth;
+        int m_iScreenHeight;
+        DateTime m_PauseStart;
+        UIButton[] m_Buttons;
+        Rectangle m_ButtonBackground;
+
+        int m_iDragY;
+        Rectangle m_HelpRectangle;
+        int m_HelpTextLeft;
+        int m_HelpTextTop;
+        int m_iIconSize;
+        int m_iIconSizeSmall;
+
+
+
+        public PauseMenu(int screenWidth, int screenHeight)
         {
             m_iSelection = 0;
-            m_Game = theGame;
-        }
+            m_iScreenWidth = screenWidth;
+            m_iScreenHeight = screenHeight;
 
-        public void Init()
-        {
             m_iSelection = 0;
             m_bConfirmDialog = false;
-            m_bGotoDialog = false;
             m_iScrollOffset = 0;
+
+
+            int buttonX = (int)(Constants.PauseMenu_ButtonX * screenWidth);
+            int buttonY = (int)(Constants.PauseMenu_ButtonY * screenHeight);
+            int buttonWidth = (int)(Constants.PauseMenu_ButtonWidth * screenWidth);
+            int buttonHeight = (int)(Constants.PauseMenu_ButtonHeight * screenWidth);
+            int buttonSpace = (int)(Constants.PauseMenu_ButtonSpace * screenHeight);
+
+            m_Buttons = new UIButton[5];
+            Rectangle brect = new Rectangle(buttonX, buttonY, buttonWidth, buttonHeight);
+            m_Buttons[0] = new UIButton(0, "Resume Game", Assets.DialogFont, brect, Assets.ScrollBar);
+            brect.Y += buttonHeight + buttonSpace;
+            m_Buttons[1] = new UIButton(1, "Reset Puzzle", Assets.DialogFont, brect, Assets.ScrollBar);
+            brect.Y += buttonHeight + buttonSpace;
+            m_Buttons[2] = new UIButton(2, "Unhide Clues", Assets.DialogFont, brect, Assets.ScrollBar);
+            brect.Y += buttonHeight + buttonSpace;
+            m_Buttons[3] = new UIButton(3, "Buy Coins", Assets.DialogFont, brect, Assets.ScrollBar);
+            brect.Y += buttonHeight + buttonSpace;
+            m_Buttons[4] = new UIButton(4, "Save & Exit", Assets.DialogFont, brect, Assets.ScrollBar);
+
+            m_ButtonBackground = new Rectangle((int)(Constants.PauseMenu_ButtonAreaBGX * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGY * screenHeight), (int)(Constants.PauseMenu_ButtonAreaBGW * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGH * screenHeight));
+
+
+            int helpLeft = (int)(Constants.PauseMenu_HelpLeft * screenWidth);
+            m_HelpRectangle = new Rectangle(helpLeft, 0, screenWidth - helpLeft, screenHeight);
+            m_HelpTextLeft = (int)(Constants.PauseMenu_HelpTextLeft * screenWidth);
+            m_HelpTextTop = (int)(Constants.PauseMenu_HelpTextTop * screenHeight);
+            m_iIconSize = (int)(Constants.PauseMenu_IconSize * screenHeight);
+            m_iIconSizeSmall = (int)(Constants.PauseMenu_IconSizeSmall * screenHeight);
+
+            m_PauseStart = DateTime.Now;
         }
 
-        public void SetSaveGame(SaveGame save)
-        {
-            if (m_SaveGame != save)
-                m_SaveGame = save;
-        }
-
-        public void NavigateDown()
-        {
-            if (m_bConfirmDialog)
-            {
-                m_iConfirmSelection++;
-                if (m_iConfirmSelection > 1)
-                    m_iConfirmSelection = 0;
-            }
-            else if (m_bGotoDialog)
-            {
-                m_iGotoSelection++;
-                if (m_iGotoSelection > 2)
-                    m_iGotoSelection = 0;
-            }
-            else
-            {
-                m_iSelection++;
-                if (m_iSelection > 8)
-                    m_iSelection = 0;
-            }
-            m_Game.m_SoundManager.PlayMenuNavigate();
-        }
-
-        public void NavigateUp()
-        {
-            if (m_bConfirmDialog)
-            {
-                m_iConfirmSelection--;
-                if (m_iConfirmSelection < 0)
-                    m_iConfirmSelection = 1;
-            }
-            else if (m_bGotoDialog)
-            {
-                m_iGotoSelection--;
-                if (m_iGotoSelection < 0)
-                    m_iGotoSelection = 2;
-            }
-            else
-            {
-                m_iSelection--;
-                if (m_iSelection < 0)
-                    m_iSelection = 8;
-            }
-            m_Game.m_SoundManager.PlayMenuNavigate();
-        }
-
-        public void NavigateLeft()
+        #region Input
+        public bool HandleClick(int x, int y)
         {
             if (m_bConfirmDialog)
             {
-                m_iConfirmSelection--;
-                if (m_iConfirmSelection < 0)
-                    m_iConfirmSelection = 1;
-                m_Game.m_SoundManager.PlayMenuNavigate();
-            }
-            else if (m_bGotoDialog)
-            {
-                if (m_iGotoSelection == 2)
-                    m_iGotoSelection = 1;
-                else if (m_iGotoSelection == 1)
-                    m_iGotoSelection = 2;
-                else
-                    DecrementPuzzleNumber();
-                m_Game.m_SoundManager.PlayMenuNavigate();
-            }
-        }
-
-        public void NavigateRight()
-        {
-            if (m_bConfirmDialog)
-            {
-                m_iConfirmSelection++;
-                if (m_iConfirmSelection > 1)
-                    m_iConfirmSelection = 0;
-                m_Game.m_SoundManager.PlayMenuNavigate();
-            }
-            else if (m_bGotoDialog)
-            {
-                if (m_iGotoSelection == 2)
-                    m_iGotoSelection = 1;
-                else if (m_iGotoSelection == 1)
-                    m_iGotoSelection = 2;
-                else
-                    IncrementPuzzleNumber();
-                m_Game.m_SoundManager.PlayMenuNavigate();
-            }
-        }
-
-        private void DecrementPuzzleNumber()
-        {
-            m_iPuzzleNumber--;
-            if (m_iPuzzleNumber < 0)
-                m_iPuzzleNumber = 67108863;
-        }
-
-        private void IncrementPuzzleNumber()
-        {
-            m_iPuzzleNumber++;
-            if (m_iPuzzleNumber > 67108863)
-                m_iPuzzleNumber = 0;
-        }
-
-        // Return false if this menu should close
-        public bool CommitSelection()
-        {
-            if (m_bConfirmDialog)
-            {
-                if (m_iConfirmSelection == 0)
+                if (m_rConfirmCancel.Contains(x, y))
                 {
-                    // No
                     m_bConfirmDialog = false;
-                    m_Game.m_SoundManager.PlayMenuCancel();
-                    return true;
+                    //m_Game.m_SoundManager.PlayMenuCancel();
+                }
+                else if (m_rConfirmAccept.Contains(x, y))
+                {
+                    return DoButtonClick(1);
                 }
             }
-            else if (m_bGotoDialog)
+            else
             {
-                if (m_iGotoSelection == 1)
+
+                foreach (UIButton b in m_Buttons)
                 {
-                    // Cancel
-                    m_bGotoDialog = false;
-                    m_Game.m_SoundManager.PlayMenuCancel();
-                    return true;
-                }
-                else if (m_iGotoSelection == 0)
-                {
-                    IncrementPuzzleNumber();
-                    m_Game.m_SoundManager.PlayMenuNavigate();
-                    return true;
+                    if (b.Click(x, y))
+                    {
+                        return DoButtonClick(b.ButtonID);
+                    }
                 }
             }
 
-            switch (m_iSelection)
+            return true;    // Return true and remain paused
+        }
+
+        bool DoButtonClick(int buttonID)
+        {
+            m_iSelection = buttonID;
+            switch (buttonID)
             {
-                case 0:         // Resume Game
-                    m_Game.m_SoundManager.PlayMenuCancel();
+                case 0: // Resume Game
                     return false;
-                case 1:         // Reset Puzzle
+                case 1: // Reset Puzzle
                     if (!m_bConfirmDialog)
                     {
                         m_szConfirmText1 = "Are you sure you want to reset this puzzle?";
                         m_szConfirmText2 = "All progress will be lost";
                         m_bConfirmDialog = true;
-                        m_iConfirmSelection = 0;
-                        m_Game.m_SoundManager.PlayMenuAccept();
+                        //m_Game.m_SoundManager.PlayMenuAccept();
                     }
                     else
                     {
-                        m_Game.m_SoundManager.PlayMenuAccept();
+                        //m_Game.m_SoundManager.PlayMenuAccept();
                         return false;
                     }
                     break;
-                case 2:         // Goto Puzzle
-                    if (!m_bGotoDialog && !m_bConfirmDialog)
-                    {
-                        m_bGotoDialog = true;
-                        m_Game.m_SoundManager.PlayMenuAccept();
-                    }
-                    else if (m_bGotoDialog && !m_bConfirmDialog)
-                    {
-                        m_bGotoDialog = false;
-                        m_szConfirmText1 = "Are you sure you want to go to puzzle: " + m_iPuzzleNumber.ToString();
-                        m_szConfirmText2 = "All progress on this puzzle will be lost";
-                        m_bConfirmDialog = true;
-                        m_iConfirmSelection = 0;
-                        m_Game.m_SoundManager.PlayMenuAccept();
-                    }
-                    else
-                    {
-                        m_Game.m_SoundManager.PlayMenuAccept();
-                        return false;
-                    }
-                    break;
-                case 3:         // Controls
-                    break;
-                case 4:         // Options
-                    //m_Game.m_Options.Init();
-                    //m_Game.m_bOptionsDialog = true;
-                    //m_Game.m_SoundManager.PlayMenuAccept();
-                    break;
-                case 5:         // Save Game
-                    m_Game.m_SoundManager.PlayMenuAccept();
+                case 2: // Unhide Clues
                     return false;
-                case 6:         // Load Game
-                    if (m_SaveGame != null && m_SaveGame.m_bIsValid)
-                    {
-                        if (!m_bConfirmDialog)
-                        {
-                            m_szConfirmText1 = "Are you sure you want to load your save game?";
-                            m_szConfirmText2 = "All progress on this puzzle will be lost";
-                            m_bConfirmDialog = true;
-                            m_iConfirmSelection = 0;
-                            m_Game.m_SoundManager.PlayMenuAccept();
-                        }
-                        else
-                        {
-                            m_Game.m_SoundManager.PlayMenuAccept();
-                            return false;
-                        }
-                    }
+                case 3: // Buy Coins
                     break;
-                case 7:         // Save & Exit
-                    m_Game.m_SoundManager.PlayMenuAccept();
+                case 4: // Save & Exit
                     return false;
-                case 8:         // Exit
-                    if (!m_bConfirmDialog)
-                    {
-                        m_szConfirmText1 = "Are you sure you want to exit?";
-                        m_szConfirmText2 = "All progress will be lost";
-                        m_bConfirmDialog = true;
-                        m_iConfirmSelection = 0;
-                        m_Game.m_SoundManager.PlayMenuAccept();
-                    }
-                    else
-                    {
-                        m_Game.m_SoundManager.PlayMenuAccept();
-                        return false;
-                    }
-                    break;
-            }            
-            return true;
-        }
-
-        public bool CancelSelection()
-        {
-            if (m_bConfirmDialog)
-            {
-                m_bConfirmDialog = false;
-                m_Game.m_SoundManager.PlayMenuCancel();
-            }
-            else if (m_bGotoDialog)
-            {
-                m_bGotoDialog = false;
-                m_Game.m_SoundManager.PlayMenuCancel();
             }
             return true;
         }
 
-        // Return false if this menu should close
-        public bool HandleClick(int iX, int iY)
+        public void OnDragBegin(DragArgs e)
         {
-            bool bRet = true;
+            m_iDragY = e.StartY;
+        }
+
+        public void OnDrag(DragArgs e)
+        {
+            int deltaY = e.CurrentY - m_iDragY;
+            m_iDragY = e.CurrentY;
+            m_iScrollOffset -= deltaY;
+            if( m_iScrollOffset < 0 )
+                m_iScrollOffset = 0;
+            if( m_iScrollOffset > m_iScrollMaximum )
+                m_iScrollOffset = m_iScrollMaximum;
+        }
+
+        public void OnDragEnd(DragArgs e)
+        {
+        }
+        #endregion
+
+        public void Draw(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, m_iScreenWidth, m_iScreenHeight), Color.White);
+            
+
+            spriteBatch.Draw(Assets.TransparentBox, m_ButtonBackground, Color.White);
+            foreach( UIButton b in m_Buttons )
+                b.Draw(spriteBatch);
+
+            DrawHelp(spriteBatch);
+
             if (m_bConfirmDialog)
-            {
-                if (m_rConfirmCancel.Contains(iX, iY))
-                {
-                    m_bConfirmDialog = false;
-                    m_Game.m_SoundManager.PlayMenuCancel();
-                }
-                else if (m_rConfirmAccept.Contains(iX, iY))
-                {
-                    bRet = CommitSelection();                    
-                }
-            }
-            else if (m_bGotoDialog)
-            {
-                if (m_rGotoLeft.Contains(iX, iY))
-                {
-                    DecrementPuzzleNumber();
-                    m_Game.m_SoundManager.PlayMenuNavigate();
-                }
-                if (m_rGotoRight.Contains(iX, iY))
-                {
-                    IncrementPuzzleNumber();
-                    m_Game.m_SoundManager.PlayMenuNavigate();
-                }
-
-                if (m_rConfirmCancel.Contains(iX, iY))
-                {
-                    m_bGotoDialog = false;
-                    m_Game.m_SoundManager.PlayMenuCancel();
-                }
-                else if (m_rConfirmAccept.Contains(iX, iY))
-                {
-                    bRet = CommitSelection();
-                }
-            }
-            else
-            {
-                if (m_rScrollBarUp.Contains(iX, iY))
-                {
-                    ScrollUp();
-                }
-                else if (m_rScrollBarDown.Contains(iX, iY))
-                {
-                    ScrollDown();
-                }
-                else
-                {
-                    bRet = CommitSelection();
-                }
-            }
-            return bRet;
-        }
-
-        public void UpdateMouse(int iX, int iY, bool bLeftButtonDown)
-        {
-            m_iMouseX = iX;
-            m_iMouseY = iY;
-            if (m_bConfirmDialog)
-            {
-                if (m_rConfirmAccept.Contains(iX, iY))
-                {
-                    if (m_iConfirmSelection != 1)
-                    {
-                        m_iConfirmSelection = 1;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
-                    }
-                }
-                else if (m_rConfirmCancel.Contains(iX, iY))
-                {
-                    if (m_iConfirmSelection != 0)
-                    {
-                        m_iConfirmSelection = 0;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
-                    }
-                }
-            }
-            else if (m_bGotoDialog)
-            {
-                if (m_rConfirmAccept.Contains(iX, iY))
-                {
-                    if (m_iGotoSelection != 2)
-                    {
-                        m_iGotoSelection = 2;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
-                    }
-                }
-                else if (m_rConfirmCancel.Contains(iX, iY))
-                {
-                    if (m_iGotoSelection != 1)
-                    {
-                        m_iGotoSelection = 1;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
-                    }
-                }
-                
-                if (bLeftButtonDown)
-                {
-                    if (m_dfScrollTime <= 0)
-                        m_dfScrollTime = m_GameTime.TotalGameTime.TotalSeconds;
-                    if (m_GameTime.TotalGameTime.TotalSeconds - m_dfScrollTime > 0.8)
-                    {
-                        const double dfSpeed = 0.04;
-                        if (m_rGotoLeft.Contains(iX, iY) || (m_iGotoSelection == 0))
-                        {
-                            m_iPuzzleNumber -= (int)m_dfScrollSpeed;
-                            if (m_iPuzzleNumber < 0)
-                                m_iPuzzleNumber = 67108864 - m_iPuzzleNumber;
-                            m_dfScrollSpeed += dfSpeed;
-                            m_Game.m_SoundManager.PlayMenuNavigate();
-                        }
-                        else if (m_rGotoRight.Contains(iX, iY) || (m_iGotoSelection == 0))
-                        {
-                            m_iPuzzleNumber += (int)m_dfScrollSpeed;
-                            if (m_iPuzzleNumber > 67108863)
-                                m_iPuzzleNumber = m_iPuzzleNumber - 67108864;
-                            m_dfScrollSpeed += dfSpeed;
-                            m_Game.m_SoundManager.PlayMenuNavigate();
-                        }
-                    }
-                }
-                else
-                {
-                    m_dfScrollTime = 0;
-                    m_dfScrollSpeed = 1.0;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    Rectangle r = new Rectangle(m_iTextX - 20, m_iTextY + (i * 30), 250, 30);
-                    if (r.Contains(iX, iY))
-                    {
-                        if (m_iSelection != i)
-                        {
-                            m_iSelection = i;
-                            m_Game.m_SoundManager.PlayMenuNavigate();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void ScrollUp()
-        {
-            if (m_iScrollOffset > 0)
-            {
-                m_iScrollOffset -= m_iScrollAmmount;
-                if (m_iScrollOffset < 0)
-                    m_iScrollOffset = 0;
-                m_Game.m_SoundManager.PlaySliderMove();
-            }
-        }
-
-        public void ScrollDown()
-        {
-            if (m_iScrollOffset < m_iScrollMaximum)
-            {
-                m_iScrollOffset += m_iScrollAmmount;
-                if (m_iScrollOffset > m_iScrollMaximum)
-                    m_iScrollOffset = m_iScrollMaximum;
-                m_Game.m_SoundManager.PlaySliderMove();
-            }            
-        }
-
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
-        {
-            int iWidth = m_Game.m_iScreenWidth;
-            int iHeight = m_Game.m_iScreenHeight;
-            spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, iWidth, iHeight), Color.White);
-
-            int iX = 50;
-            int iY = 50;
-            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iX, iY, 230, 310), Color.White);
-
-            m_iTextX = iX + 20;
-            m_iTextY = iY + 20;
-            DrawString(spriteBatch, "Resume Game", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            const int iTextSpacing = 30;
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Reset Puzzle", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Goto Puzzle", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Controls", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Options", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Save Game", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            Color cLoadColor = (m_SaveGame != null && m_SaveGame.m_bIsValid) ? Color.Goldenrod : Color.Gray;
-            DrawString(spriteBatch, "Load Game", m_iTextX, m_iTextY, cLoadColor);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Save & Exit", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            m_iTextY += iTextSpacing;
-            DrawString(spriteBatch, "Exit", m_iTextX, m_iTextY, Color.Goldenrod);
-
-            int iArrowWidth = 50;
-            int iArrowX = m_iTextX - iArrowWidth;
-            int iArrowY = iY + 16 + (m_iSelection * iTextSpacing);
-            spriteBatch.Draw(m_Game.m_BlueArrow, new Rectangle(iArrowX, iArrowY, iArrowWidth, 40), Color.White);
-
-            if (m_iSelection == 3)
-                DrawControls(spriteBatch);
-            else
-                DrawHelp(spriteBatch);
-
-            if (m_bGotoDialog)
-                DrawGotoDialog(spriteBatch, iWidth, iHeight);
-            if (m_bConfirmDialog)
-                DrawConfirmDialog(spriteBatch, iWidth, iHeight);
-
-            m_iTextY = iY + 20;
+                DrawConfirmDialog(spriteBatch, m_iScreenWidth, m_iScreenHeight);
         }
 
         private int DrawString(SpriteBatch spriteBatch, string text, int iX, int iY, Color cColor)
@@ -543,69 +193,6 @@ namespace Happiness
             spriteBatch.DrawString(font, text, new Vector2(iX + iShadowOffset, iY + iShadowOffset), Color.Black);
             spriteBatch.DrawString(font, text, new Vector2(iX, iY), cColor);
             return (int)font.MeasureString(text).X + iShadowOffset;
-        }
-
-        private void DrawGotoDialog(SpriteBatch spriteBatch, int iScreenW, int iScreenH)
-        {
-            int iDialogWidth = 400;
-            int iDialogHeight = 100;
-            int iHalfScreenW = iScreenW / 2;
-            int iHalfScreenH = iScreenH / 2;
-            int iDialogX = iHalfScreenW - (iDialogWidth / 2);
-            int iDialogY = iHalfScreenH - (iDialogHeight / 2);
-
-            Rectangle r = new Rectangle(iDialogX, iDialogY, iDialogWidth, iDialogHeight);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-
-            int iTextX = iDialogX + 20;
-            int iTextY = iDialogY + 20;
-            spriteBatch.DrawString(Assets.DialogFont, "Puzzle #:", new Vector2(iTextX + 2, iTextY + 2), Color.Black);
-            spriteBatch.DrawString(Assets.DialogFont, "Puzzle #:", new Vector2(iTextX, iTextY), Color.Goldenrod);
-
-            // Draw the value box
-            int iValueBoxWidth = 140;
-            int iValueBoxHeight = 32;
-            int iValueBoxX = iTextX + 200;
-            int iValueBoxY = iTextY - 4;
-            Color cBoxColor = (m_iGotoSelection == 0) ? Color.Yellow : Color.White;
-            spriteBatch.Draw(Assets.TransparentBox, new Rectangle(iValueBoxX, iValueBoxY, iValueBoxWidth, iValueBoxHeight), cBoxColor);
-
-            // Draw the value
-            string szValue = m_iPuzzleNumber.ToString();
-            int iValueX = iValueBoxX + (iValueBoxWidth / 2) - ((int)Assets.DialogFont.MeasureString(szValue).X / 2);
-            int iValueY = iTextY;
-            spriteBatch.DrawString(Assets.DialogFont, szValue, new Vector2(iValueX + 2, iValueY + 2), Color.Black);
-            spriteBatch.DrawString(Assets.DialogFont, szValue, new Vector2(iValueX, iValueY), Color.White);
-
-            // Draw the left arrow
-            int iLeftArrowX = iValueBoxX - 24;
-            int iArrowWidth = 32;
-            spriteBatch.Draw(m_Game.m_GoldArrowLeft, new Vector2(iLeftArrowX, iValueBoxY), Color.White);
-
-            // Draw the right arrow
-            int iRightArrowX = iValueBoxX + iValueBoxWidth - 8;
-            spriteBatch.Draw(m_Game.m_GoldArrowRight, new Vector2(iRightArrowX, iValueBoxY), Color.White);
-
-            // Update boxes
-            if (m_rGotoLeft.IsEmpty)
-                m_rGotoLeft = new Rectangle(iLeftArrowX, iValueBoxY, iArrowWidth, iValueBoxHeight);
-            if (m_rGotoRight.IsEmpty)
-                m_rGotoRight = new Rectangle(iRightArrowX, iValueBoxY, iArrowWidth, iValueBoxHeight);
-
-            int iButtonsY = iDialogY + 70;
-            int iButtonXSpace = 20;
-            Vector2 vSize = Assets.DialogFont.MeasureString("Cancel");
-            m_rConfirmCancel = new Rectangle(iHalfScreenW - ((int)vSize.X + iButtonXSpace), iButtonsY, (int)vSize.X, (int)vSize.Y);
-            Color cButtonColor = (m_rConfirmCancel.Contains(m_iMouseX, m_iMouseY) || m_iGotoSelection == 1) ? Color.Turquoise : Color.CornflowerBlue;
-            DrawString(spriteBatch, "Cancel", m_rConfirmCancel.X, iButtonsY, cButtonColor);
-
-            vSize = Assets.DialogFont.MeasureString("Go");
-            m_rConfirmAccept = new Rectangle(iHalfScreenW + iButtonXSpace, iButtonsY, (int)vSize.X, (int)vSize.Y);
-            cButtonColor = (m_rConfirmAccept.Contains(m_iMouseX, m_iMouseY) || m_iGotoSelection == 2) ? Color.Turquoise : Color.CornflowerBlue;
-            DrawString(spriteBatch, "Go", m_rConfirmAccept.X, iButtonsY, cButtonColor);
         }
 
         private void DrawConfirmDialog(SpriteBatch spriteBatch, int iScreenW, int iScreenH)
@@ -629,166 +216,41 @@ namespace Happiness
             DrawString(spriteBatch, m_szConfirmText2, iHalfScreenW - (iWidth1 / 2), iDialogY + 40, Color.White);
 
             int iButtonsY = iDialogY + 70;
-            int iButtonXSpace = 20;
+            int iButtonXSpace = 40;
             Vector2 vSize = Assets.DialogFont.MeasureString(m_szConfirmCancelText);
             m_rConfirmCancel = new Rectangle(iHalfScreenW - ((int)vSize.X + iButtonXSpace), iButtonsY, (int)vSize.X, (int)vSize.Y);
-            Color cButtonColor = (m_rConfirmCancel.Contains(m_iMouseX, m_iMouseY) || m_iConfirmSelection == 0) ? Color.Turquoise : Color.CornflowerBlue;
+            Color cButtonColor = Color.Turquoise;
             DrawString(spriteBatch, m_szConfirmCancelText, m_rConfirmCancel.X, iButtonsY, cButtonColor);
 
             vSize = Assets.DialogFont.MeasureString(m_szConfirmAcceptText);
             m_rConfirmAccept = new Rectangle(iHalfScreenW + iButtonXSpace, iButtonsY, (int)vSize.X, (int)vSize.Y);
-            cButtonColor = (m_rConfirmAccept.Contains(m_iMouseX, m_iMouseY) || m_iConfirmSelection == 1) ? Color.Turquoise : Color.CornflowerBlue;
+            cButtonColor = Color.Turquoise;
             DrawString(spriteBatch, m_szConfirmAcceptText, m_rConfirmAccept.X, iButtonsY, cButtonColor);
         }
-
-        private void DrawControls(SpriteBatch spriteBatch)
-        {
-            int iX = 300;
-            int iY = 20;
-
-            // Draw Background
-            spriteBatch.Draw(m_Game.m_HelpBackground, new Rectangle(iX, 0, 980, 720), Color.White);
-
-            iY += DrawMouseControls(spriteBatch, iY);           
-        }
-
-        private int DrawMouseControls(SpriteBatch spriteBatch, int iY)
-        {
-            int iFuncX = -510;
-            int iKeyX = 520;
-            int iKeyYOffset = 3;
-            int iYSpacing = 25;
-            int iMouseX = 800;
-            int iMouseY = iY + 20;
-
-            spriteBatch.Draw(m_Game.m_MouseImage, new Rectangle(iMouseX, iMouseY, 256, 256), Color.White);
-            DrawString(spriteBatch, Assets.HelpFont, "Scroll Up/Down", iMouseX + 70, iMouseY - 20, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Eliminate Icon", iMouseX + 210, iMouseY + 50, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Set Icon", iMouseX - 15, iMouseY + 50, Color.White, 1);
-
-            DrawString(spriteBatch, "Pause:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Esc", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Save Game:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "S", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Hint:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "H", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Unhide Clues:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "U", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Undo:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Ctrl + Z", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Redo:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Ctrl + Shift + Z", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Move Up:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Up Arrow", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Move Down:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Down Arrow", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Move Left:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Left Arrow", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Move Right:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Right Arrow", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-
-            DrawString(spriteBatch, "Select Item:", iFuncX, iY, Color.Goldenrod);
-            DrawString(spriteBatch, Assets.HelpFont, "Enter/Space", iKeyX, iY + iKeyYOffset, Color.White, 1);
-            iY += iYSpacing;
-            iY += iYSpacing;
-
-            return iY;
-        }
-
-        private void DrawControllerControls(SpriteBatch spriteBatch, int iY)
-        {
-            int iX = 500;
-            int iTop = iY + 50;
-
-#if XBOX
-            iTop += 200;
-#endif
-
-            spriteBatch.Draw(m_Game.m_ControllerImage, new Rectangle(iX, iTop, 512, 256), Color.White);
-            DrawString(spriteBatch, Assets.HelpFont, "Pause",             iX + 265, iTop + 10, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Unhide Clues",      iX + 160, iTop - 20, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Vertical Clues",    iX - 25, iTop - 5, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Undo",              iX + 10, iTop + 55, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Navigate",          iX - 20, iTop + 120, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Navigate",          iX + 100, iTop + 250, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Navigate Fast",     iX + 280, iTop + 250, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Set Icon",          iX + 450, iTop + 140, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Eliminate Icon",    iX + 450, iTop + 110, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Restore Icon",      iX + 450, iTop + 82, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Hint",              iX + 450, iTop + 60, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Redo",              iX + 470, iTop + 30, Color.White, 1);
-            DrawString(spriteBatch, Assets.HelpFont, "Horizontal Clues",  iX + 445, iTop + 5, Color.White, 1);
-        }
-
+        
         private void DrawHelp(SpriteBatch spriteBatch)
         {
-            int iX = 300;
-            int iY = 20;
-            int iIconSize = 30;
-            int iIconSizeSmall = 16;
             int iClueMargin = 5;
             int iClueIconGap = 2;
             int iTextIconGap = 2;
 
             // Draw Background
-            spriteBatch.Draw(m_Game.m_HelpBackground, new Rectangle(iX, 0, 980, 720), Color.White);
+            spriteBatch.Draw(Assets.HelpBackground, m_HelpRectangle, Color.White);
 
-            // Draw Scrollbar
-            {
-                int iTop = 4;
-                int iBottom = 716;
-                iX -= 18;
-
-                // Draw bar
-                spriteBatch.Draw(Assets.ScrollBar, new Rectangle(iX, iTop, 16, iBottom - iTop), Color.White);
-
-                // Draw Cursor
-                float fPercent = (float)m_iScrollOffset / (float)m_iScrollMaximum;
-                int iCursorY = iTop + 8 + (int)((float)((iBottom - iTop) - 32) * fPercent);
-                spriteBatch.Draw(Assets.ScrollCursor, new Rectangle(iX, iCursorY, 16, 16), Color.White);
-
-                // Draw top arrow
-                m_rScrollBarUp = new Rectangle(iX, iTop, 16, 16);
-                spriteBatch.Draw(Assets.ScrollArrow, m_rScrollBarUp, Color.White);
-
-                // Draw bottom arrow
-                m_rScrollBarDown = new Rectangle(iX, iBottom - 16, 16, 16);
-                spriteBatch.Draw(Assets.ScrollArrow, m_rScrollBarDown, null, Color.White, 0, new Vector2(0, 0), SpriteEffects.FlipVertically, 0);
-
-                iX += 45;
-                iY -= m_iScrollOffset;
-            }
-
+            int iX = m_HelpTextLeft;
+            
+            int iY = m_HelpTextTop - m_iScrollOffset;
 
             // Draw Objective
             DrawString(spriteBatch, Assets.MenuFont, "Objective", iX, iY, Color.Goldenrod, 2);
-            iY += 40;
+            iY += 48;
 
             DrawString(spriteBatch, Assets.HelpFont, "Use the clues to figure out where each icon belongs in the puzzle", iX + 20, iY, Color.White, 1);
             iY += 60;
 
             // Draw some Vertical Clue help
             DrawString(spriteBatch, Assets.MenuFont, "Vertical Clues", iX, iY, Color.Goldenrod, 2);
-            iY += 40;
+            iY += 48;
 
             DrawString(spriteBatch, Assets.HelpFont, "Vertical clues give information about one column of the puzzle", iX + 20, iY, Color.White, 1);
             iY += 50;
@@ -799,47 +261,47 @@ namespace Happiness
             // Draw a VerticalType Two clue here
             Texture2D tIcon1 = Assets.Flowers[4];
             Texture2D tIcon2 = Assets.Puppies[6];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
 
             // Icon1 is in the same column as Icon2. 
-            int iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            int iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in the same column as the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you already know where Icon1 is, you know that Icon2 is in the same column and visa versa.  
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you know that the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             DrawString(spriteBatch, Assets.HelpFont, " is in the same column and visa versa.", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know any other icons in the same row as Icon1, you can eliminate Icon2 in that column.    
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know any other icons in the same row as the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know that Icon1 is not in a column, you know that Icon2 is also not in that column so it can be elimnated.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know that the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not in a column, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 50;
 
@@ -847,26 +309,26 @@ namespace Happiness
             //eVerticalType.TwoNot,
             tIcon1 = Assets.Cars[2];
             tIcon2 = Assets.Hubble[7];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + (iIconSize / 2), iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + (m_iIconSize / 2), m_iIconSize, m_iIconSize), Color.White);
 
             // Icon1 is not in the same colum as Icon2.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not the same column as the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you already know where Icon1 is, you can eliminate Icon2 from that column and visa versa.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             DrawString(spriteBatch, Assets.HelpFont, " from that column and visa versa.", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 90;
 
@@ -874,35 +336,35 @@ namespace Happiness
             tIcon1 = Assets.Princesses[0];
             tIcon2 = Assets.Cats[3];
             Texture2D tIcon3 = Assets.Simpsons[6];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
 
             // Icon1, Icon2, and Icon3 are all in the same column.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " are all in the same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where one of the icons is, you know the other two are in the same column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where one icon is, you know the other two are in that same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know any icons in the same row as one of these icons, you can elminate the other two icons from that column.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know any icons in the same row as one of these icons, you can elminate the other two icons from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know that any one of the icons is not in a column, you can eliminate the other two icons from that column as well.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know that any one of the icons is not in a column, you can eliminate the other two icons from that column as well", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 50;
 
@@ -911,49 +373,49 @@ namespace Happiness
             tIcon1 = Assets.Superheros[4];
             tIcon2 = Assets.Flowers[5];
             tIcon3 = Assets.Hubble[2];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
 
             // IconA, and IconB are in the same column and IconC is not in that same column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " are in the same column, and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not in that same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconA is, you know IconB is in that same column and you can eliminate IconC from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you know the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in that same column and you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconC is you can eliminate both IconA and IconB from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate both the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column ", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 70;
 
@@ -961,49 +423,49 @@ namespace Happiness
             tIcon1 = Assets.Hubble[7];
             tIcon2 = Assets.Cats[1];
             tIcon3 = Assets.Cars[5];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
 
             // IconA, and IconB are in the same column and IconC is not in that same column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " are in the same column, and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not in that same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconA is, you know IconB is in that same column and you can eliminate IconC from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you know the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in that same column and you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconC is you can eliminate both IconA and IconB from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate both the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column ", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 70;
 
@@ -1012,49 +474,49 @@ namespace Happiness
             tIcon1 = Assets.Superheros[7];
             tIcon2 = Assets.Princesses[1];
             tIcon3 = Assets.Flowers[0];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
 
             // IconA, and IconB are in the same column and IconC is not in that same column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, ", and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " are in the same column, and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not in that same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconA is, you know IconB is in that same column and you can eliminate IconC from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you know the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in that same column and you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //   If you know where IconC is you can eliminate both IconA and IconB from that column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate both the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column ", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 70;
 
@@ -1063,60 +525,60 @@ namespace Happiness
             tIcon1 = Assets.Cars[6];
             tIcon2 = Assets.Puppies[3];
             tIcon3 = Assets.Cats[5];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.EitherOrOverlay, new Rectangle(iX + iClueMargin, iY + iIconSize + iClueIconGap + (iIconSize / 2), iIconSize, iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.EitherOrOverlay, new Rectangle(iX + iClueMargin, iY + m_iIconSize + iClueIconGap + (m_iIconSize / 2), m_iIconSize, m_iIconSize), Color.White);
 
             // Icon1 is either in the column with Icon2 or the column Icon3 but not both
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is either in the column with the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " or in the column with the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " but not both", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon2 is you can eliminate Icon3 from that column and visa versa since these cant be in the same column.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column and visa versa", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon2 is and you know where Icon3 is, you can eliminate Icon1 from all other columns since it has to be in one of these two columns.
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, and you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can elminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all other columns", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If a column doesnt have either Icon2 or Icon3 then you can eliminate Icon1 from this column
-            iXPos = iX + iClueMargin + iIconSize + iClueMargin;
+            iXPos = iX + iClueMargin + m_iIconSize + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If a column doesnt have either the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " or the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " then you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 70;
 
@@ -1133,39 +595,39 @@ namespace Happiness
             //eHorizontalType.NextTo,
             tIcon1 = Assets.Princesses[4];
             tIcon2 = Assets.Cats[6];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
             
             // Icon1 is next to Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in a column next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);            
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);            
             iY += 20;
 
             //  If you know where Icon1 is, you can eliminate Icon2 from all columns that arent next to the column with Icon1.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't next to the column with the", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If a column does not have Icon1 to the right or to the left, then you can eliminate Icon2 from this column.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If a column does not have the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " to the right or to the left, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 80;
 
@@ -1173,28 +635,28 @@ namespace Happiness
             //eHorizontalType.NotNextTo,
             tIcon1 = Assets.Hubble[1];
             tIcon2 = Assets.Simpsons[6];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon1 is not next to Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not in a column next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon1 is, you can eliminate Icon2 from the column to the left and the column to the right and visa versa.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the columns to the left and right", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 100;
 
@@ -1202,60 +664,60 @@ namespace Happiness
             //eHorizontalType.LeftOf
             tIcon1 = Assets.Flowers[2];
             tIcon2 = Assets.Superheros[5];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.LeftOfIcon, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.LeftOfIcon, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon1 is to the left of Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is somwhere to the left of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon1 is, you can eliminate Icon2 from that column and all columns to the left.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column and all columns to the left", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon2 is, you can eliminate Icon1 from that column and all columns to the right.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from that column and all columns to the right", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  You can eliminate Icon2 from any columns on the left side of the puzzle that would result in Icon1 being in the same column or any column to the right.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "You can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from any columns that would result in the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " being in the same column or any column to the right", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;                       
 
             //  You can eliminate Icon1 from any columns on the right side of the puzzle that would result in Icon2 being in the same column or any column to the left
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "You can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from any columns that would result in the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " being in the same column or any column to the left", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 40; 
 
@@ -1263,49 +725,49 @@ namespace Happiness
             //eHorizontalType.NotLeftOf,
             tIcon1 = Assets.Cats[7];
             tIcon2 = Assets.Princesses[2];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.LeftOfIcon, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.LeftOfIcon, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon1 is not to the left of Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is not to the left of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  Icon1 and Icon2 can be in the same column as Icon1 would not be left of Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " can be in the same column", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon1 is, you can eliminate Icon2 from all columns to the right
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns to the right", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon2 is, you can eliminate Icon1 from all columns to the left
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns to the left", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 60;
 
@@ -1314,87 +776,87 @@ namespace Happiness
             tIcon1 = Assets.Flowers[3];
             tIcon2 = Assets.Hubble[6];
             tIcon3 = Assets.Puppies[0];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (iIconSize * 3) + (iClueIconGap * 2) , iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (m_iIconSize * 3) + (iClueIconGap * 2) , m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon2 has Icon1 on one side and Icon3 on the other side
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on one side and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on the other side", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon1 is, Icon2 has to be next to it on either side and Icon3 has to be next to Icon2 in the same direction.  You can eliminate Icon2 from all columns that arent next to Icon1 and Icon3 from all columns that arent 2 columns away from Icon1
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has to be on either side of it and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has to be next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " in the same direction", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon3 is, Icon2 has to be next to it on either side and Icon1 has to be next to Icon2 in the same direction.  You can eliminate Icon2 from all columns that arent next to Icon3 and Icon1 from all columns that arent 2 columns away from Icon3
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has to be on either side of it and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has to be next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " in the same direction", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon2 is, you can eliminate Icon1 and Icon3 from all columns that arent next to Icon2.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that arent next to ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  Icon2 is in the middle of Icon1 and Icon3, thus you can eliminate Icon2 from the left most column and the right most column.
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in the middle of ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " so you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the left most and right most columns", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 40;
 
@@ -1403,78 +865,78 @@ namespace Happiness
             tIcon1 = Assets.Simpsons[1];
             tIcon2 = Assets.Princesses[0];
             tIcon3 = Assets.Cats[7];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (iIconSize * 3) + (iClueIconGap * 2), iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (m_iIconSize * 3) + (iClueIconGap * 2), m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon2 has Icon3 on one side and not Icon1 on the other side
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on one side and not the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on the other side", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon3 is, you can eliminate Icon2 from all columns that arent next to Icon3
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that arent next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon2 is, you can eliminate Icon3 from all columns that arent next to Icon2
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon2 is and you know where Icon3 is, you can eliminate Icon1 from the other side of Icon2
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is and you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the other side of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  Icon2 is in the middle of Icon3 and not Icon1, thus you can eliminate Icon2 from the left most column and the right most column.
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in the middle of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and not the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " so you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the left most and right most columns", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 40;
 
@@ -1482,143 +944,150 @@ namespace Happiness
             tIcon1 = Assets.Cars[4];
             tIcon2 = Assets.Hubble[7];
             tIcon3 = Assets.Puppies[3];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (iIconSize * 3) + (iClueIconGap * 2), iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (m_iIconSize * 3) + (iClueIconGap * 2), m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon1 and Icon3 have an icon between them that is not Icon2
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " have a column between them that does not have the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " in it", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             // If you know where Icon1 is, you can eliminate Icon3 from all columns that are not 2 columns left or right of Icon1.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't 2 columns left or right of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             // If you know where Icon3 is, you can eliminate Icon1 from all columns that are not 2 columns left or right of Icon3.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't 2 columns left or right of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             // If you know where Icon1 is and you know where Icon3 is, you can eliminate Icon2 from the middle column.
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is and you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the column in between", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 60;
             
             //eHorizontalType.SpanNotRight
             tIcon1 = Assets.Cats[0];
             tIcon2 = Assets.Flowers[5];
             tIcon3 = Assets.Superheros[0];
-            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (iIconSize * 3) + (iClueIconGap * 2), iIconSize), Color.White);
-            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + iIconSize + iClueIconGap + iIconSize + iClueIconGap, iY, iIconSize, iIconSize), Color.White);
-            iY += iIconSize + iClueIconGap;
+            spriteBatch.Draw(tIcon1, new Rectangle(iX + iClueMargin, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(tIcon3, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.SpanOverlay, new Rectangle(iX + iClueMargin, iY, (m_iIconSize * 3) + (iClueIconGap * 2), m_iIconSize), Color.White);
+            spriteBatch.Draw(Assets.NotOverlay, new Rectangle(iX + iClueMargin + m_iIconSize + iClueIconGap + m_iIconSize + iClueIconGap, iY, m_iIconSize, m_iIconSize), Color.White);
+            iY += m_iIconSize + iClueIconGap;
 
             // Icon2 has Icon1 on one side and not Icon3 on the other side
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " has the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on one side and not the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " on the other side", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 20;
 
             //  If you know where Icon1 is, you can eliminate Icon2 from all columns that arent next to Icon1
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon2 is, you can eliminate Icon1 from all columns that arent next to Icon2
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from all columns that aren't next to the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  If you know where Icon2 is and you know where Icon1 is, you can eliminate Icon3 from the other side of Icon2
             iXPos = iX + iClueMargin + iClueMargin;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, "If you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is and you know where the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is, you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the other side of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
             iY += 20;
 
             //  Icon2 is in the middle of Icon1 and not Icon3, thus you can eliminate Icon2 from the left most column and the right most column.
             iXPos = iX + iClueMargin + iClueMargin;
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " is in the middle of the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon1, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " and not the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon3, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " so you can eliminate the ", iXPos, iY - iTextIconGap, Color.White, 1);
-            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, iIconSizeSmall, iIconSizeSmall), Color.White);
-            iXPos += iIconSizeSmall;
+            spriteBatch.Draw(tIcon2, new Rectangle(iXPos, iY, m_iIconSizeSmall, m_iIconSizeSmall), Color.White);
+            iXPos += m_iIconSizeSmall;
             iXPos += DrawString(spriteBatch, Assets.HelpFont, " from the left most and right most columns", iXPos, iY - iTextIconGap, Color.White, 1);
             iY += 40;
         }
+
+        #region Accessors
+        public double Elapsed
+        {
+            get { return (DateTime.Now - m_PauseStart).TotalSeconds; }
+        }
+        #endregion
     }
 }

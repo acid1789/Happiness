@@ -62,7 +62,9 @@
     <Compile Include="Activity1.cs" />
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Assets.cs" />
+    <Compile Include="NetworkLog.cs" />
     <Compile Include="NetworkManager.cs" />
+    <Compile Include="ReconnectScreen.cs" />
     <Compile Include="Scenes\Hub\HubScene.cs" />
     <Compile Include="Scenes\Hub\Tower.cs" />
     <Compile Include="CellDialog.cs" />
@@ -108,9 +110,17 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="HappinessNetwork\HappinessNetwork.csproj">
+      <Project>{d4b75aee-412b-45bf-b9ab-911641272454}</Project>
+      <Name>HappinessNetwork</Name>
+    </ProjectReference>
     <ProjectReference Include="LogicMatrix\LogicMatrix.csproj">
       <Project>{8ae57b9a-aced-4428-a804-993eb37e966b}</Project>
       <Name>LogicMatrix</Name>
+    </ProjectReference>
+    <ProjectReference Include="NetworkCore\NetworkCore.csproj">
+      <Project>{6877f982-bb8d-428e-b017-afb86a00be95}</Project>
+      <Name>NetworkCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />

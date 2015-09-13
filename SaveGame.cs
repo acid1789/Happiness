@@ -260,5 +260,65 @@ namespace Happiness
             }
             return bExists;
         }
+
+        static string PuzzleSaveName(int puzzleSize, int puzzleIndex)
+        {
+            string saveName = string.Format("{0}_{1}.save", puzzleSize, puzzleIndex);
+            return saveName;
+        }
+        
+        public static void SavePuzzle(Puzzle P, int puzzleIndex, double elapsedSeconds)
+        {
+            string saveName = PuzzleSaveName(P.m_iSize, puzzleIndex);
+            FileStream fs = File.Open(saveName, FileMode.Create);
+            BinaryWriter bw = new BinaryWriter(fs);
+
+            bw.Write(m_iVersion);
+            bw.Write(elapsedSeconds);
+            for (int iRow = 0; iRow < P.m_iSize; iRow++)
+            {
+                for (int iCol = 0; iCol < P.m_iSize; iCol++)
+                {
+                    for (int iIcon = 0; iIcon < P.m_iSize; iIcon++)
+                    {
+                        bw.Write(P.m_Rows[iRow].m_Cells[iCol].m_bValues[iIcon]);
+                    }
+                }
+            }
+            bw.Close();
+        }
+        
+        public static double LoadPuzzle(Puzzle P, int puzzleSize, int puzzleIndex)
+        {
+            double elapsedTime = 0;
+            string saveName = PuzzleSaveName(puzzleSize, puzzleIndex);
+            if (File.Exists(saveName))
+            {
+                FileStream fs = File.OpenRead(saveName);
+                BinaryReader br = new BinaryReader(fs);
+
+                int iVersion = br.ReadInt32();
+                if (iVersion == m_iVersion)
+                {
+                    elapsedTime = br.ReadDouble();
+                    for (int iRow = 0; iRow < P.m_iSize; iRow++)
+                    {
+                        for (int iCol = 0; iCol < P.m_iSize; iCol++)
+                        {
+                            for (int iIcon = 0; iIcon < P.m_iSize; iIcon++)
+                            {
+                                P.m_Rows[iRow].m_Cells[iCol].m_bValues[iIcon] = br.ReadBoolean();
+                            }
+                            P.m_Rows[iRow].m_Cells[iCol].m_iFinalIcon = P.m_Rows[iRow].m_Cells[iCol].GetRemainingIcon();
+                        }
+                    }
+                }
+
+                br.Close();
+                File.Delete(saveName);
+            }
+
+            return elapsedTime;
+        }
     }
 }

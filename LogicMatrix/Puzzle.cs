@@ -14,7 +14,7 @@ namespace LogicMatrix
         public int[,] m_Solution;
         public PuzzleRow[] m_Rows;
         public PuzzleRow[] m_MarkerRows;
-        private Random m_Rand;
+        public Random m_Rand;
         public ArrayList m_Clues;
         public List<Clue> m_GivenClues;
         public List<Clue> m_VeritcalClues;

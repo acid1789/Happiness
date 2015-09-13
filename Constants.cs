@@ -34,5 +34,22 @@ namespace Happiness
 
         public static float ButtonPanel_ButtonSize = 35f / 720f;
         public static float ButtonPanel_ButtonSpace = 10f / 720f;
+
+        public static float PauseMenu_ButtonX = 50f / 1280f;
+        public static float PauseMenu_ButtonY = 50f / 720f;
+        public static float PauseMenu_ButtonWidth = 200f / 1280f;
+        public static float PauseMenu_ButtonHeight = 40f / 720f;
+        public static float PauseMenu_ButtonSpace = 20f / 720f;
+
+        public static float PauseMenu_ButtonAreaBGX = 30f / 1280f;
+        public static float PauseMenu_ButtonAreaBGY = 25f / 720f;
+        public static float PauseMenu_ButtonAreaBGW = 240f / 1280f;
+        public static float PauseMenu_ButtonAreaBGH = 490f / 720f;
+
+        public static float PauseMenu_HelpLeft = 300f / 1280f;
+        public static float PauseMenu_HelpTextLeft = 327f / 1280f;
+        public static float PauseMenu_HelpTextTop = 20f / 720f;
+        public static float PauseMenu_IconSize = 30f / 720f;
+        public static float PauseMenu_IconSizeSmall = 16f / 720f;
     }
 }

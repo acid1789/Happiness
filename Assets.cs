@@ -44,6 +44,9 @@ namespace Happiness
         public static Texture2D ScrollCursor;
         public static Texture2D GoldBarHorizontal;
         public static Texture2D GoldBarVertical;
+        public static Texture2D GoldArrowLeft;
+        public static Texture2D GoldArrowRight;
+        public static Texture2D HelpBackground;
 
         // Fonts
         public static SpriteFont MenuFont;
@@ -180,6 +183,9 @@ namespace Happiness
             ScrollArrow = Content.Load<Texture2D>("ScrollArrow");
             ScrollBar = Content.Load<Texture2D>("ScrollBar");
             ScrollCursor = Content.Load<Texture2D>("ScrollCursor");
+            GoldArrowLeft = Content.Load<Texture2D>("GoldArrowLeft");
+            GoldArrowRight = Content.Load<Texture2D>("GoldArrowRight");
+            HelpBackground = Content.Load<Texture2D>("HelpBackground");
         }
 
         static void LoadFonts(ContentManager Content)
