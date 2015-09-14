@@ -14,12 +14,14 @@ namespace ServerCore
         {
             AccountInfoRequest = 50000,
             AccountInfoResponse,
-
+            SpendCoins,
+            CurrencyUpdate,
         }
 
         public event EventHandler<AccountInfoRequestArgs> OnAccountInfoRequest;
         public event EventHandler<AccountInfoResponseArgs> OnAccountInfoResponse;
-
+        public event EventHandler<GlobalSpendCoinArgs> OnSpendCoins;
+        public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
 
         public GlobalClient() : base (null)
         {
@@ -36,6 +38,8 @@ namespace ServerCore
 
             _packetHandlers[(ushort)GPacketType.AccountInfoRequest] = AccountInfoRequestHandler;
             _packetHandlers[(ushort)GPacketType.AccountInfoResponse] = AccountInfoResponseHandler;
+            _packetHandlers[(ushort)GPacketType.SpendCoins] = SpendCoinsHandler;
+            _packetHandlers[(ushort)GPacketType.CurrencyUpdate] = CurrencyUpdteHandler;
         }
 
         void BeginPacket(GPacketType gt)
@@ -68,6 +72,27 @@ namespace ServerCore
 
             SendPacket();
         }
+
+        public void SpendCoins(int accountId, int amount, ulong serverRecord)
+        {
+            BeginPacket(GPacketType.SpendCoins);
+
+            _outgoingBW.Write(accountId);
+            _outgoingBW.Write(amount);
+            _outgoingBW.Write(serverRecord);
+
+            SendPacket();
+        }
+
+        public void HardCurrencyUpdate(int accountId, int currency)
+        {
+            BeginPacket(GPacketType.CurrencyUpdate);
+
+            _outgoingBW.Write(accountId);
+            _outgoingBW.Write(currency);
+
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -90,6 +115,24 @@ namespace ServerCore
             args.DisplayName = ReadUTF8String(br);
             OnAccountInfoResponse(this, args);
         }
+
+        void SpendCoinsHandler(BinaryReader br)
+        {
+            GlobalSpendCoinArgs args = new GlobalSpendCoinArgs();
+            args.AccountId = br.ReadInt32();
+            args.Amount = br.ReadInt32();
+            args.ServerRecord = br.ReadUInt64();
+            OnSpendCoins(this, args);
+        }
+
+        void CurrencyUpdteHandler(BinaryReader br)
+        {
+            CurrencyUpdateArgs args = new CurrencyUpdateArgs();
+            args.AccountId = br.ReadInt32();
+            args.NewCurrency = br.ReadInt32();
+
+            OnCurrencyUpdate(this, args);
+        }
         #endregion
     }
 
@@ -108,6 +151,19 @@ namespace ServerCore
         public int AccountId;
         public int HardCurrency;
         public string DisplayName;
+    }
+
+    public class GlobalSpendCoinArgs : EventArgs
+    {
+        public int AccountId;
+        public int Amount;
+        public ulong ServerRecord;
+    }
+
+    public class CurrencyUpdateArgs : EventArgs
+    {
+        public int AccountId;
+        public int NewCurrency;
     }
     #endregion
 }

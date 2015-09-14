@@ -16,7 +16,8 @@ namespace ServerCore
         {
             // Start the global server manager
             _gs = new GlobalServerManager(globalAddress, globalPort);
-            _gs.OnAccountInfoResponse += new EventHandler<AccountInfoResponseArgs>(_gs_OnAccountInfoResponse);            
+            _gs.OnAccountInfoResponse += new EventHandler<AccountInfoResponseArgs>(_gs_OnAccountInfoResponse);
+            _gs.OnCurrencyUpdate += _gs_OnCurrencyUpdate;
 
             ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);            
         }
@@ -76,6 +77,16 @@ namespace ServerCore
         {
             GSTask t = new GSTask();
             t.Type = (int)GSTask.GSTType.AccountInfoResponse;
+            t.Client = null;
+            t.Args = e;
+
+            TaskProcessor.AddTask(t);
+        }
+
+        private void _gs_OnCurrencyUpdate(object sender, CurrencyUpdateArgs e)
+        {
+            GSTask t = new GSTask();
+            t.Type = (int)GSTask.GSTType.CurrencyUpdate;
             t.Client = null;
             t.Args = e;
 

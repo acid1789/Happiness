@@ -45,6 +45,7 @@
     <Compile Include="Action.cs" />
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Assets.cs" />
+    <Compile Include="MessageBox.cs" />
     <Compile Include="NetworkLog.cs" />
     <Compile Include="NetworkManager.cs" />
     <Compile Include="ReconnectScreen.cs" />

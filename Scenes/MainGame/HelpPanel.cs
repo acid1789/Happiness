@@ -35,6 +35,8 @@ namespace Happiness
                         break;
                 }
             }
+
+            DrawClock(sb);
         }
 
         void DrawClueDescription_Horizontal(SpriteBatch spriteBatch, Clue clue)
@@ -291,6 +293,68 @@ namespace Happiness
                     spriteBatch.DrawString(Assets.DialogFont, szDesc, new Vector2(iX, iY), Color.White);
                     break;
             }
+        }
+
+        private void DrawClock(SpriteBatch sb)
+        {
+            double seconds = GameScene.ElapsedTime;
+
+            int hours = (int)(seconds / 3600);
+            seconds -= (hours * 3600);
+            int minutes = (int)(seconds / 60);
+            seconds -= (minutes * 60);
+
+            string timeString = string.Format("{0:D2}:{1:D2}:{2:D2}", hours, minutes, (int)seconds);
+            Vector2 size = Assets.DialogFont.MeasureString(timeString);
+            
+
+            sb.DrawString(Assets.DialogFont, timeString, new Vector2(m_Rect.Right - (size.X + 5), (m_Rect.Top + (m_Rect.Height >> 1)) - (size.Y * 0.5f)), Color.White);
+
+                /*
+            int iX = 910;
+            int iY = (m_iScreenHeight - 50);
+
+            string szText = "Puzzle Time:  ";
+            DrawString(szText, iX, iY, Color.White);
+            iX += (int)m_DialogFont.MeasureString(szText).X;
+
+            // Days
+            int iDays = (int)(((m_dfSeconds / 60.0) / 60.0) / 24.0);
+            double dfRemainingSeconds = m_dfSeconds - ((((double)iDays * 24.0) * 60.0) * 60.0);
+            if (iDays > 0)
+            {
+                string szDays = iDays.ToString();
+                DrawString(szDays, iX, iY, Color.Goldenrod);
+                iX += (int)m_DialogFont.MeasureString(szDays).X;
+
+                szDays = " Days, ";
+                DrawString(szDays, iX, iY, Color.White);
+                iX += (int)m_DialogFont.MeasureString(szDays).X;
+            }
+
+            // Hours
+            int iHours = (int)((dfRemainingSeconds / 60.0) / 60.0);
+            dfRemainingSeconds = dfRemainingSeconds - (((double)iHours * 60.0) * 60.0);
+
+            string szHours = iHours.ToString("D2") + ":";
+            DrawString(szHours, iX, iY, Color.Goldenrod);
+            iX += (int)m_DialogFont.MeasureString(szHours).X;
+
+            // Minutes
+            int iMinutes = (int)(dfRemainingSeconds / 60);
+            dfRemainingSeconds = dfRemainingSeconds - ((double)iMinutes * 60.0);
+
+            string szMinutes = iMinutes.ToString("D2") + ":";
+            DrawString(szMinutes, iX, iY, Color.Goldenrod);
+            iX += (int)m_DialogFont.MeasureString(szMinutes).X;
+
+            // Seconds
+            int iSeconds = (int)dfRemainingSeconds;
+
+            string szSeconds = iSeconds.ToString("D2");
+            DrawString(szSeconds, iX, iY, Color.Goldenrod);
+            iX += (int)m_DialogFont.MeasureString(szSeconds).X;
+            */
         }
         #endregion
 

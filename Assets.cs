@@ -47,6 +47,9 @@ namespace Happiness
         public static Texture2D GoldArrowLeft;
         public static Texture2D GoldArrowRight;
         public static Texture2D HelpBackground;
+        public static Texture2D GoldCoin;
+        public static Texture2D CheckBox;
+        public static Texture2D Check;
 
         // Fonts
         public static SpriteFont MenuFont;
@@ -186,6 +189,9 @@ namespace Happiness
             GoldArrowLeft = Content.Load<Texture2D>("GoldArrowLeft");
             GoldArrowRight = Content.Load<Texture2D>("GoldArrowRight");
             HelpBackground = Content.Load<Texture2D>("HelpBackground");
+            GoldCoin = Content.Load<Texture2D>("GoldCoin");
+            CheckBox = Content.Load<Texture2D>("CheckBox");
+            Check = Content.Load<Texture2D>("Check");
         }
 
         static void LoadFonts(ContentManager Content)

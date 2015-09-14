@@ -29,6 +29,7 @@ namespace Happiness
 
         SignInStatus m_SignInStatus;
         GameDataArgs m_GameData;
+        VipDataArgs m_VipData;
 
         public NetworkManager()
         {
@@ -121,6 +122,11 @@ namespace Happiness
             }
         }
 
+        public void SpendCoins(int coinCount, int spentOn)
+        {
+            m_Client.SpendCoins(coinCount, spentOn);
+        }
+
         #region Response Handlers
         private void M_Client_OnAccountResponse(object sender, EventArgs e)
         {
@@ -146,7 +152,46 @@ namespace Happiness
 
         public GameDataArgs GameData
         {
-            get { return m_GameData; }
+            get
+            {
+#if DEBUG   
+                // Fake game data for debugging without server
+                if (m_GameData == null)
+                {
+                    m_GameData = new GameDataArgs();
+                    m_GameData.TowerFloors = new int[4];
+                    m_GameData.TowerFloors[0] = 1;
+                    m_GameData.Level = 1;
+                    m_GameData.Exp = 0;
+                }
+#endif
+                return m_GameData;
+            }
+        }
+
+        public VipDataArgs VipData
+        {
+            get
+            {
+#if DEBUG
+                // Fake vip data for debugging without server
+                if (m_VipData == null)
+                {
+                    m_VipData = new VipDataArgs();
+                    m_VipData.Level = 1;
+                    m_VipData.Progress = 0;
+                    m_VipData.Hints = 5;
+                    m_VipData.MegaHints = 2;
+                    m_VipData.UndoSize = 5;
+                }
+#endif
+                return m_VipData;
+            }
+        }
+
+        public int HardCurrency
+        {
+            get { return m_Client.HardCurrency; }
         }
 
         public bool Connected

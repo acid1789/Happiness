@@ -65,7 +65,7 @@ namespace Happiness
             {
                 // Launch the puzzle
                 GameScene gs = new GameScene(Game);
-                gs.Initialize(t.Floor, t.Size);
+                gs.Initialize(t.Floor, t.Size, true);
                 Game.GotoScene(gs);
             }
         }

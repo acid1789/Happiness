@@ -18,6 +18,8 @@ namespace ServerCore
             ChatInfo_Process,
             ChatMessage,
             FlagAccount,
+            SpendCoins_Global,
+            CurrencyUpdate,
 
             Last
         }
@@ -44,6 +46,8 @@ namespace ServerCore
             _taskHandlers[(int)GSTask.GSTType.ChatBlockList_Process] = ChatBlockListProcessHandler;
             _taskHandlers[(int)GSTask.GSTType.ChatInfo_Process] = ChatInfoProcessHandler;
             _taskHandlers[(int)GSTask.GSTType.ChatMessage] = ChatMessageHandler;
+            _taskHandlers[(int)GSTask.GSTType.SpendCoins_Global] = SpendCoinsGlobalHandler;
+            _taskHandlers[(int)GSTask.GSTType.CurrencyUpdate] = CurrencyUpdateHandler;
         }
 
         #region Task Handlers
@@ -156,6 +160,27 @@ namespace ServerCore
                     }
                 }
             }
+        }
+
+        void SpendCoinsGlobalHandler(Task t)
+        {
+            GSTask task = (GSTask)t;
+
+            int amount = (int)task.Args;
+            ulong serverSpendID = (ulong)task.Query.Rows[0][0];
+
+            _server.GlobalServer.SpendCoins(task.Client.AccountId, amount, serverSpendID);
+        }
+
+        void CurrencyUpdateHandler(Task t)
+        {
+            CurrencyUpdateArgs args = (CurrencyUpdateArgs)t.Args;
+
+            // Find the client
+            GameClient client = _server.InputThread.FindClientByID(args.AccountId);
+
+            // Tell the client
+            client.CurrencyUpdate(args.NewCurrency);
         }
         #endregion
 

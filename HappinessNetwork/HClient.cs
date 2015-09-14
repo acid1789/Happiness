@@ -16,11 +16,13 @@ namespace HappinessNetwork
             GameData_Request = 5000,
             GameData_Response,
             Puzzle_Complete,
+            SpendCoins,
         }
 
         public event EventHandler OnGameDataRequest;
         public event EventHandler<GameDataArgs> OnGameDataResponse;   
         public event EventHandler<PuzzleCompleteArgs> OnPuzzleComplete;
+        public event EventHandler<SpendCoinsArgs> OnSpendCoins;
 
         public HClient()
             : base(null)
@@ -38,6 +40,7 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.GameData_Request] = GameData_Request_Handler;
             _packetHandlers[(ushort)HPacketType.GameData_Response] = GameData_Response_Handler;
             _packetHandlers[(ushort)HPacketType.Puzzle_Complete] = Puzzle_Complete_Handler;
+            _packetHandlers[(ushort)HPacketType.SpendCoins] = SpendCoins_Handler;
         }
 
         void BeginPacket(HPacketType type)
@@ -75,6 +78,18 @@ namespace HappinessNetwork
 
             SendPacket();
         }
+
+        public void SpendCoins(int coins, int spendOn)
+        {
+            HardCurrency -= coins;
+
+            BeginPacket(HPacketType.SpendCoins);
+
+            _outgoingBW.Write(coins);
+            _outgoingBW.Write(spendOn);
+
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -104,6 +119,17 @@ namespace HappinessNetwork
             args.CompletionTime = br.ReadSingle();
             OnPuzzleComplete(this, args);
         }
+
+        void SpendCoins_Handler(BinaryReader br)
+        {
+            SpendCoinsArgs args = new SpendCoinsArgs();
+            args.Coins = br.ReadInt32();
+            args.SpendOn = br.ReadInt32();
+
+            HardCurrency -= args.Coins;
+
+            OnSpendCoins(this, args);
+        }
         #endregion
 
         #region Accessors
@@ -122,5 +148,20 @@ namespace HappinessNetwork
         public int TowerIndex;
         public int FloorNumber;
         public float CompletionTime;
+    }
+
+    public class VipDataArgs : EventArgs
+    {
+        public int Level;
+        public int Progress;
+        public int Hints;
+        public int MegaHints;
+        public int UndoSize;
+    }
+
+    public class SpendCoinsArgs : EventArgs
+    {
+        public int Coins;
+        public int SpendOn;
     }
 }

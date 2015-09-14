@@ -24,6 +24,7 @@ namespace HappinessServer
             // Register Happiness specific handlers
             client.OnGameDataRequest += Client_OnGameDataRequest;
             client.OnPuzzleComplete += Client_OnPuzzleComplete;
+            client.OnSpendCoins += Client_OnSpendCoins;
 
             return client;
         }
@@ -42,6 +43,11 @@ namespace HappinessServer
         private void Client_OnPuzzleComplete(object sender, PuzzleCompleteArgs e)
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.PuzzleComplete_FetchData, (HClient)sender, e));
+        }
+
+        private void Client_OnSpendCoins(object sender, SpendCoinsArgs e)
+        {
+            TaskProcessor.AddTask(new HTask(HTask.HTaskType.SpendCoins, (HClient)sender, e));
         }
         #endregion
 

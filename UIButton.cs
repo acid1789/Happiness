@@ -22,6 +22,12 @@ namespace Happiness
         Color m_TextColor;
         Color m_TextColorDisabled;
 
+        string m_UnderText;
+        Vector2 m_UnderTextPosition;
+        SpriteFont m_UnderTextFont;
+        Color m_UnderTextColor;
+        Color m_UnderTextColorDisabled;
+
         bool m_bDisabled;
         
         public event EventHandler OnClick;
@@ -42,6 +48,11 @@ namespace Happiness
             ResizeText();
             m_TextColor = Color.Black;
             m_TextColorDisabled = Color.Gray;
+
+            m_UnderTextFont = Assets.HelpFont;
+            m_UnderTextColor = m_TextColor;
+            m_UnderTextColorDisabled = m_TextColorDisabled;
+            ResizeUnderText();
 
             m_bDisabled = false;
         }
@@ -68,10 +79,26 @@ namespace Happiness
             m_TextPosition.Y = m_Rect.Top + halfHeight - (textSize.Y * 0.5f);
         }
 
+        void ResizeUnderText()
+        {
+            if (m_UnderText != null)
+            {
+                Vector2 textSize = m_UnderTextFont.MeasureString(m_UnderText);
+
+                int halfWidth = m_Rect.Width >> 1;
+
+                m_UnderTextPosition.X = m_Rect.Left + halfWidth - (textSize.X * 0.5f);
+                m_UnderTextPosition.Y = m_Rect.Bottom;
+            }
+        }
+
         public void Draw(SpriteBatch sb)
         {        
             sb.Draw(m_bDisabled ? m_DisabledTexture : m_MainTexture, m_Rect, m_bDisabled ? m_DisabledColor : m_MainColor);            
-            sb.DrawString(m_Font, m_Text, m_TextPosition, m_bDisabled ? m_TextColorDisabled : m_TextColor);    
+            sb.DrawString(m_Font, m_Text, m_TextPosition, m_bDisabled ? m_TextColorDisabled : m_TextColor);   
+            
+            if( m_UnderText != null )
+                sb.DrawString(m_UnderTextFont, m_UnderText, m_UnderTextPosition, m_bDisabled ? m_UnderTextColorDisabled : m_UnderTextColor); 
         }
 
         #region Accessors
@@ -97,6 +124,12 @@ namespace Happiness
             set { m_Text = value; ResizeText(); }
         }
 
+        public string UnderText
+        {
+            get { return m_UnderText; }
+            set { m_UnderText = value; ResizeUnderText(); }
+        }
+
         public Color TextColor
         {
             get { return m_TextColor; }
@@ -107,6 +140,18 @@ namespace Happiness
         {
             get { return m_TextColorDisabled; }
             set { m_TextColorDisabled = value; }
+        }
+
+        public Color UnderTextColor
+        {
+            get { return m_UnderTextColor; }
+            set { m_UnderTextColor = value; }
+        }
+
+        public Color UnderTextColorDisabled
+        {
+            get { return m_UnderTextColorDisabled; }
+            set { m_UnderTextColorDisabled = value; }
         }
 
         public Texture2D DisabledTexture

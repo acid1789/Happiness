@@ -27,6 +27,7 @@ namespace GlobalServer
             GlobalClient gclient = new GlobalClient(e.Socket);
 
             gclient.OnAccountInfoRequest += new EventHandler<AccountInfoRequestArgs>(gclient_OnAccountInfoRequest);
+            gclient.OnSpendCoins += Gclient_OnSpendCoins;
 
             _server.InputThread.AddConnection(gclient);
         }
@@ -35,6 +36,16 @@ namespace GlobalServer
         {
             GlobalTask gst = new GlobalTask();
             gst.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
+            gst.Client = (GlobalClient)sender;
+            gst.Args = e;
+
+            _server.TaskProcessor.AddTask(gst);
+        }
+
+        private static void Gclient_OnSpendCoins(object sender, GlobalSpendCoinArgs e)
+        {
+            GlobalTask gst = new GlobalTask();
+            gst.Type = (int)GlobalTask.GlobalType.SpendCoins;
             gst.Client = (GlobalClient)sender;
             gst.Args = e;
 

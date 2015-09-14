@@ -15,6 +15,7 @@ namespace HappinessServer
             GameData_Fetched,
             PuzzleComplete_FetchData,
             PuzzleComplete_Validate,
+            SpendCoins,
         }
 
         public HTask(HTaskType type, HClient client = null, object args = null)
@@ -48,6 +49,7 @@ namespace HappinessServer
             _taskHandlers[(int)HTask.HTaskType.GameData_Fetched] = GameData_Fetched_Handler;
             _taskHandlers[(int)HTask.HTaskType.PuzzleComplete_FetchData] = PuzzleComplete_FetchData_Handler;
             _taskHandlers[(int)HTask.HTaskType.PuzzleComplete_Validate] = PuzzleComplete_Validate_Handler;
+            _taskHandlers[(int)HTask.HTaskType.SpendCoins] = SpendCoins_Handler;
         }
 
         #region Task Handlers
@@ -136,6 +138,18 @@ namespace HappinessServer
                     task.Client.SendGameData(gameData);
                 }
             }
+        }
+
+        void SpendCoins_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+            SpendCoinsArgs args = (SpendCoinsArgs)t.Args;
+
+            // Record this spend in the database
+            string sql = string.Format("INSERT INTO spends SET account_id={0}, amount={1}, reason={2}, timestamp={3}; SELECT LAST_INSERT_ID();", task.Client.AccountId, args.Coins, args.SpendOn, DateTime.Now.Ticks);
+            t.Type = (int)GSTask.GSTType.SpendCoins_Global;
+            t.Args = args.Coins;
+            AddDBQuery(sql, t);
         }
         #endregion
 

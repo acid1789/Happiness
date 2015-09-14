@@ -14,6 +14,8 @@ namespace GlobalServer
         {
             AccountInfoRequest,
             AccountInfoProcess,
+            SpendCoins,
+            SpendCoins_Process,
         }
 
         public GlobalClient Client
@@ -56,7 +58,9 @@ namespace GlobalServer
             : base()
         {
             _taskHandlers[(int)GlobalTask.GlobalType.AccountInfoRequest] = AccountInfoRequestHandler;
-            _taskHandlers[(int)GlobalTask.GlobalType.AccountInfoProcess] = AccountInfoProcessHandler;            
+            _taskHandlers[(int)GlobalTask.GlobalType.AccountInfoProcess] = AccountInfoProcessHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.SpendCoins] = SpendCoinsHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.SpendCoins_Process] = SpendCoins_ProcessHandler;
         }
 
         #region Task Handlers
@@ -117,6 +121,40 @@ namespace GlobalServer
             }
             if(sendAccountInfo )
                 task.Client.SendAccountInfo(args.ClientKey, accountId, displayName, hardCurrency); 
+        }
+
+        void SpendCoinsHandler(Task t)
+        {
+            GlobalSpendCoinArgs args = (GlobalSpendCoinArgs)t.Args;
+            string sql = string.Format("SELECT hard_currency FROM accounts WHERE account_id={0};", args.AccountId);
+            t.Type = (int)GlobalTask.GlobalType.SpendCoins_Process;
+            AddDBQuery(sql, t);
+        }
+
+        void SpendCoins_ProcessHandler(Task t)
+        {
+            GlobalTask task = (GlobalTask)t;
+            GlobalSpendCoinArgs args = (GlobalSpendCoinArgs)t.Args;
+            int currency = (int)t.Query.Rows[0][0];
+            int before = currency;
+            
+            currency -= args.Amount;
+            if (currency < 0)
+            {
+                // Spent more than they had!?
+                currency = 0;
+            }
+
+            // Store transaction in the database
+            string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before={2}, after={3}, server_record={4}, timestamp={5}", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.Ticks);
+            AddDBQuery(sql, null, false);
+
+            // Store currency in the database
+            sql = string.Format("UPDATE accounts SET hard_currency={0} WHERE account_id={1};");
+            AddDBQuery(sql, null, false);
+
+            // Tell the client about it
+            task.Client.HardCurrencyUpdate(args.AccountId, currency);
         }
         #endregion
     }

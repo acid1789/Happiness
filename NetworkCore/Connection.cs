@@ -38,7 +38,7 @@ namespace NetworkCore
         protected BinaryWriter _outgoingBW;
 
         protected uint _sessionKey;
-        
+
         public Connection(Socket s)
         {
             _socket = s;

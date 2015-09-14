@@ -15,12 +15,14 @@ namespace NetworkCore
             AccountResponse,
             ChatChannels,
             ChatMessage,
+            CurrencyUpdate,
         }
 
         public event EventHandler<AccountRequestArgs> OnAccountRequest;
         public event EventHandler OnAccountResponse;
         public event EventHandler OnChatChannels;
         public event EventHandler<ChatMessageArgs> OnChatMessage;
+        public event EventHandler OnHardCurrencyUpdate;
 
         #region Account Info
         int _accountId;
@@ -54,6 +56,7 @@ namespace NetworkCore
             _packetHandlers[(ushort)GCPacketType.AccountResponse] = AccountResponseHandler;
             _packetHandlers[(ushort)GCPacketType.ChatChannels] = ChatChannelsHandler;
             _packetHandlers[(ushort)GCPacketType.ChatMessage] = ChatMessageHandler;
+            _packetHandlers[(ushort)GCPacketType.CurrencyUpdate] = CurrencyUpdateHandler;
         }
 
         void BeginPacket(GCPacketType type)
@@ -117,6 +120,17 @@ namespace NetworkCore
             
             SendPacket();
         }
+
+        public void CurrencyUpdate(int newCurrency)
+        {
+            _hardCurrency = newCurrency;
+
+            BeginPacket(GCPacketType.CurrencyUpdate);
+
+            _outgoingBW.Write(newCurrency);
+
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -156,6 +170,12 @@ namespace NetworkCore
             string sender = ReadUTF8String(br);
 
             OnChatMessage(this, new ChatMessageArgs(channel, message, sender));
+        }
+
+        void CurrencyUpdateHandler(BinaryReader br)
+        {
+            _hardCurrency = br.ReadInt32();
+            OnHardCurrencyUpdate(this, null);
         }
         #endregion
 

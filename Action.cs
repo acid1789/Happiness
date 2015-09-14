@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LogicMatrix; 
+using System.IO;
 
 namespace Happiness
 {
@@ -21,6 +22,10 @@ namespace Happiness
         int m_iIcon;
 
         bool[,,] m_SavedPuzzle;
+
+        private Action()
+        {
+        }
 
         public Action(eActionType type, int iRow, int iCol, int iIcon, Puzzle P)
         {
@@ -77,6 +82,48 @@ namespace Happiness
                     P.m_Rows[iRow].m_Cells[iCol].m_iFinalIcon = P.m_Rows[iRow].m_Cells[iCol].GetRemainingIcon();
                 }
             }
+        }
+
+        public void Save(BinaryWriter bw, int puzzleSize)
+        {
+            bw.Write((int)m_Type);
+            bw.Write(m_iRow);
+            bw.Write(m_iCol);
+            bw.Write(m_iIcon);
+
+            for (int iRow = 0; iRow < puzzleSize; iRow++)
+            {
+                for (int iCol = 0; iCol < puzzleSize; iCol++)
+                {
+                    for (int iIcon = 0; iIcon < puzzleSize; iIcon++)
+                    {
+                        bw.Write(m_SavedPuzzle[iRow, iCol, iIcon]);
+                    }
+                }
+            }
+        }
+
+        public static Action Load(BinaryReader br, int puzzleSize)
+        {
+            Action a = new Action();
+            a.m_Type = (eActionType)br.ReadInt32();
+            a.m_iRow = br.ReadInt32();
+            a.m_iCol = br.ReadInt32();
+            a.m_iIcon = br.ReadInt32();
+            a.m_SavedPuzzle = new bool[puzzleSize, puzzleSize, puzzleSize];
+
+            for (int iRow = 0; iRow < puzzleSize; iRow++)
+            {
+                for (int iCol = 0; iCol < puzzleSize; iCol++)
+                {
+                    for (int iIcon = 0; iIcon < puzzleSize; iIcon++)
+                    {
+                        a.m_SavedPuzzle[iRow, iCol, iIcon] = br.ReadBoolean();
+                    }
+                }
+            }
+
+            return a;
         }
     }
 }

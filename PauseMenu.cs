@@ -12,13 +12,7 @@ namespace Happiness
     {
         public GameTime m_GameTime;
 
-        string m_szConfirmText1;
-        string m_szConfirmText2;
-        string m_szConfirmCancelText = "No";
-        string m_szConfirmAcceptText = "Yes";
-        Rectangle m_rConfirmAccept;
-        Rectangle m_rConfirmCancel;
-        bool m_bConfirmDialog;
+        MessageBox m_ConfirmDialog;
         
         int m_iScrollOffset;
         int m_iScrollMaximum = 1800;
@@ -39,8 +33,6 @@ namespace Happiness
         int m_iIconSize;
         int m_iIconSizeSmall;
 
-
-
         public PauseMenu(int screenWidth, int screenHeight)
         {
             m_iSelection = 0;
@@ -48,7 +40,6 @@ namespace Happiness
             m_iScreenHeight = screenHeight;
 
             m_iSelection = 0;
-            m_bConfirmDialog = false;
             m_iScrollOffset = 0;
 
 
@@ -86,16 +77,16 @@ namespace Happiness
         #region Input
         public bool HandleClick(int x, int y)
         {
-            if (m_bConfirmDialog)
+            if (m_ConfirmDialog != null)
             {
-                if (m_rConfirmCancel.Contains(x, y))
-                {
-                    m_bConfirmDialog = false;
-                    //m_Game.m_SoundManager.PlayMenuCancel();
-                }
-                else if (m_rConfirmAccept.Contains(x, y))
+                MessageBoxResult res = m_ConfirmDialog.HandleClick(x, y);
+                if (res == MessageBoxResult.Yes)
                 {
                     return DoButtonClick(1);
+                }
+                else if( res == MessageBoxResult.No )
+                {
+                    m_ConfirmDialog = null;
                 }
             }
             else
@@ -121,16 +112,14 @@ namespace Happiness
                 case 0: // Resume Game
                     return false;
                 case 1: // Reset Puzzle
-                    if (!m_bConfirmDialog)
+                    if (m_ConfirmDialog == null)
                     {
-                        m_szConfirmText1 = "Are you sure you want to reset this puzzle?";
-                        m_szConfirmText2 = "All progress will be lost";
-                        m_bConfirmDialog = true;
-                        //m_Game.m_SoundManager.PlayMenuAccept();
+                        m_ConfirmDialog = new MessageBox("Are you sure you want to reset this puzzle?\nAll progress will be lost.", MessageBoxButtons.YesNo, 0, m_iScreenWidth, m_iScreenHeight);
                     }
                     else
                     {
                         //m_Game.m_SoundManager.PlayMenuAccept();
+                        m_ConfirmDialog = null;
                         return false;
                     }
                     break;
@@ -175,9 +164,9 @@ namespace Happiness
                 b.Draw(spriteBatch);
 
             DrawHelp(spriteBatch);
-
-            if (m_bConfirmDialog)
-                DrawConfirmDialog(spriteBatch, m_iScreenWidth, m_iScreenHeight);
+            
+            if( m_ConfirmDialog != null )
+                m_ConfirmDialog.Draw(spriteBatch);
         }
 
         private int DrawString(SpriteBatch spriteBatch, string text, int iX, int iY, Color cColor)
@@ -194,40 +183,7 @@ namespace Happiness
             spriteBatch.DrawString(font, text, new Vector2(iX, iY), cColor);
             return (int)font.MeasureString(text).X + iShadowOffset;
         }
-
-        private void DrawConfirmDialog(SpriteBatch spriteBatch, int iScreenW, int iScreenH)
-        {
-            int iHalfScreenW = iScreenW / 2;
-            int iHalfScreenH = iScreenH / 2;
-            int iWidth1 = (int)Assets.DialogFont.MeasureString(m_szConfirmText1).X;
-            int iWidth2 = (int)Assets.DialogFont.MeasureString(m_szConfirmText2).X;
-            int iDialogWidth = Math.Max(iWidth1, iWidth2) + 40;
-            int iDialogHeight = 100;
-            int iDialogX = iHalfScreenW - (iDialogWidth / 2);
-            int iDialogY = iHalfScreenH - (iDialogHeight / 2);
-
-            Rectangle r = new Rectangle(iDialogX, iDialogY, iDialogWidth, iDialogHeight);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-            spriteBatch.Draw(Assets.TransparentBox, r, Color.SteelBlue);
-
-            DrawString(spriteBatch, m_szConfirmText1, iHalfScreenW - (iWidth1 / 2), iDialogY + 20, Color.White);
-            DrawString(spriteBatch, m_szConfirmText2, iHalfScreenW - (iWidth1 / 2), iDialogY + 40, Color.White);
-
-            int iButtonsY = iDialogY + 70;
-            int iButtonXSpace = 40;
-            Vector2 vSize = Assets.DialogFont.MeasureString(m_szConfirmCancelText);
-            m_rConfirmCancel = new Rectangle(iHalfScreenW - ((int)vSize.X + iButtonXSpace), iButtonsY, (int)vSize.X, (int)vSize.Y);
-            Color cButtonColor = Color.Turquoise;
-            DrawString(spriteBatch, m_szConfirmCancelText, m_rConfirmCancel.X, iButtonsY, cButtonColor);
-
-            vSize = Assets.DialogFont.MeasureString(m_szConfirmAcceptText);
-            m_rConfirmAccept = new Rectangle(iHalfScreenW + iButtonXSpace, iButtonsY, (int)vSize.X, (int)vSize.Y);
-            cButtonColor = Color.Turquoise;
-            DrawString(spriteBatch, m_szConfirmAcceptText, m_rConfirmAccept.X, iButtonsY, cButtonColor);
-        }
-        
+                        
         private void DrawHelp(SpriteBatch spriteBatch)
         {
             int iClueMargin = 5;

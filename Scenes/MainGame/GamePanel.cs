@@ -137,8 +137,8 @@ namespace Happiness
                         r.Offset(xcoord, ycoord);
                         sb.Draw(GameScene.GetIcon(y, iFinal), r, Color.White);
 
-                        //if (m_Hint != null && m_Hint.ShouldDraw(iRow, iCol, iFinal))
-                        //    m_HintSprite.Draw(spriteBatch, m_aDisplayRows[iRow].m_aCells[iCol].m_rFinal, Color.White);
+                        if (GameScene.ShouldDrawHint(y, x, iFinal))
+                            Assets.HintSprite.Draw(sb, r, Color.White);
                     }
                     else
                     {
@@ -150,8 +150,8 @@ namespace Happiness
                                 r.Offset(xcoord, ycoord);
                                 sb.Draw(GameScene.GetIcon(y, iIcon), r, Color.White);
 
-                                //if (m_Hint != null && m_Hint.ShouldDraw(iRow, iCol, iIcon))
-                                //    m_HintSprite.Draw(spriteBatch, m_aDisplayRows[iRow].m_aCells[iCol].m_aDisplayRects[iIcon], Color.White);
+                                if (GameScene.ShouldDrawHint(y, x, iIcon))
+                                    Assets.HintSprite.Draw(sb, r, Color.White);
                             }
                         }
                     }

@@ -12,7 +12,7 @@ namespace Happiness
         public static float MarginTop = 10f / 720f;
         public static float MarginBottom = 10f / 720f;
 
-        public static float ButtonPanel_Width = 60f / 1280f;
+        public static float ButtonPanel_Width = 98f / 1280f;
         public static float HelpPanel_Height = 40f / 720f;
 
         public static float IconSize = 60f / 720f;
@@ -32,8 +32,10 @@ namespace Happiness
         
         public static float HelpClueIconSize = 30f / 720f;
 
-        public static float ButtonPanel_ButtonSize = 35f / 720f;
-        public static float ButtonPanel_ButtonSpace = 10f / 720f;
+        public static float ButtonPanel_ButtonSize = 60f / 720f;
+        public static float ButtonPanel_ButtonSpace = 40f / 720f;
+        public static float ButtonPanel_CoinSize = 25f / 720f;
+        public static float ButtonPanel_CoinMargin = 5f / 720f;
 
         public static float PauseMenu_ButtonX = 50f / 1280f;
         public static float PauseMenu_ButtonY = 50f / 720f;
@@ -51,5 +53,13 @@ namespace Happiness
         public static float PauseMenu_HelpTextTop = 20f / 720f;
         public static float PauseMenu_IconSize = 30f / 720f;
         public static float PauseMenu_IconSizeSmall = 16f / 720f;
+
+        public static float MessageBox_Width = 400f / 1280f;
+        public static float MessageBox_ButtonWidth = 90f / 1280f;
+        public static float MessageBox_ButtonHeight = 30f / 720f;
+        public static float MessageBox_TopBottomMargin = 20f / 720f;
+        public static float MessageBox_LeftRightMargin = 20f / 1280f;
+        public static float MessageBox_LineSpace = 10f / 720f;
+        public static float MessageBox_CheckboxSize = 20f / 720f;
     }
 }

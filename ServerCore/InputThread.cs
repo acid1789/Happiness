@@ -46,6 +46,21 @@ namespace ServerCore
             return null;
         }
 
+        public GameClient FindClientByID(int accountId)
+        {
+            _connectionsLock.WaitOne();
+            Connection[] connections = _connections.ToArray();
+            _connectionsLock.ReleaseMutex();
+
+            foreach (Connection c in connections)
+            {
+                GameClient gc = (GameClient)c;
+                if( gc != null && gc.AccountId == accountId )
+                    return gc;
+            }
+            return null;
+        }
+
         void InputThreadFunc()
         {
             while (true)

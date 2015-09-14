@@ -229,6 +229,11 @@ namespace Happiness
         {
             get { return (GameScene)m_Scene; }
         }
+
+        public Clue[] Clues
+        {
+            get { return m_Clues.ToArray(); }
+        }
         #endregion
     }
 }

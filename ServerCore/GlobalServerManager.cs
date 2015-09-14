@@ -14,6 +14,7 @@ namespace ServerCore
         int _port;
         
         public event EventHandler<AccountInfoResponseArgs> OnAccountInfoResponse;
+        public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
 
         public GlobalServerManager(string address, int port)
         {
@@ -33,7 +34,7 @@ namespace ServerCore
                 {
                     _gc = new GlobalClient();
                     _gc.OnAccountInfoResponse += OnAccountInfoResponse;
-
+                    _gc.OnCurrencyUpdate += OnCurrencyUpdate;
 
                     _gc.Connect(_address, _port);
                     if (_gc.Connected)
@@ -49,10 +50,14 @@ namespace ServerCore
             }
         }
 
-
         public void RequestAccountInfo(uint clientKey, string email, string password, string displayName)
         {
             _gc.RequestAccountInfo(clientKey, email, password, displayName);
+        }
+
+        public void SpendCoins(int accountId, int amount, ulong gameServerSpendRecord)
+        {
+            _gc.SpendCoins(accountId, amount, gameServerSpendRecord);
         }
     }
 }
