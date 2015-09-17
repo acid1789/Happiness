@@ -172,7 +172,9 @@ namespace Happiness
         #region Puzzle File
         string PuzzleSaveName(int puzzleSize, int puzzleIndex)
         {
-            string saveName = string.Format("{0}_{1}.save", puzzleSize, puzzleIndex);
+            string saveName = string.Format("{0}/{1}_{2}.save", NetworkManager.Net.DisplayName, puzzleSize, puzzleIndex);
+            if( !Directory.Exists(NetworkManager.Net.DisplayName) )
+                Directory.CreateDirectory(NetworkManager.Net.DisplayName);
             return saveName;
         }
 
@@ -275,6 +277,8 @@ namespace Happiness
                     int maxHints = NetworkManager.Net.VipData.Hints;
                     m_ButtonPanel.SetHintCount(maxHints - m_iHintCount, maxHints);
 
+                    SavePuzzle();
+
                     // Play the sound
                     // m_SoundManager.PlayGameHint();
                 }
@@ -296,6 +300,11 @@ namespace Happiness
                 // Subtract the coins
                 NetworkManager.Net.SpendCoins(50, 2);
 
+                // Modify the count
+                m_iMegaHintCount++;
+                int maxHints = NetworkManager.Net.VipData.MegaHints;
+                m_ButtonPanel.SetMegaHintCount(maxHints - m_iMegaHintCount, maxHints);
+
                 // Show the hint
                 Random rand = new Random();
                 while (true)
@@ -309,11 +318,6 @@ namespace Happiness
                         break;
                     }
                 }
-
-                // Modify the count
-                m_iMegaHintCount++;
-                int maxHints = NetworkManager.Net.VipData.MegaHints;
-                m_ButtonPanel.SetMegaHintCount(maxHints - m_iMegaHintCount, maxHints);
 
                 // Play the sound
                 // m_SoundManager.PlayGameHint();
@@ -357,7 +361,7 @@ namespace Happiness
                 {
                     m_ReconnectScreen.Update(gameTime);
                 }
-                else if (!NetworkManager.Net.Connected)
+                else if (!NetworkManager.Net.Connected && !NetworkManager.Net.Disabled)
                 {
                     m_ReconnectScreen = new ReconnectScreen();
                 }

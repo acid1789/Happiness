@@ -29,6 +29,11 @@ namespace Happiness
 
             m_iCheckboxSize = (int)(Constants.MessageBox_CheckboxSize * screenHeight);
 
+            Layout(left, top);
+        }
+
+        void Layout(int left, int top)
+        {
             Vector2 textSize = Assets.HelpFont.MeasureString(m_szText);
             int checkWidth = m_iCheckboxSize + 5 + (int)textSize.X;
             m_Rect = new Rectangle(left, top, checkWidth, m_iCheckboxSize);
@@ -72,7 +77,7 @@ namespace Happiness
         public int Left
         {
             get { return m_Rect.Left; }
-            set { m_Rect = new Rectangle(value, m_Rect.Top, m_Rect.Width, m_Rect.Height); }
+            set { Layout(value, m_Rect.Top); }
         }
 
         public Rectangle Rect

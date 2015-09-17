@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using HappinessNetwork;
+using System.IO;
 
 namespace Happiness
 {
@@ -21,6 +22,7 @@ namespace Happiness
         NetworkLog m_NetworkLog;
         HClient m_Client;
         Thread m_ClientPump;
+        bool m_bDisabled;
 
         string m_szServerAddress;
         int m_iServerPort;
@@ -59,11 +61,14 @@ namespace Happiness
         {
             while (true)
             {
-                if( !m_Client.Connected && m_szServerAddress != null )
-                    m_Client.Connect(m_szServerAddress, m_iServerPort);
+                if (!m_bDisabled)
+                {
+                    if (!m_Client.Connected && m_szServerAddress != null)
+                        m_Client.Connect(m_szServerAddress, m_iServerPort);
 
-                if( m_Client.Connected )
-                    m_Client.Update();
+                    if (m_Client.Connected)
+                        m_Client.Update();
+                }
                 Thread.Sleep(100);
             }
         }
@@ -117,13 +122,23 @@ namespace Happiness
             if (m_GameData.TowerFloors[tower] >= floor)
             {
                 m_GameData.TowerFloors[tower] = floor + 1;
-                m_Client.PuzzleComplete(tower, floor, (float)completionTime);
+
+                if (m_bDisabled)
+                    StoreStaticData();
+                else
+                    m_Client.PuzzleComplete(tower, floor, (float)completionTime);
             }
         }
 
         public void SpendCoins(int coinCount, int spentOn)
         {
-            m_Client.SpendCoins(coinCount, spentOn);
+            if (m_bDisabled)
+            {
+                m_Client.HardCurrency -= coinCount;
+                StoreStaticData();
+            }
+            else
+                m_Client.SpendCoins(coinCount, spentOn);
         }
 
         #region Response Handlers
@@ -143,6 +158,71 @@ namespace Happiness
         }
         #endregion
 
+        #region StaticData
+        const string s_GameDataFile = "gamedata";
+        public void LoadStaticData()
+        {
+            GameDataArgs gd = new GameDataArgs();
+            gd.TowerFloors = new int[4];
+
+            // Load game data if it exists
+            if (File.Exists(s_GameDataFile))
+            {
+                FileStream fs = File.OpenRead(s_GameDataFile);
+                BinaryReader br = new BinaryReader(fs);
+
+                int version = br.ReadInt32();
+                for (int i = 0; i < gd.TowerFloors.Length; i++)
+                    gd.TowerFloors[i] = br.ReadInt32();
+                gd.Level = br.ReadInt32();
+                gd.Exp = br.ReadInt32();
+                m_Client.HardCurrency = br.ReadInt32();
+
+                br.Close();
+            }
+            else
+            {
+                gd.TowerFloors[0] = 1;
+                gd.TowerFloors[1] = 0;
+                gd.TowerFloors[2] = 0;
+                gd.TowerFloors[3] = 0;
+                gd.Level = 1;
+                gd.Exp = 0;
+                m_Client.HardCurrency = 1000;
+            }
+
+            m_GameData = gd;
+
+            if (m_VipData == null)
+            {
+                m_VipData = new VipDataArgs();
+                m_VipData.Level = 1;
+                m_VipData.Progress = 0;
+                m_VipData.Hints = 5;
+                m_VipData.MegaHints = 2;
+                m_VipData.UndoSize = 5;
+            }
+        }
+
+        void StoreStaticData()
+        {
+            if (m_GameData != null)
+            {
+                FileStream fs = File.Create(s_GameDataFile);
+                BinaryWriter bw = new BinaryWriter(fs);
+                
+                bw.Write(1);    // version
+                foreach(int floor in m_GameData.TowerFloors )
+                    bw.Write(floor);
+                bw.Write(m_GameData.Level);
+                bw.Write(m_GameData.Exp);
+                bw.Write(m_Client.HardCurrency);
+
+                bw.Close();
+            }
+        }
+        #endregion
+
         #region Accessors
         public SignInStatus SignInState
         {
@@ -151,43 +231,12 @@ namespace Happiness
 
         public GameDataArgs GameData
         {
-            get
-            {
-                /*
-#if DEBUG   
-                // Fake game data for debugging without server
-                if (m_GameData == null)
-                {
-                    m_GameData = new GameDataArgs();
-                    m_GameData.TowerFloors = new int[4];
-                    m_GameData.TowerFloors[0] = 1;
-                    m_GameData.Level = 1;
-                    m_GameData.Exp = 0;
-                }
-#endif
-*/
-                return m_GameData;
-            }
+            get { return m_GameData; }
         }
 
         public VipDataArgs VipData
         {
-            get
-            {
-#if DEBUG
-                // Fake vip data for debugging without server
-                if (m_VipData == null)
-                {
-                    m_VipData = new VipDataArgs();
-                    m_VipData.Level = 1;
-                    m_VipData.Progress = 0;
-                    m_VipData.Hints = 5;
-                    m_VipData.MegaHints = 2;
-                    m_VipData.UndoSize = 5;
-                }
-#endif
-                return m_VipData;
-            }
+            get { return m_VipData; }
         }
 
         public int HardCurrency
@@ -198,6 +247,17 @@ namespace Happiness
         public bool Connected
         {
             get { return m_Client.Connected; }
+        }
+
+        public bool Disabled
+        {
+            get { return m_bDisabled; }
+            set { m_bDisabled = value; }
+        }
+
+        public string DisplayName
+        {
+            get { return m_bDisabled ? "Static" : m_Client.DisplayName; }
         }
         #endregion
 

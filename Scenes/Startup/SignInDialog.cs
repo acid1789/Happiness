@@ -36,6 +36,7 @@ namespace Happiness
 
         public event EventHandler OnSignIn;
         public event EventHandler OnExit;
+        public event EventHandler OnSkip;
 
 
         public SignInDialog(int screenWidth, int screenHeight)
@@ -78,9 +79,10 @@ namespace Happiness
             m_fStatusTextY = m_AuthButtons[0].Rect.Bottom + 5;
 
             int btnY = m_Rect.Bottom - 80;
-            m_DialogButtons = new UIButton[2];
+            m_DialogButtons = new UIButton[3];
             m_DialogButtons[0] = new UIButton(0, "Sign In", Assets.DialogFont, new Rectangle(m_iCenterDialogX - 100, btnY, 200, 50), Assets.ScrollBar);
             m_DialogButtons[1] = new UIButton(1, "Exit", Assets.DialogFont, new Rectangle(m_Rect.Left + 40, btnY, 80, 50), Assets.ScrollBar);
+            m_DialogButtons[2] = new UIButton(2, "Skip", Assets.DialogFont, new Rectangle(m_Rect.Right - 120, btnY, 80, 50), Assets.ScrollBar);
         }
 
         #region Input
@@ -115,6 +117,10 @@ namespace Happiness
                 case 1: // Exit
                     if( OnExit != null )
                         OnExit(this, null);
+                    break;
+                case 2:
+                    if( OnSkip != null )
+                        OnSkip(this, null);
                     break;
             }
         }

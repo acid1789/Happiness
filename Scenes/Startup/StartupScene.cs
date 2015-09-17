@@ -29,6 +29,7 @@ namespace Happiness
             m_SignInDialog = new SignInDialog(game.ScreenWidth, game.ScreenHeight);
             m_SignInDialog.OnSignIn += M_SignInDialog_OnSignIn;
             m_SignInDialog.OnExit += M_SignInDialog_OnExit;
+            m_SignInDialog.OnSkip += M_SignInDialog_OnSkip;
 
             InputController.IC.OnClick += IC_OnClick;
             InputController.IC.OnKeyUp += IC_OnKeyUp;            
@@ -190,6 +191,17 @@ namespace Happiness
             {
                 // Cancel
             }
+        }
+
+        private void M_SignInDialog_OnSkip(object sender, EventArgs e)
+        {
+            // Disable networking
+            NetworkManager.Net.Disabled = true;
+
+            // Load static gamedata
+            NetworkManager.Net.LoadStaticData();   
+            
+            GotoHubScene();         
         }
         #endregion
     }
