@@ -175,7 +175,8 @@ namespace NetworkCore
         void CurrencyUpdateHandler(BinaryReader br)
         {
             _hardCurrency = br.ReadInt32();
-            OnHardCurrencyUpdate(this, null);
+            if( OnHardCurrencyUpdate != null )
+                OnHardCurrencyUpdate(this, null);
         }
         #endregion
 

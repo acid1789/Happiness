@@ -56,6 +56,11 @@ namespace Happiness
         public static SpriteFont DialogFont;
         public static SpriteFont HelpFont;
 
+        // Signin Icons
+        public static Texture2D Facebook;
+        public static Texture2D Google;
+        public static Texture2D Apple;
+
 
         public static void LoadAll(ContentManager Content)
         {
@@ -67,6 +72,7 @@ namespace Happiness
             LoadStaticParts(Content);
             LoadFonts(Content);
             LoadTowers(Content);
+            LoadSignInIcons(Content);
         }
 
         static void LoadIcons(ContentManager Content)
@@ -208,6 +214,13 @@ namespace Happiness
             Towers[1] = content.Load<Texture2D>("Towers/Tower2");
             Towers[2] = content.Load<Texture2D>("Towers/Tower3");
             Towers[3] = content.Load<Texture2D>("Towers/Tower4");
+        }
+
+        static void LoadSignInIcons(ContentManager content)
+        {
+            Facebook = content.Load<Texture2D>("facebook");
+            Google = content.Load<Texture2D>("google");
+            Apple = content.Load<Texture2D>("apple_id");
         }
     }
 }

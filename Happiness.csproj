@@ -69,8 +69,11 @@
     <Compile Include="SaveGame.cs" />
     <Compile Include="Scenes\Scene.cs" />
     <Compile Include="Scenes\Startup\StartupScene.cs" />
+    <Compile Include="Scenes\Startup\SignInDialog.cs" />
     <Compile Include="SoundManager.cs" />
     <Compile Include="UIButton.cs" />
+    <Compile Include="UICheckbox.cs" />
+    <Compile Include="UIInputField.cs" />
     <Compile Include="UIPanel.cs" />
     <Compile Include="Scenes\MainGame\VerticalCluePanel.cs" />
   </ItemGroup>

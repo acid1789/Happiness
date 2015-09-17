@@ -63,6 +63,12 @@ namespace Happiness
             m_CurrentScene = new StartupScene(this);
         }
 
+        public void ExitGame()
+        {
+            NetworkManager.Net.Shutdown();
+            Exit();
+        }
+
         /// <summary>
         /// LoadContent will be called once per game and is the place to load
         /// all of your content.
@@ -157,5 +163,14 @@ namespace Happiness
             get { return m_iScreenHeight; }
         }
         #endregion
+
+
+
+
+        public static void ShadowString(SpriteBatch sb, SpriteFont font, string text, Vector2 position, Color color)
+        {
+            sb.DrawString(font, text, new Vector2(position.X + 2, position.Y + 2), Color.Black);
+            sb.DrawString(font, text, position, color);
+        }
     }
 }

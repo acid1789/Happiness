@@ -34,7 +34,7 @@ namespace HappinessServer
 
     public class HTaskProcessor : GSTaskProcessor
     {
-        int[] TowerFloorUnlockThresholds = new int[] { 5, 10, 15, 20 };
+        int[] TowerFloorUnlockThresholds = new int[] { 5, 25, 50 };
 
         float[] TowerParTimes = new float[] { 1f * 60, 2.5f * 60, 5f * 60, 10 * 60 };
 
@@ -110,15 +110,7 @@ namespace HappinessServer
 
                     // Move to the next puzzle on this floor
                     gameData.TowerFloors[pca.TowerIndex]++;
-
-                    // Unlock next tower?
-                    if (pca.TowerIndex < (gameData.TowerFloors.Length - 1) &&
-                        gameData.TowerFloors[pca.TowerIndex + 1] == 0 &&
-                        gameData.TowerFloors[pca.TowerIndex] >= TowerFloorUnlockThresholds[pca.TowerIndex])
-                    {
-                        gameData.TowerFloors[pca.TowerIndex + 1] = 1;
-                    }
-
+                    
                     // Level up?
                     float timeDelta = Math.Max(pca.CompletionTime / TowerParTimes[pca.TowerIndex], 0);
                     int exp = (int)(TowerBaseExpValues[pca.TowerIndex] + (TowerTimeBonusExpValues[pca.TowerIndex] * timeDelta));
@@ -129,6 +121,14 @@ namespace HappinessServer
                         gameData.Level++;
                         gameData.Exp -= expForNextLevel;
                         expForNextLevel = ExpThreshold(gameData.Level);
+                    }
+
+                    // Unlock next tower?
+                    if (pca.TowerIndex < (gameData.TowerFloors.Length - 1) &&
+                        gameData.TowerFloors[pca.TowerIndex + 1] == 0 &&
+                        gameData.Level >= TowerFloorUnlockThresholds[pca.TowerIndex])
+                    {
+                        gameData.TowerFloors[pca.TowerIndex + 1] = 1;
                     }
 
                     // Save changes

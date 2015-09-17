@@ -38,11 +38,7 @@ namespace Happiness
         int m_iTextLineHeight;
         int m_iCenterDialogX;
 
-        string m_szCheckboxText;
-        int m_iCheckboxSize;
-        bool m_bCheckboxChecked;
-        Rectangle m_CheckboxRect;
-        Vector2 m_CheckboxTextLocation;
+        UICheckbox m_CheckBox;
 
         Color m_TextColor;
 
@@ -51,14 +47,13 @@ namespace Happiness
         {
             m_iContext = context;
             m_TextColor = Color.White;
-
-            m_szCheckboxText = checkboxText;
-            m_iCheckboxSize = (int)(Constants.MessageBox_CheckboxSize * screenHeight);
+            
+            int iCheckboxSize = (int)(Constants.MessageBox_CheckboxSize * screenHeight);
 
             m_iMarginLeftRight = (int)(Constants.MessageBox_LeftRightMargin * screenWidth);
             m_iMarginTopBottom = (int)(Constants.MessageBox_TopBottomMargin * screenHeight);
 
-            int checkboxHeight = checkboxText == null ? 0 : m_iMarginTopBottom + m_iCheckboxSize;
+            int checkboxHeight = checkboxText == null ? 0 : m_iMarginTopBottom + iCheckboxSize;
 
             int width = (int)(Constants.MessageBox_Width * screenWidth);            
             SetupLines(width - (m_iMarginLeftRight * 2), message);
@@ -101,13 +96,10 @@ namespace Happiness
                     break;
             }
 
-            if (m_szCheckboxText != null)
+            if (checkboxText != null)
             {
-                Vector2 textSize = Assets.HelpFont.MeasureString(m_szCheckboxText);
-                int checkWidth = m_iCheckboxSize + 5 + (int)textSize.X;
-                int checkLeft = m_iCenterDialogX - (checkWidth >> 1);
-                m_CheckboxRect = new Rectangle(checkLeft, buttonY - (m_iMarginTopBottom + m_iCheckboxSize), checkWidth, m_iCheckboxSize);
-                m_CheckboxTextLocation = new Vector2(checkLeft + m_iCheckboxSize + 5, (m_CheckboxRect.Top + (m_iCheckboxSize >> 1)) - (textSize.Y / 2));
+                m_CheckBox = new UICheckbox(checkboxText, 0, buttonY - (m_iMarginTopBottom + iCheckboxSize), screenHeight);
+                m_CheckBox.Left = m_iCenterDialogX - (m_CheckBox.Rect.Width >> 1);
             }
         }
 
@@ -168,12 +160,9 @@ namespace Happiness
 
         public MessageBoxResult HandleClick(int x, int y)
         {
-            if (m_szCheckboxText != null)
+            if (m_CheckBox != null)
             {
-                if (m_CheckboxRect.Contains(x, y))
-                {
-                    m_bCheckboxChecked = !m_bCheckboxChecked;
-                }
+                m_CheckBox.HandleClick(x, y);
             }
 
             foreach (UIButton b in m_Buttons)
@@ -207,13 +196,9 @@ namespace Happiness
             }
 
             // Draw Checkbox
-            if (m_szCheckboxText != null)
+            if (m_CheckBox != null)
             {
-                sb.Draw(Assets.CheckBox, new Rectangle(m_CheckboxRect.Left, m_CheckboxRect.Top, m_iCheckboxSize, m_iCheckboxSize), Color.White);
-                if( m_bCheckboxChecked )
-                    sb.Draw(Assets.Check, new Rectangle(m_CheckboxRect.Left, m_CheckboxRect.Top, m_iCheckboxSize, m_iCheckboxSize), Color.White);
-
-                sb.DrawString(Assets.HelpFont, m_szCheckboxText, m_CheckboxTextLocation, Color.LightGray);
+                m_CheckBox.Draw(sb);
             }
 
             // Draw buttons
@@ -238,8 +223,8 @@ namespace Happiness
 
         public bool Checkbox
         {
-            get { return m_bCheckboxChecked; }
-            set { m_bCheckboxChecked = value; }
+            get { return m_CheckBox.Checked; }
+            set { m_CheckBox.Checked = value; }
         }
         #endregion
     }

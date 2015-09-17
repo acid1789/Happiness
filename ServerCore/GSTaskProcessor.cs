@@ -78,6 +78,7 @@ namespace ServerCore
             {
                 // Valid account
                 client.SendAccountResponse(args.AccountId, args.DisplayName);
+                client.CurrencyUpdate(args.HardCurrency);
 
                 // Store stuff
                 client.AccountId = args.AccountId;

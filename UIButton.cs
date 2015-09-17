@@ -70,13 +70,16 @@ namespace Happiness
 
         void ResizeText()
         {
-            Vector2 textSize = m_Font.MeasureString(m_Text);
+            if (m_Text != null)
+            {
+                Vector2 textSize = m_Font.MeasureString(m_Text);
 
-            int halfWidth = m_Rect.Width >> 1;
-            int halfHeight = m_Rect.Height >> 1;
+                int halfWidth = m_Rect.Width >> 1;
+                int halfHeight = m_Rect.Height >> 1;
 
-            m_TextPosition.X = m_Rect.Left + halfWidth - (textSize.X * 0.5f);
-            m_TextPosition.Y = m_Rect.Top + halfHeight - (textSize.Y * 0.5f);
+                m_TextPosition.X = m_Rect.Left + halfWidth - (textSize.X * 0.5f);
+                m_TextPosition.Y = m_Rect.Top + halfHeight - (textSize.Y * 0.5f);
+            }
         }
 
         void ResizeUnderText()
@@ -95,7 +98,8 @@ namespace Happiness
         public void Draw(SpriteBatch sb)
         {        
             sb.Draw(m_bDisabled ? m_DisabledTexture : m_MainTexture, m_Rect, m_bDisabled ? m_DisabledColor : m_MainColor);            
-            sb.DrawString(m_Font, m_Text, m_TextPosition, m_bDisabled ? m_TextColorDisabled : m_TextColor);   
+            if( m_Text != null )
+                sb.DrawString(m_Font, m_Text, m_TextPosition, m_bDisabled ? m_TextColorDisabled : m_TextColor);   
             
             if( m_UnderText != null )
                 sb.DrawString(m_UnderTextFont, m_UnderText, m_UnderTextPosition, m_bDisabled ? m_UnderTextColorDisabled : m_UnderTextColor); 

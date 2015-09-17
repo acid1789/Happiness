@@ -62,6 +62,7 @@
     <Compile Include="Activity1.cs" />
     <Compile Include="AnimatedSprite.cs" />
     <Compile Include="Assets.cs" />
+    <Compile Include="MessageBox.cs" />
     <Compile Include="NetworkLog.cs" />
     <Compile Include="NetworkManager.cs" />
     <Compile Include="ReconnectScreen.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="Scenes\MainGame\HorizontalCluePanel.cs" />
     <Compile Include="Scenes\MainGame\VerticalCluePanel.cs" />
     <Compile Include="Scenes\Scene.cs" />
+    <Compile Include="Scenes\Startup\StartupScene.cs" />
     <Compile Include="SoundManager.cs" />
     <Compile Include="UIButton.cs" />
     <Compile Include="UIPanel.cs" />

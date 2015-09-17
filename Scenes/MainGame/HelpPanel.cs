@@ -12,6 +12,7 @@ namespace Happiness
     {
         int m_iClueIconSize;
         Clue m_Clue;
+        double m_dfSeconds;
 
         public HelpPanel(GameScene game, Rectangle rect) : base(game)
         {
@@ -297,7 +298,9 @@ namespace Happiness
 
         private void DrawClock(SpriteBatch sb)
         {
-            double seconds = GameScene.ElapsedTime;
+            if( GameScene.ClockRunning )
+                m_dfSeconds = GameScene.ElapsedTime;
+            double seconds = m_dfSeconds;
 
             int hours = (int)(seconds / 3600);
             seconds -= (hours * 3600);
@@ -308,53 +311,7 @@ namespace Happiness
             Vector2 size = Assets.DialogFont.MeasureString(timeString);
             
 
-            sb.DrawString(Assets.DialogFont, timeString, new Vector2(m_Rect.Right - (size.X + 5), (m_Rect.Top + (m_Rect.Height >> 1)) - (size.Y * 0.5f)), Color.White);
-
-                /*
-            int iX = 910;
-            int iY = (m_iScreenHeight - 50);
-
-            string szText = "Puzzle Time:  ";
-            DrawString(szText, iX, iY, Color.White);
-            iX += (int)m_DialogFont.MeasureString(szText).X;
-
-            // Days
-            int iDays = (int)(((m_dfSeconds / 60.0) / 60.0) / 24.0);
-            double dfRemainingSeconds = m_dfSeconds - ((((double)iDays * 24.0) * 60.0) * 60.0);
-            if (iDays > 0)
-            {
-                string szDays = iDays.ToString();
-                DrawString(szDays, iX, iY, Color.Goldenrod);
-                iX += (int)m_DialogFont.MeasureString(szDays).X;
-
-                szDays = " Days, ";
-                DrawString(szDays, iX, iY, Color.White);
-                iX += (int)m_DialogFont.MeasureString(szDays).X;
-            }
-
-            // Hours
-            int iHours = (int)((dfRemainingSeconds / 60.0) / 60.0);
-            dfRemainingSeconds = dfRemainingSeconds - (((double)iHours * 60.0) * 60.0);
-
-            string szHours = iHours.ToString("D2") + ":";
-            DrawString(szHours, iX, iY, Color.Goldenrod);
-            iX += (int)m_DialogFont.MeasureString(szHours).X;
-
-            // Minutes
-            int iMinutes = (int)(dfRemainingSeconds / 60);
-            dfRemainingSeconds = dfRemainingSeconds - ((double)iMinutes * 60.0);
-
-            string szMinutes = iMinutes.ToString("D2") + ":";
-            DrawString(szMinutes, iX, iY, Color.Goldenrod);
-            iX += (int)m_DialogFont.MeasureString(szMinutes).X;
-
-            // Seconds
-            int iSeconds = (int)dfRemainingSeconds;
-
-            string szSeconds = iSeconds.ToString("D2");
-            DrawString(szSeconds, iX, iY, Color.Goldenrod);
-            iX += (int)m_DialogFont.MeasureString(szSeconds).X;
-            */
+            sb.DrawString(Assets.DialogFont, timeString, new Vector2(m_Rect.Right - (size.X + 5), (m_Rect.Top + (m_Rect.Height >> 1)) - (size.Y * 0.5f)), Color.White);                       
         }
         #endregion
 

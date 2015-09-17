@@ -68,11 +68,10 @@ namespace Happiness
             }
         }
 
-        public bool Connect(string address, int port)
+        public void Connect(string address, int port)
         {
             m_szServerAddress = address;
             m_iServerPort = port;
-            return Connect();
         }
 
         public bool Connect()
@@ -101,7 +100,7 @@ namespace Happiness
 
         public void SignIn(string displayName = null)
         {
-            if (m_SignInStatus == SignInStatus.None)
+            if (m_SignInStatus != SignInStatus.CredentialsSent)
             {
                 m_Client.SendAccountRequest(m_szEmail, m_szPassword, displayName);
                 m_SignInStatus = SignInStatus.CredentialsSent;
@@ -154,6 +153,7 @@ namespace Happiness
         {
             get
             {
+                /*
 #if DEBUG   
                 // Fake game data for debugging without server
                 if (m_GameData == null)
@@ -165,6 +165,7 @@ namespace Happiness
                     m_GameData.Exp = 0;
                 }
 #endif
+*/
                 return m_GameData;
             }
         }

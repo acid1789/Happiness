@@ -64,13 +64,13 @@ namespace Happiness
             InputController.IC.OnDragEnd += M_Input_OnDragEnd;
             InputController.IC.OnClick += M_Input_OnClick;
 
-            m_PuzzleStart = DateTime.Now;
-            m_PauseSeconds = 0;
         }
 
         #region Initialization
         public void Initialize(int puzzleIndex, int puzzleSize, bool load)
         {
+            m_PuzzleStart = DateTime.Now;
+            m_PauseSeconds = 0;
             m_bVerifyHintPurchase = true;
             m_bVerifyMegaHintPurchase = true;
             m_iHintCount = 0;
@@ -95,7 +95,8 @@ namespace Happiness
             HappinessNetwork.VipDataArgs vip = NetworkManager.Net.VipData;
             m_ButtonPanel.SetHintCount(vip.Hints - m_iHintCount, vip.Hints);
             m_ButtonPanel.SetMegaHintCount(vip.MegaHints - m_iMegaHintCount, vip.MegaHints);
-            m_ButtonPanel.SetUndoCount(m_History.Count, vip.UndoSize);            
+            m_ButtonPanel.SetUndoCount(m_History.Count, vip.UndoSize);
+            m_ButtonPanel.SetCoins(NetworkManager.Net.HardCurrency);
 
             m_UIPanels = new List<UIPanel>();
             m_UIPanels.Add(m_GamePanel);
@@ -168,6 +169,7 @@ namespace Happiness
             }
         }
 
+        #region Puzzle File
         string PuzzleSaveName(int puzzleSize, int puzzleIndex)
         {
             string saveName = string.Format("{0}_{1}.save", puzzleSize, puzzleIndex);
@@ -234,6 +236,16 @@ namespace Happiness
                 br.Close();
             }
         }
+
+        void DeleteSavedPuzzle()
+        {
+            string saveName = PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
+            if (File.Exists(saveName))
+            {
+                File.Delete(saveName);
+            }
+        }
+        #endregion
 
         public void DoHint(bool verified = false)
         {
@@ -353,6 +365,7 @@ namespace Happiness
                 {
                     if (m_EndScreen == null)
                     {
+                        DeleteSavedPuzzle();
                         m_EndScreen = new EndPuzzleScreen();
                         m_EndScreen.m_bSuccess = m_Puzzle.IsSolved();
                         if (m_EndScreen.m_bSuccess)
@@ -495,8 +508,7 @@ namespace Happiness
                             Initialize(m_iPuzzleIndex + 1, m_Puzzle.m_iSize, true);
                             break;
                         case 1: // Restart Puzzle
-                            m_Puzzle.Reset();
-                            UnHideAllClues();
+                            Initialize(m_iPuzzleIndex, m_Puzzle.m_iSize, false);
                             break;
                         case 2: // Main Menu
                             Game.GotoScene(new HubScene(Game));
@@ -623,12 +635,12 @@ namespace Happiness
                     {
                         if (context == MessageBoxContext.InsufficientFunds_Hint)
                         {
-                            m_bVerifyHintPurchase = bChecked;
+                            m_bVerifyHintPurchase = !bChecked;
                             DoHint(true);
                         }
                         else
                         {
-                            m_bVerifyMegaHintPurchase = bChecked;
+                            m_bVerifyMegaHintPurchase = !bChecked;
                             DoMegaHint(true);
                         }
                     }
@@ -646,6 +658,11 @@ namespace Happiness
         public double ElapsedTime
         {
             get { return (DateTime.Now - m_PuzzleStart).TotalSeconds - m_PauseSeconds; }
+        }
+
+        public bool ClockRunning
+        {
+            get { return !m_Puzzle.IsSolved(); }
         }
         #endregion
     }

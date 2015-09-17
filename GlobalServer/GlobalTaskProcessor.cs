@@ -146,11 +146,11 @@ namespace GlobalServer
             }
 
             // Store transaction in the database
-            string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before={2}, after={3}, server_record={4}, timestamp={5}", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.Ticks);
+            string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before_t={2}, after_t={3}, server_record={4}, timestamp={5};", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.Ticks);
             AddDBQuery(sql, null, false);
 
             // Store currency in the database
-            sql = string.Format("UPDATE accounts SET hard_currency={0} WHERE account_id={1};");
+            sql = string.Format("UPDATE accounts SET hard_currency={0} WHERE account_id={1};", currency, args.AccountId);
             AddDBQuery(sql, null, false);
 
             // Tell the client about it

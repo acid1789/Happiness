@@ -10,10 +10,8 @@ namespace Happiness
 {
     public class InputController
     {
-        private MouseState m_LastMouseState;
-
-        public int m_iMouseX;
-        public int m_iMouseY;
+        MouseState m_LastMouseState;
+        KeyboardState m_LastKeyboardState;
 
         const int m_DragThreshold = 5;
         int m_MousePressedX;
@@ -25,18 +23,25 @@ namespace Happiness
         public event EventHandler<DragArgs> OnDrag;
         public event EventHandler<DragArgs> OnDragEnd;
         public event EventHandler<DragArgs> OnClick;
+        public event EventHandler<KeyArgs> OnKeyDown;
+        public event EventHandler<KeyArgs> OnKeyRepeat;
+        public event EventHandler<KeyArgs> OnKeyUp;
 
         public InputController()
         {
             m_DragArgs = new DragArgs();
             
             m_LastMouseState = Mouse.GetState();
+            m_LastKeyboardState = Keyboard.GetState();
         }
 
         public void Update(Happiness theGame, GameTime time, PlayerIndex Primary)
         {
             UpdateMouse();
             UpdateTouch();
+
+            if( OnKeyDown != null || OnKeyUp != null || OnKeyRepeat != null )
+                UpdateKeyboard();
         }
 
         void UpdateTouch()
@@ -156,6 +161,44 @@ namespace Happiness
             m_LastMouseState = state;
         }
 
+        void UpdateKeyboard()
+        {
+            KeyboardState state = Keyboard.GetState();
+
+            if (OnKeyUp != null)
+            {
+                foreach (Keys key in m_LastKeyboardState.GetPressedKeys())
+                {
+                    if (!state.IsKeyDown(key))
+                    {
+                        // Key was down, now isnt
+                        OnKeyUp(this, new KeyArgs(key, m_LastKeyboardState.IsKeyDown(Keys.LeftShift) | m_LastKeyboardState.IsKeyDown(Keys.RightShift)));
+                    }
+                }
+            }
+
+            if (OnKeyDown != null || OnKeyRepeat != null)
+            {
+                foreach (Keys key in state.GetPressedKeys())
+                {
+                    if (m_LastKeyboardState.IsKeyDown(key))
+                    {
+                        // Key is down, key was down
+                        if (OnKeyRepeat != null)
+                            OnKeyRepeat(this, new KeyArgs(key, state.IsKeyDown(Keys.LeftShift) | state.IsKeyDown(Keys.RightShift)));
+                    }
+                    else
+                    {
+                        // Key is donw now, wasnt down before
+                        if (OnKeyDown != null)
+                            OnKeyDown(this, new KeyArgs(key, state.IsKeyDown(Keys.LeftShift) | state.IsKeyDown(Keys.RightShift)));
+                    }
+                }
+            }
+
+            m_LastKeyboardState = state;
+        }
+
         /*
         private void HandleKeyRelease(Happiness theGame, Keys key)
         {
@@ -204,5 +247,17 @@ namespace Happiness
         public int StartY;
         public int CurrentX;
         public int CurrentY;
-    }    
+    }
+
+    public class KeyArgs : EventArgs
+    {
+        public Keys Key;
+        public bool Shift;
+
+        public KeyArgs(Keys key, bool shift)
+        {
+            Key = key;
+            Shift = shift;
+        }
+    }
 }

@@ -61,5 +61,12 @@ namespace Happiness
         public static float MessageBox_LeftRightMargin = 20f / 1280f;
         public static float MessageBox_LineSpace = 10f / 720f;
         public static float MessageBox_CheckboxSize = 20f / 720f;
+
+        public static float SignInDialog_Width = 600f / 1280f;
+        public static float SignInDialog_Height = 400f / 720f;
+
+
+
+        public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
     }
 }
