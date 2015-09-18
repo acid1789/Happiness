@@ -1,0 +1,28 @@
+﻿Sign In Screen
+	Facebook Auth
+	Google Auth
+	Apple Auth
+
+Hub Scene
+	General Layout
+	Level Display
+	Coin Display
+	Feature Button
+	Tower floor selection
+
+Gameplay
+	Reconnect to server	
+
+Pause Screen
+	Audio Settings
+	
+Overall
+	Tutorial
+	Social Sharing
+	Leaderboards
+	Quest system
+	Audio
+	VipData
+	WaitIcon
+	Buy Coins
+	Particles

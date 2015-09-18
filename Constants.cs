@@ -110,6 +110,13 @@ namespace Happiness
         public static float EndScreen_ExpBarHeight = 20f / 720f;
         public static float EndScreen_LevelUnlockGap = 30f / 720f;
 
+        public static float HubScene_TowerSize = 180f / 720f;
+        public static float HubScene_TowerAreaTop = 100f / 720f;
+        public static float HubScene_ExpBarWidth = 150f / 720f;
+        public static float HubScene_ExpBarHeight = 10f / 720f;
+        public static float HubScene_MarginLeftRight = 20f / 1280f;
+        public static float HubScene_MarginTopBottom = 10f / 720f;
+
 
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
     }

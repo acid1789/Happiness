@@ -29,17 +29,16 @@ namespace Happiness
             m_bLocked = floor <= 0;
 
             int iconCenterX = m_Rect.Left + (m_Rect.Width >> 1);
-
-            int stringGap = 2;
+            
             m_iSize = size;
             m_szSize = string.Format("{0} x {0}", m_iSize);
             Vector2 strSize = Assets.DialogFont.MeasureString(m_szSize);
             m_vSizePosition.X = iconCenterX - (strSize.X / 2);
-            m_vSizePosition.Y = m_Rect.Bottom + stringGap;
+            m_vSizePosition.Y = m_Rect.Bottom;
 
             m_iFloor = floor;
             m_szFloor = (floor != 0) ? string.Format("Floor: {0:n0}", floor) : string.Format("Unlocks at level {0}", HappinessNetwork.Balance.UnlockThreshold(size - 4));
-            m_vFloorPosition.Y = m_vSizePosition.Y + stringGap + strSize.Y;
+            m_vFloorPosition.Y = m_vSizePosition.Y + strSize.Y;
             strSize = Assets.DialogFont.MeasureString(m_szFloor);
             m_vFloorPosition.X = iconCenterX - (strSize.X / 2);
         }
@@ -56,7 +55,7 @@ namespace Happiness
             if( m_bLocked )
                 sb.Draw(Assets.NotOverlay, m_Rect, Color.White);
             
-            Happiness.ShadowString(sb, Assets.DialogFont, m_szSize, m_vSizePosition, Color.White);
+            Happiness.ShadowString(sb, Assets.DialogFont, m_szSize, m_vSizePosition, Color.Goldenrod);
             Happiness.ShadowString(sb, Assets.DialogFont, m_szFloor, m_vFloorPosition, Color.White);
         }
 
