@@ -49,40 +49,50 @@ namespace Happiness
             int left = m_iCenterDialogX - (width >> 1);
             int top = centerY - (height >> 1);
             m_Rect = new Rectangle(left, top, width, height);
+            
+            int margin = (int)(Constants.SignInDialog_Margin * screenHeight);
 
 
             m_szTitleText = "Sign In";
             Vector2 titleSize = Assets.MenuFont.MeasureString(m_szTitleText);
-            m_vTitlePosition = new Vector2(m_iCenterDialogX - (titleSize.X * 0.5f), m_Rect.Top + 20);
-
-            int inputFieldWidth = width - 250;
-            int inputFieldLeft = m_Rect.Left + 150;
+            m_vTitlePosition = new Vector2(m_iCenterDialogX - (titleSize.X * 0.5f), m_Rect.Top + margin);
+                        
+            int inputFieldWidth = (int)(Constants.SignInDialog_InputWidth * screenWidth);
+            int inputFieldLeft = m_Rect.Left + (int)(Constants.SignInDialog_InputLeft * screenWidth);
+            int inputFieldTop = m_Rect.Top + (int)(Constants.SignInDialog_InputTop * screenHeight);
             m_szEmailText = "Email:";
             Vector2 emailSize = Assets.HelpFont.MeasureString(m_szEmailText);
-            m_vEmailLabelPosition = new Vector2(inputFieldLeft - (emailSize.X + 2), m_Rect.Top + 100);
-            m_Email = new UIInputField(new Rectangle(inputFieldLeft, m_Rect.Top + 100, inputFieldWidth, (int)emailSize.Y));
+            m_vEmailLabelPosition = new Vector2(inputFieldLeft - (emailSize.X + 2), inputFieldTop);
+            m_Email = new UIInputField(new Rectangle(inputFieldLeft, inputFieldTop, inputFieldWidth, (int)emailSize.Y));
 
+            int passwordY = m_Email.Rect.Bottom + margin;
             m_szPasswordText = "Password:";
             Vector2 passSize = Assets.HelpFont.MeasureString(m_szPasswordText);
-            m_vPasswordLabelPosition = new Vector2(inputFieldLeft - (passSize.X + 2), m_Email.Rect.Bottom + 20);
-            m_Password = new UIInputField(new Rectangle(inputFieldLeft, m_Email.Rect.Bottom + 20, inputFieldWidth, (int)passSize.Y), true);
+            m_vPasswordLabelPosition = new Vector2(inputFieldLeft - (passSize.X + 2), passwordY);
+            m_Password = new UIInputField(new Rectangle(inputFieldLeft, passwordY, inputFieldWidth, (int)passSize.Y), true);
 
-            m_RememberMe = new UICheckbox("Remember Me", inputFieldLeft, m_Password.Rect.Bottom + 20, screenHeight);
+            m_RememberMe = new UICheckbox("Remember Me", inputFieldLeft, m_Password.Rect.Bottom + margin, screenHeight);
 
-            int authY = m_RememberMe.Rect.Bottom + 10;
-            int authSize = 60;
+            int authY = m_RememberMe.Rect.Bottom + (int)(Constants.SignInDialog_AuthGap * screenHeight);
+            int authSize = (int)(Constants.SignInDialog_AuthSize * screenHeight);
             m_AuthButtons = new UIButton[2];
-            m_AuthButtons[0] = new UIButton(0, null, null, new Rectangle(m_iCenterDialogX - 100, authY, authSize, authSize), Assets.Facebook);
-            m_AuthButtons[1] = new UIButton(1, null, null, new Rectangle(m_iCenterDialogX + 40, authY, authSize, authSize), Assets.Google);
+            m_AuthButtons[0] = new UIButton(0, null, null, new Rectangle(m_iCenterDialogX - ((authSize >> 1) + authSize), authY, authSize, authSize), Assets.Facebook);
+            m_AuthButtons[1] = new UIButton(1, null, null, new Rectangle(m_iCenterDialogX + (authSize >> 1), authY, authSize, authSize), Assets.Google);
 
             m_StatusColor = Color.White;
-            m_fStatusTextY = m_AuthButtons[0].Rect.Bottom + 5;
+            m_fStatusTextY = m_AuthButtons[0].Rect.Bottom + (int)(Constants.SignInDialog_StatusGap * screenHeight);
 
-            int btnY = m_Rect.Bottom - 80;
+            int btnY = m_Rect.Bottom - (int)(Constants.SignInDialog_ButtonGap * screenHeight);
+            int btnX = (int)(Constants.SignInDialog_ButtonGapLeft * screenWidth);
+            int btnLargeW = (int)(Constants.SignInDialog_ButtonWidthLarge * screenWidth);
+            int btnSmallW = (int)(Constants.SignInDialog_ButtonWidthSmall * screenWidth);
+            int btnH = (int)(Constants.SignInDialog_ButtonHeight * screenHeight);
             m_DialogButtons = new UIButton[3];
-            m_DialogButtons[0] = new UIButton(0, "Sign In", Assets.DialogFont, new Rectangle(m_iCenterDialogX - 100, btnY, 200, 50), Assets.ScrollBar);
-            m_DialogButtons[1] = new UIButton(1, "Exit", Assets.DialogFont, new Rectangle(m_Rect.Left + 40, btnY, 80, 50), Assets.ScrollBar);
-            m_DialogButtons[2] = new UIButton(2, "Skip", Assets.DialogFont, new Rectangle(m_Rect.Right - 120, btnY, 80, 50), Assets.ScrollBar);
+            m_DialogButtons[0] = new UIButton(0, "Sign In", Assets.DialogFont, new Rectangle(m_iCenterDialogX - (btnLargeW >> 1), btnY, btnLargeW, btnH), Assets.ScrollBar);
+            m_DialogButtons[1] = new UIButton(1, "Exit", Assets.DialogFont, new Rectangle(m_Rect.Left + btnX, btnY, btnSmallW, btnH), Assets.ScrollBar);
+            m_DialogButtons[2] = new UIButton(2, "Skip", Assets.DialogFont, new Rectangle(m_Rect.Right - (btnSmallW + btnX), btnY, btnSmallW, btnH), Assets.ScrollBar);
+
+            m_Email.Focused = true;
         }
 
         #region Input
@@ -136,6 +146,8 @@ namespace Happiness
             {
                 if (key.Key == Keys.Enter)
                 {
+                    if( OnSignIn != null )
+                        OnSignIn(this, null);
                 }
                 else if (key.Key == Keys.Tab)
                 {
@@ -143,8 +155,7 @@ namespace Happiness
                     {
                         m_Email.Focused = false;
                         m_Password.Focused = true;
-                    }
-                        
+                    }                        
                 }
                 else
                 {

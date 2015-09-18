@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.IO;
 
 namespace Happiness
 {
@@ -16,12 +16,20 @@ namespace Happiness
             Connecting,
             WaitingForSignIn,
             WaitingForGameData,
-            Finished
+            Finished,
+            GettingDisplayName,
         }
 
         SignInStep m_Step;
         SignInDialog m_SignInDialog;
         MessageBox m_MessageBox;
+        DisplayNameDialog m_DisplayNameDialog;
+
+        Rectangle m_LogoRectangle;
+        string m_szCreditLine;
+        string m_szMusicCreditLine;
+        Vector2 m_vCreditPosition;
+        Vector2 m_vMusicCreditPosition;
 
         public StartupScene(Happiness game) : base(game)
         {
@@ -31,8 +39,24 @@ namespace Happiness
             m_SignInDialog.OnExit += M_SignInDialog_OnExit;
             m_SignInDialog.OnSkip += M_SignInDialog_OnSkip;
 
+            LoadStartupDetails();
+
             InputController.IC.OnClick += IC_OnClick;
-            InputController.IC.OnKeyUp += IC_OnKeyUp;            
+            InputController.IC.OnKeyUp += IC_OnKeyUp;
+
+            int logoSize = (int)(Constants.Startup_LogoSize * game.ScreenHeight);
+            m_LogoRectangle = new Rectangle(0, 0, logoSize, logoSize);
+
+            m_szCreditLine = "A logic puzzle game by Ron O'Hara";
+            m_szMusicCreditLine = "Muisc by Ronald Jenkees (www.ronaldjenkees.com)";
+
+            int creditX = (int)(Constants.Startup_CreditX * game.ScreenWidth);
+            int creditY = (int)(Constants.Startup_CreditY * game.ScreenHeight);
+            int musicY = (int)(Constants.Startup_MusicCreditY * game.ScreenHeight);
+            m_vCreditPosition.X = creditX;
+            m_vCreditPosition.Y = game.ScreenHeight - creditY;
+            m_vMusicCreditPosition.Y = game.ScreenHeight - musicY;
+            m_vMusicCreditPosition.X = creditX + 20;
         }
 
         public override void Shutdown()
@@ -43,6 +67,7 @@ namespace Happiness
             InputController.IC.OnKeyUp -= IC_OnKeyUp;
         }
 
+        #region Inupt
         private void IC_OnClick(object sender, DragArgs e)
         {
             if (m_MessageBox != null)
@@ -51,8 +76,9 @@ namespace Happiness
                 switch (res)
                 {
                     case MessageBoxResult.Yes:
-                        NetworkManager.Net.SignIn(m_SignInDialog.Email, m_SignInDialog.Password, "HU_" + ((ushort)DateTime.Now.Ticks).ToString());
-                        m_SignInDialog.Status = "Creating Account...";
+                        m_DisplayNameDialog = new DisplayNameDialog(Game.ScreenWidth, Game.ScreenHeight);
+                        m_Step = SignInStep.GettingDisplayName;
+                        m_SignInDialog.Status = null;                        
                         m_MessageBox = null;
                         break;
                     case MessageBoxResult.No:
@@ -63,7 +89,22 @@ namespace Happiness
                         break;
                 }
             }
-            else if ( m_SignInDialog != null )
+            else if (m_DisplayNameDialog != null)
+            {
+                MessageBoxResult res = m_DisplayNameDialog.HandleClick(e.CurrentX, e.CurrentY);
+                if (res != MessageBoxResult.NoResult)
+                {
+                    if (res == MessageBoxResult.OK)
+                    {
+                        NetworkManager.Net.SignIn(m_SignInDialog.Email, m_SignInDialog.Password, m_DisplayNameDialog.Name);
+                        m_SignInDialog.Status = "Creating Account...";
+                        m_SignInDialog.StatusColor = Color.Green;
+                        m_Step = SignInStep.WaitingForSignIn;
+                    }
+                    m_DisplayNameDialog = null;
+                }
+            }
+            else if (m_SignInDialog != null)
                 m_SignInDialog.HandleClick(e.CurrentX, e.CurrentY);
         }
 
@@ -71,7 +112,10 @@ namespace Happiness
         {
             if( m_SignInDialog != null )
                 m_SignInDialog.HandleKeyUp(e);
+            if(m_DisplayNameDialog != null )
+                m_DisplayNameDialog.HandleKey(e);
         }
+        #endregion
 
         public override void Update(GameTime gameTime)
         {
@@ -79,7 +123,10 @@ namespace Happiness
 
             if( m_SignInDialog != null )
                 m_SignInDialog.Update(gameTime);
-            
+
+            if(m_DisplayNameDialog != null )
+                m_DisplayNameDialog.Update(gameTime);
+
             switch (m_Step)
             {
                 case SignInStep.InputCredentials:
@@ -124,6 +171,7 @@ namespace Happiness
                     if (NetworkManager.Net.GameData != null)
                     {
                         m_Step = SignInStep.Finished;
+                        SaveStartupDetails();
                         GotoHubScene();
                     }
                     break;
@@ -143,6 +191,13 @@ namespace Happiness
             // Draw background
             spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, Game.ScreenWidth, Game.ScreenHeight), Color.White);
 
+            // Draw Logo
+            spriteBatch.Draw(Assets.Logo, m_LogoRectangle, Color.White);
+
+            // Draw Credits
+            Happiness.ShadowString(spriteBatch, Assets.MenuFont, m_szCreditLine, m_vCreditPosition, Color.Goldenrod);
+            Happiness.ShadowString(spriteBatch, Assets.DialogFont, m_szMusicCreditLine, m_vMusicCreditPosition, Color.LightGray);
+
             if (m_Step == SignInStep.Finished)
             {
             }
@@ -153,9 +208,50 @@ namespace Happiness
                     m_SignInDialog.Draw(spriteBatch);
             }
 
-            if(m_MessageBox != null )
+            if(m_DisplayNameDialog != null )
+                m_DisplayNameDialog.Draw(spriteBatch);
+
+            if (m_MessageBox != null )
                 m_MessageBox.Draw(spriteBatch);
         }
+
+        #region Startup Details
+        static string s_StartupFile = "startup.info";
+        void LoadStartupDetails()
+        {
+            if (File.Exists(s_StartupFile))
+            {
+                FileStream fs = File.OpenRead(s_StartupFile);
+                BinaryReader br = new BinaryReader(fs);
+
+                m_SignInDialog.Email = br.ReadString();
+                m_SignInDialog.Password = br.ReadString();
+                m_SignInDialog.RememberMe = br.ReadBoolean();
+
+                br.Close();
+            }
+        }
+
+        void SaveStartupDetails()
+        {
+            FileStream fs = File.Open(s_StartupFile, FileMode.Create);
+            BinaryWriter bw = new BinaryWriter(fs);
+
+            if (m_SignInDialog.RememberMe)
+            {
+                bw.Write(m_SignInDialog.Email);
+                bw.Write(m_SignInDialog.Password);
+            }
+            else
+            {
+                bw.Write("");
+                bw.Write("");
+            }
+            bw.Write(m_SignInDialog.RememberMe);
+
+            bw.Close();
+        }
+        #endregion
 
         #region Dialog Events
         private void M_SignInDialog_OnExit(object sender, EventArgs e)

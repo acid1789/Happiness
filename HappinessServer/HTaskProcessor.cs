@@ -34,13 +34,6 @@ namespace HappinessServer
 
     public class HTaskProcessor : GSTaskProcessor
     {
-        int[] TowerFloorUnlockThresholds = new int[] { 5, 25, 50 };
-
-        float[] TowerParTimes = new float[] { 1f * 60, 2.5f * 60, 5f * 60, 10 * 60 };
-
-        float[] TowerBaseExpValues = new float[] { 200, 600, 1200, 3000 };
-        float[] TowerTimeBonusExpValues = new float[] { 400, 1200, 2400, 6000 };
-
 
         public HTaskProcessor(GameServer server) : base(server)
         {
@@ -112,21 +105,23 @@ namespace HappinessServer
                     gameData.TowerFloors[pca.TowerIndex]++;
                     
                     // Level up?
-                    float timeDelta = Math.Max(pca.CompletionTime / TowerParTimes[pca.TowerIndex], 0);
-                    int exp = (int)(TowerBaseExpValues[pca.TowerIndex] + (TowerTimeBonusExpValues[pca.TowerIndex] * timeDelta));
+                    double baseExp = Balance.BaseExp(pca.TowerIndex);
+                    double bonusExp = Balance.BonusExp(pca.TowerIndex, pca.CompletionTime);
+                    double total = baseExp + bonusExp;
+                    int exp = (int)total;
                     gameData.Exp += exp;
-                    int expForNextLevel = ExpThreshold(gameData.Level);
+                    int expForNextLevel = Balance.ExpForNextLevel(gameData.Level);
                     while (gameData.Exp >= expForNextLevel)
                     {
                         gameData.Level++;
                         gameData.Exp -= expForNextLevel;
-                        expForNextLevel = ExpThreshold(gameData.Level);
+                        expForNextLevel = Balance.ExpForNextLevel(gameData.Level);
                     }
 
                     // Unlock next tower?
                     if (pca.TowerIndex < (gameData.TowerFloors.Length - 1) &&
                         gameData.TowerFloors[pca.TowerIndex + 1] == 0 &&
-                        gameData.Level >= TowerFloorUnlockThresholds[pca.TowerIndex])
+                        gameData.Level >= Balance.UnlockThreshold(pca.TowerIndex) )
                     {
                         gameData.TowerFloors[pca.TowerIndex + 1] = 1;
                     }
@@ -159,7 +154,7 @@ namespace HappinessServer
             GameDataArgs gameData = new GameDataArgs();
 
             object[] row = query.Rows[0];
-            gameData.TowerFloors = new int[4];
+            gameData.TowerFloors = new int[6];
             for (int i = 0; i < gameData.TowerFloors.Length; i++)
                 gameData.TowerFloors[i] = (int)row[i + 1];
 
@@ -170,10 +165,7 @@ namespace HappinessServer
         }
         #endregion
 
-        int ExpThreshold(int level)
-        {
-            return (int)(Math.Log(level + 3) * 1000);
-        }
+        
 
         void RecordError(int accountId, string error)
         {

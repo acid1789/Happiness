@@ -101,7 +101,7 @@ namespace HappinessNetwork
         void GameData_Response_Handler(BinaryReader br)
         {
             GameDataArgs args = new GameDataArgs();
-            args.TowerFloors = new int[4];
+            args.TowerFloors = new int[6];
             for( int i = 0; i < args.TowerFloors.Length; i++ )
                 args.TowerFloors[i] = br.ReadInt32();
 

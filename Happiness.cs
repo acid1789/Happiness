@@ -172,5 +172,16 @@ namespace Happiness
             sb.DrawString(font, text, new Vector2(position.X + 2, position.Y + 2), Color.Black);
             sb.DrawString(font, text, position, color);
         }
+
+        public static string TimeString(double seconds)
+        {
+            int hours = (int)(seconds / 3600);
+            seconds -= (hours * 3600);
+            int minutes = (int)(seconds / 60);
+            seconds -= (minutes * 60);
+
+            string timeString = string.Format("{0:D2}:{1:D2}:{2:D2}", hours, minutes, (int)seconds);
+            return timeString;
+        }
     }
 }

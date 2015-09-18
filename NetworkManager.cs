@@ -124,7 +124,9 @@ namespace Happiness
                 m_GameData.TowerFloors[tower] = floor + 1;
 
                 if (m_bDisabled)
+                {
                     StoreStaticData();
+                }
                 else
                     m_Client.PuzzleComplete(tower, floor, (float)completionTime);
             }
@@ -163,7 +165,7 @@ namespace Happiness
         public void LoadStaticData()
         {
             GameDataArgs gd = new GameDataArgs();
-            gd.TowerFloors = new int[4];
+            gd.TowerFloors = new int[6];
 
             // Load game data if it exists
             if (File.Exists(s_GameDataFile))
@@ -172,7 +174,8 @@ namespace Happiness
                 BinaryReader br = new BinaryReader(fs);
 
                 int version = br.ReadInt32();
-                for (int i = 0; i < gd.TowerFloors.Length; i++)
+                int towers = version == 1 ? 4 : gd.TowerFloors.Length;
+                for (int i = 0; i < towers; i++)
                     gd.TowerFloors[i] = br.ReadInt32();
                 gd.Level = br.ReadInt32();
                 gd.Exp = br.ReadInt32();
@@ -186,6 +189,8 @@ namespace Happiness
                 gd.TowerFloors[1] = 0;
                 gd.TowerFloors[2] = 0;
                 gd.TowerFloors[3] = 0;
+                gd.TowerFloors[4] = 0;
+                gd.TowerFloors[5] = 0;
                 gd.Level = 1;
                 gd.Exp = 0;
                 m_Client.HardCurrency = 1000;
@@ -204,14 +209,14 @@ namespace Happiness
             }
         }
 
-        void StoreStaticData()
+        public void StoreStaticData()
         {
             if (m_GameData != null)
             {
                 FileStream fs = File.Create(s_GameDataFile);
                 BinaryWriter bw = new BinaryWriter(fs);
                 
-                bw.Write(1);    // version
+                bw.Write(2);    // version
                 foreach(int floor in m_GameData.TowerFloors )
                     bw.Write(floor);
                 bw.Write(m_GameData.Level);

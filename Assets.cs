@@ -11,6 +11,7 @@ namespace Happiness
     public static class Assets
     {
         public static Texture2D Background;
+        public static Texture2D Logo;
 
         // Towers
         public static Texture2D[] Towers;
@@ -37,7 +38,7 @@ namespace Happiness
         public static Texture2D LeftOfIcon;
 
         // Static Parts
-        public static Texture2D TransGrey;
+        public static Texture2D TransGray;
         public static Texture2D TransparentBox;
         public static Texture2D ScrollArrow;
         public static Texture2D ScrollBar;
@@ -65,6 +66,7 @@ namespace Happiness
         public static void LoadAll(ContentManager Content)
         {
             Background = Content.Load<Texture2D>("Clouds4");
+            Logo = Content.Load<Texture2D>("Logo");
 
             LoadIcons(Content);
             LoadMarkers(Content);
@@ -187,7 +189,7 @@ namespace Happiness
         {
             GoldBarVertical = Content.Load<Texture2D>("GoldBarVertical");
             GoldBarHorizontal = Content.Load<Texture2D>("GoldBarHorizontal");
-            TransGrey = Content.Load<Texture2D>("TransGrey");
+            TransGray = Content.Load<Texture2D>("TransGrey");
             TransparentBox = Content.Load<Texture2D>("TransparentGray");
             ScrollArrow = Content.Load<Texture2D>("ScrollArrow");
             ScrollBar = Content.Load<Texture2D>("ScrollBar");

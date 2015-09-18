@@ -19,11 +19,13 @@ namespace Happiness
 
             // Setup Towers
             int towerSize = 100;
-            m_Towers = new Tower[4];
+            m_Towers = new Tower[6];
             m_Towers[0] = new Tower(3, nm.GameData.TowerFloors[0], new Rectangle(200, 200, towerSize, towerSize), Assets.Towers[0]);
             m_Towers[1] = new Tower(4, nm.GameData.TowerFloors[1], new Rectangle(500, 200, towerSize, towerSize), Assets.Towers[1]);
-            m_Towers[2] = new Tower(5, nm.GameData.TowerFloors[2], new Rectangle(200, 500, towerSize, towerSize), Assets.Towers[2]);
-            m_Towers[3] = new Tower(6, nm.GameData.TowerFloors[3], new Rectangle(500, 500, towerSize, towerSize), Assets.Towers[3]);
+            m_Towers[2] = new Tower(5, nm.GameData.TowerFloors[2], new Rectangle(700, 200, towerSize, towerSize), Assets.Towers[2]);
+            m_Towers[3] = new Tower(6, nm.GameData.TowerFloors[3], new Rectangle(200, 500, towerSize, towerSize), Assets.Towers[3]);
+            m_Towers[4] = new Tower(7, nm.GameData.TowerFloors[4], new Rectangle(500, 500, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[5] = new Tower(8, nm.GameData.TowerFloors[5], new Rectangle(700, 500, towerSize, towerSize), Assets.Towers[0]);
         }
 
         public override void Shutdown()

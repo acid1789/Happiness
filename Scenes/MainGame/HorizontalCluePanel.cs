@@ -53,8 +53,13 @@ namespace Happiness
         {
             float virtY = y - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtY / (m_IconSize + m_ClueSpace));
-
-            GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+            if (m_iSelectedIndex < m_Clues.Count)
+                GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+            else
+            {
+                GameScene.SelectClue(null, this);
+                ClearSelected();
+            }
         }
 
         public void ClearSelected()

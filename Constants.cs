@@ -64,7 +64,51 @@ namespace Happiness
 
         public static float SignInDialog_Width = 600f / 1280f;
         public static float SignInDialog_Height = 400f / 720f;
+        public static float SignInDialog_Margin = 20f / 720f;
+        public static float SignInDialog_InputWidth = 350f / 1280f;
+        public static float SignInDialog_InputLeft = 150f / 1280f;
+        public static float SignInDialog_InputTop = 100f / 720f;
+        public static float SignInDialog_AuthGap = 10f / 720f;
+        public static float SignInDialog_AuthSize = 60f / 720f;
+        public static float SignInDialog_StatusGap = 5f / 720f;
+        public static float SignInDialog_ButtonGap = 80f / 720f;
+        public static float SignInDialog_ButtonGapLeft = 40f / 1280f;
+        public static float SignInDialog_ButtonWidthLarge = 200f / 1280f;
+        public static float SignInDialog_ButtonWidthSmall = 80f / 1280f;
+        public static float SignInDialog_ButtonHeight = 50f / 720f;
 
+        public static float DisplayNameDialog_Width = 600f / 1280f;
+        public static float DisplayNameDialog_Height = 175f / 720f;
+        public static float DisplayNameDialog_MarginTopBottom = 20f / 720f;
+        public static float DisplayNameDialog_LineSpace = 8f / 720f;
+        public static float DisplayNameDialog_InputWidth = 400f / 1280f;
+        public static float DisplayNameDialog_InputHeight = 22f / 720f;
+        public static float DisplayNameDialog_ButtonWidth =  90f / 1280f;
+        public static float DisplayNameDialog_ButtonHeight = 30f / 720f;
+        
+        public static float Startup_LogoSize = 400f / 720f;
+        public static float Startup_CreditX = 40f / 1280f;
+        public static float Startup_CreditY = 120f / 720f;
+        public static float Startup_MusicCreditY = 60f / 720f;
+
+        public static float EndScreen_Width = 600f / 1280f;
+        public static float EndScreen_Height = 500f / 720f;
+        public static float EndScreen_MarginTopBottom = 30f / 720f;
+        public static float EndScreen_SuccessGap = 30f / 720f;
+        public static float EndScreen_ButtonWidth = 150f / 1280f;
+        public static float EndScreen_ButtonHeight = 30f / 720f;
+        public static float EndScreen_ButtonSpace = 20f / 1280f;
+        public static float EndScreen_TimeLabelGap = 50f / 720f;
+        public static float EndScreen_TimeGap = 25f / 720f;
+        public static float EndScreen_ScoreCenterGap = 15f / 1280f;
+        public static float EndScreen_TimeScoreGap = 40f / 720f;
+        public static float EndScreen_ScoreSpace = 25f / 720f;
+        public static float EndScreen_ScoreBarWidth = 60f / 1280f;
+        public static float EndScreen_ScoreBarHeight = 3f / 720f;
+        public static float EndScreen_ScoreLevelGap = 40f / 720f;
+        public static float EndScreen_ExpBarWidth = 300f / 1280f;
+        public static float EndScreen_ExpBarHeight = 20f / 720f;
+        public static float EndScreen_LevelUnlockGap = 30f / 720f;
 
 
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };

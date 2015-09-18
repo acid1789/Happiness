@@ -50,8 +50,13 @@ namespace Happiness
         {
             float virtX = x - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtX / (m_IconSize + m_ClueSpace));
-
-            GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+            if (m_iSelectedIndex < m_Clues.Count)
+                GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+            else
+            {
+                GameScene.SelectClue(null, this);
+                ClearSelected();
+            }
         }
 
         public void ClearSelected()
@@ -160,7 +165,7 @@ namespace Happiness
             int iNumIcons = c.GetIcons(GameScene.Puzzle, iIcons);
 
             // Draw the frame
-            sb.Draw(Assets.TransGrey, bounds, Color.White);
+            sb.Draw(Assets.TransGray, bounds, Color.White);
             sb.Draw(Assets.GoldBarVertical, new Rectangle(x - 3, y - 3, 3, bounds.Height + 6), Color.White);
             sb.Draw(Assets.GoldBarHorizontal, new Rectangle(x - 3, y - 3, bounds.Width + 6, 3), Color.White);
             sb.Draw(Assets.GoldBarVertical, new Rectangle(bounds.Right, y - 3, 3, bounds.Height + 6), Color.White);

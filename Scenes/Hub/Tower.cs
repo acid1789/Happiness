@@ -38,7 +38,7 @@ namespace Happiness
             m_vSizePosition.Y = m_Rect.Bottom + stringGap;
 
             m_iFloor = floor;
-            m_szFloor = string.Format("Floor: {0:n0}", floor);
+            m_szFloor = (floor != 0) ? string.Format("Floor: {0:n0}", floor) : string.Format("Unlocks at level {0}", HappinessNetwork.Balance.UnlockThreshold(size - 4));
             m_vFloorPosition.Y = m_vSizePosition.Y + stringGap + strSize.Y;
             strSize = Assets.DialogFont.MeasureString(m_szFloor);
             m_vFloorPosition.X = iconCenterX - (strSize.X / 2);
@@ -56,9 +56,8 @@ namespace Happiness
             if( m_bLocked )
                 sb.Draw(Assets.NotOverlay, m_Rect, Color.White);
             
-            DrawShadowedString(sb, Assets.DialogFont, m_szSize, m_vSizePosition, Color.White);
-            if( !m_bLocked )
-            DrawShadowedString(sb, Assets.DialogFont, m_szFloor, m_vFloorPosition, Color.White);
+            Happiness.ShadowString(sb, Assets.DialogFont, m_szSize, m_vSizePosition, Color.White);
+            Happiness.ShadowString(sb, Assets.DialogFont, m_szFloor, m_vFloorPosition, Color.White);
         }
 
         void DrawShadowedString(SpriteBatch sb, SpriteFont font, string str, Vector2 position, Color color)

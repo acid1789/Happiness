@@ -107,7 +107,7 @@ namespace Happiness
         public override void Draw(SpriteBatch sb)
         {
             // Draw Background
-            sb.Draw(Assets.TransGrey, m_Rect, Color.White);
+            sb.Draw(Assets.TransGray, m_Rect, Color.White);
 
             // Draw Icons
             DrawIcons(sb);

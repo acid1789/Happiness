@@ -302,12 +302,7 @@ namespace Happiness
                 m_dfSeconds = GameScene.ElapsedTime;
             double seconds = m_dfSeconds;
 
-            int hours = (int)(seconds / 3600);
-            seconds -= (hours * 3600);
-            int minutes = (int)(seconds / 60);
-            seconds -= (minutes * 60);
-
-            string timeString = string.Format("{0:D2}:{1:D2}:{2:D2}", hours, minutes, (int)seconds);
+            string timeString = Happiness.TimeString(seconds);
             Vector2 size = Assets.DialogFont.MeasureString(timeString);
             
 

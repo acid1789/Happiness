@@ -107,6 +107,8 @@ namespace Happiness
 
             // Init Icons
             InitIcons();
+
+            //m_EndScreen = new EndPuzzleScreen(true, Game.ScreenWidth, Game.ScreenHeight);
         }
 
         public void InitIcons()
@@ -151,6 +153,7 @@ namespace Happiness
         }
         #endregion
 
+        #region Pausing
         public void Pause()
         {
             if (m_PauseMenu == null)
@@ -168,6 +171,7 @@ namespace Happiness
                 m_PauseMenu = null;
             }
         }
+        #endregion
 
         #region Puzzle File
         string PuzzleSaveName(int puzzleSize, int puzzleIndex)
@@ -249,6 +253,7 @@ namespace Happiness
         }
         #endregion
 
+        #region Game Functions
         public void DoHint(bool verified = false)
         {
             if (m_Hint == null)
@@ -342,6 +347,7 @@ namespace Happiness
         {
 
         }
+        #endregion
 
         #region Update
         public override void Update(GameTime gameTime)
@@ -357,33 +363,59 @@ namespace Happiness
 
             if (m_Puzzle.IsCompleted())
             {
-                if (m_ReconnectScreen != null)
+                DoEndScreenUpdate(gameTime);
+            }
+        }
+        #endregion
+
+        #region EndScreen
+        void DoEndScreenUpdate(GameTime gameTime)
+        {
+            if (m_ReconnectScreen != null)
+            {
+                m_ReconnectScreen.Update(gameTime);
+            }
+            else if (!NetworkManager.Net.Connected && !NetworkManager.Net.Disabled)
+            {
+                m_ReconnectScreen = new ReconnectScreen();
+            }
+            else
+            {
+                if (m_EndScreen == null)
                 {
-                    m_ReconnectScreen.Update(gameTime);
-                }
-                else if (!NetworkManager.Net.Connected && !NetworkManager.Net.Disabled)
-                {
-                    m_ReconnectScreen = new ReconnectScreen();
-                }
-                else
-                {
-                    if (m_EndScreen == null)
+                    DeleteSavedPuzzle();
+                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, ElapsedTime, Game.ScreenWidth, Game.ScreenHeight);
+                    m_EndScreen.OnNextPuzzle += M_EndScreen_OnNextPuzzle;
+                    m_EndScreen.OnMainMenu += M_EndScreen_OnMainMenu;
+                    m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;
+                    if (m_Puzzle.IsSolved())
                     {
-                        DeleteSavedPuzzle();
-                        m_EndScreen = new EndPuzzleScreen();
-                        m_EndScreen.m_bSuccess = m_Puzzle.IsSolved();
-                        if (m_EndScreen.m_bSuccess)
-                        {
-                            //m_SoundManager.PlayPuzzleComplete();
-                            NetworkManager.Net.PuzzleComplete(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime);
-                        }
-                        else
-                        {
-                            //m_SoundManager.PlayPuzzleFailed();
-                        }
+                        //m_SoundManager.PlayPuzzleComplete();
+                        NetworkManager.Net.PuzzleComplete(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime);
+                    }
+                    else
+                    {
+                        //m_SoundManager.PlayPuzzleFailed();
                     }
                 }
+                else
+                    m_EndScreen.Update(gameTime);
             }
+        }
+
+        private void M_EndScreen_OnRestartPuzzle(object sender, EventArgs e)
+        {
+            Initialize(m_iPuzzleIndex, m_Puzzle.m_iSize, false);
+        }
+
+        private void M_EndScreen_OnMainMenu(object sender, EventArgs e)
+        {
+            Game.GotoScene(new HubScene(Game));
+        }
+
+        private void M_EndScreen_OnNextPuzzle(object sender, EventArgs e)
+        {
+            Initialize(m_iPuzzleIndex + 1, m_Puzzle.m_iSize, true);
         }
         #endregion
 
@@ -506,18 +538,6 @@ namespace Happiness
             {
                 if (!m_EndScreen.HandleClick(iX, iY))
                 {
-                    switch (m_EndScreen.m_iSelection)
-                    {
-                        case 0: // Next Puzzle
-                            Initialize(m_iPuzzleIndex + 1, m_Puzzle.m_iSize, true);
-                            break;
-                        case 1: // Restart Puzzle
-                            Initialize(m_iPuzzleIndex, m_Puzzle.m_iSize, false);
-                            break;
-                        case 2: // Main Menu
-                            Game.GotoScene(new HubScene(Game));
-                            break;
-                    }
                     m_EndScreen = null;
                 }
             }
