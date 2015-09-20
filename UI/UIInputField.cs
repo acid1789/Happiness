@@ -20,6 +20,8 @@ namespace Happiness
         string m_szInputText;
         string m_szMaskedText;
 
+        UIFrame m_FocusFrame;
+
         public UIInputField(Rectangle rect, bool masked = false)
         {
             m_bEnabled = true;
@@ -29,6 +31,8 @@ namespace Happiness
             m_bMaskedText = masked;
             m_szInputText = "";
             m_szMaskedText = "";
+
+            m_FocusFrame = new UIFrame(2, m_InputRect);
         }
 
         #region Input
@@ -136,10 +140,7 @@ namespace Happiness
             // Draw outline
             if (m_bFocused && m_bEnabled)
             {
-                sb.Draw(Assets.GoldBarHorizontal, new Rectangle(m_InputRect.Left, m_InputRect.Top - 2, m_InputRect.Width, 2), Color.White);
-                sb.Draw(Assets.GoldBarHorizontal, new Rectangle(m_InputRect.Left, m_InputRect.Bottom, m_InputRect.Width, 2), Color.White);
-                sb.Draw(Assets.GoldBarVertical, new Rectangle(m_InputRect.Left - 2, m_InputRect.Top - 2, 2, m_InputRect.Height + 3), Color.White);
-                sb.Draw(Assets.GoldBarVertical, new Rectangle(m_InputRect.Right, m_InputRect.Top - 2, 2, m_InputRect.Height + 3), Color.White);
+                m_FocusFrame.Draw(sb);
             }
 
         }        

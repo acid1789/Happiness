@@ -42,7 +42,10 @@
     <ApplicationIcon>Happiness.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Scenes\Hub\FloorDisplay.cs" />
+    <Compile Include="Scenes\Hub\FloorSelectDialog.cs" />
     <Compile Include="Scenes\MainGame\Action.cs" />
+    <Compile Include="UI\UIFrame.cs" />
     <Compile Include="UI\UIProgressBar.cs" />
     <Compile Include="UI\UILabel.cs" />
     <Compile Include="UI\AnimatedSprite.cs" />

@@ -16,6 +16,9 @@ namespace HappinessServer
             PuzzleComplete_FetchData,
             PuzzleComplete_Validate,
             SpendCoins,
+            TowerData_Fetch,
+            TowerData_Process,
+            FloorRecord_Process,
         }
 
         public HTask(HTaskType type, HClient client = null, object args = null)
@@ -43,6 +46,9 @@ namespace HappinessServer
             _taskHandlers[(int)HTask.HTaskType.PuzzleComplete_FetchData] = PuzzleComplete_FetchData_Handler;
             _taskHandlers[(int)HTask.HTaskType.PuzzleComplete_Validate] = PuzzleComplete_Validate_Handler;
             _taskHandlers[(int)HTask.HTaskType.SpendCoins] = SpendCoins_Handler;
+            _taskHandlers[(int)HTask.HTaskType.TowerData_Fetch] = TowerData_Fetch_Handler;
+            _taskHandlers[(int)HTask.HTaskType.TowerData_Process] = TowerData_Process_Handler;
+            _taskHandlers[(int)HTask.HTaskType.FloorRecord_Process] = FloorRecord_Process_Handler;
         }
 
         #region Task Handlers
@@ -97,12 +103,13 @@ namespace HappinessServer
                     // Trying to complete a puzzle further ahead than the current progress?!
                     RecordError(task.Client.AccountId, string.Format("Out of order completion - got:{0}, expected{1}", pca.FloorNumber, gameData.TowerFloors[pca.TowerIndex]));
                 }
-                else if (pca.FloorNumber == gameData.TowerFloors[pca.TowerIndex])
+                else
                 {
-                    // This is the expected puzzle
+                    // This is the expected puzzle or a repeat of a previous puzzle
 
                     // Move to the next puzzle on this floor
-                    gameData.TowerFloors[pca.TowerIndex]++;
+                    if (pca.FloorNumber == gameData.TowerFloors[pca.TowerIndex])
+                        gameData.TowerFloors[pca.TowerIndex]++;
                     
                     // Level up?
                     double baseExp = Balance.BaseExp(pca.TowerIndex);
@@ -127,10 +134,15 @@ namespace HappinessServer
                     }
 
                     // Save changes
-                    string sql = string.Format("UPDATE game_data SET tower_floor_0={0}, tower_floor_1={1}, tower_floor_2={2}, tower_floor_3={3}, level={4}, exp={5} WHERE account_id={6};",
-                                                                     gameData.TowerFloors[0], gameData.TowerFloors[1], gameData.TowerFloors[2], gameData.TowerFloors[3], gameData.Level, gameData.Exp, task.Client.AccountId);
+                    string sql = string.Format("UPDATE game_data SET tower_floor_0={0}, tower_floor_1={1}, tower_floor_2={2}, tower_floor_3={3}, tower_floor_4={4}, tower_floor_5={5}, level={6}, exp={7} WHERE account_id={8};",
+                                                                     gameData.TowerFloors[0], gameData.TowerFloors[1], gameData.TowerFloors[2], gameData.TowerFloors[3], gameData.TowerFloors[4], gameData.TowerFloors[5], gameData.Level, gameData.Exp, task.Client.AccountId);
                     AddDBQuery(sql, null, false);
                     task.Client.SendGameData(gameData);
+
+                    // Store this completion record
+                    sql = string.Format("SELECT * FROM floor_records WHERE account_id={0} AND tower={1} AND floor={2};", task.Client.AccountId, pca.TowerIndex, pca.FloorNumber);
+                    task.Type = (int)HTask.HTaskType.FloorRecord_Process;
+                    AddDBQuery(sql, task);
                 }
             }
         }
@@ -146,6 +158,66 @@ namespace HappinessServer
             t.Args = args.Coins;
             AddDBQuery(sql, t);
         }
+
+        void TowerData_Fetch_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+            TowerDataRequstArgs args = (TowerDataRequstArgs)t.Args;
+            string sql = string.Format("SELECT * FROM floor_records WHERE account_id={0} AND tower={1};", task.Client.AccountId, args.Tower);
+            t.Type = (int)HTask.HTaskType.TowerData_Process;
+            AddDBQuery(sql, t);
+        }
+
+        void TowerData_Process_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+            TowerDataRequstArgs args = (TowerDataRequstArgs)t.Args;
+
+            // get the records
+            List<TowerFloorRecord> floors = new List<TowerFloorRecord>();
+            foreach (object[] row in t.Query.Rows)
+            {
+                // 0: account_id
+                // 1: tower
+                // 2: floor
+                // 3: best_time
+                // 4: friend_rank
+                // 5: global_rank
+
+                TowerFloorRecord record = new TowerFloorRecord();
+                record.Floor = (int)row[2];
+                record.BestTime = (int)row[3];
+                record.RankFriends = (int)row[4];
+                record.RankGlobal = (int)row[5];
+                floors.Add(record);
+            }
+            task.Client.SendTowerData(args.Tower, floors.ToArray());
+        }
+
+        void FloorRecord_Process_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)t.Args;
+            if (task.Query.Rows.Count > 0)
+            {
+                // record exists, see if this time is better
+                object[] row = task.Query.Rows[0];
+                int oldTime = (int)row[3];
+                int newTime = (int)pca.CompletionTime;
+                if (newTime < oldTime)
+                {
+                    // Better time, update the record
+                    string sql = string.Format("UPDATE floor_records SET best_time={0} WHERE account_id={1} AND tower={2} AND floor={3};", newTime, task.Client.AccountId, pca.TowerIndex, pca.FloorNumber);
+                    AddDBQuery(sql, null, false);
+                }
+            }
+            else
+            {
+                // No record for this floor yet, just submit what we have
+                string sql = string.Format("INSERT INTO floor_records SET account_id={0}, tower={1}, floor={2}, best_time={3}, friend_rank={4}, global_rank={5};", task.Client.AccountId, pca.TowerIndex, pca.FloorNumber, (int)pca.CompletionTime, 0, 0);
+                AddDBQuery(sql, null, false);
+            }
+        }
         #endregion
 
         #region Data Functions
@@ -154,12 +226,12 @@ namespace HappinessServer
             GameDataArgs gameData = new GameDataArgs();
 
             object[] row = query.Rows[0];
-            gameData.TowerFloors = new int[6];
+            gameData.TowerFloors = new int[6];            
             for (int i = 0; i < gameData.TowerFloors.Length; i++)
                 gameData.TowerFloors[i] = (int)row[i + 1];
 
-            gameData.Level = (int)row[5];
-            gameData.Exp = (int)row[6];
+            gameData.Level = (int)row[7];
+            gameData.Exp = (int)row[8];
 
             return gameData;
         }

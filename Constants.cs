@@ -117,6 +117,16 @@ namespace Happiness
         public static float HubScene_MarginLeftRight = 20f / 1280f;
         public static float HubScene_MarginTopBottom = 10f / 720f;
 
+        public static float FloorSelectDialog_Width = 1000f / 1280f;
+        public static float FloorSelectDialog_Height = 600 / 720f;
+        public static float FloorSelectDialog_MarginTopBottom = 40f / 720f;
+        public static float FloorSelectDialog_MarginLeftRight = 50f / 1280f;
+        public static float FloorSelectDialog_NavButtonWidth = 60f / 1280f;
+        public static float FloorSelectDialog_NavButtonHeight = 50f / 720f;
+        public static float FloorSelectDialog_LBButtonWidth = 180f / 1280f;
+        public static float FloorSelectDialog_LBButtonHeight = 50f / 720f;
+        public static float FloorSelectDialog_FloorScrollWidth = 400f / 1280f;
+        public static float FloorSelectDialog_WaitIconSize = 100f / 720f;
 
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
     }

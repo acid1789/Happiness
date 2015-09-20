@@ -27,6 +27,7 @@ namespace Happiness
         public static Texture2D[] Superheros;
 
         // Markers
+        public static AnimatedSprite WaitIcon;
         public static AnimatedSprite HintSprite;
         public static Texture2D SelectionIconWide;
         public static Texture2D SelectionIconTall;
@@ -163,6 +164,15 @@ namespace Happiness
 
         static void LoadMarkers(ContentManager Content)
         {
+            // Load Wait Icon
+            Texture2D[] WaitFrames = new Texture2D[20];
+            for (int i = 0; i < WaitFrames.Length; i++)
+            {
+                string frameName = string.Format("WaitIcon/Wait_{0:D2}", i + 1);
+                WaitFrames[i] = Content.Load<Texture2D>(frameName);
+            }
+            WaitIcon = new AnimatedSprite(WaitFrames, 0.0625);
+
             // Load Hint Sprite
             Texture2D[] HintIcons = new Texture2D[6];
             HintIcons[0] = Content.Load<Texture2D>("HintIcon");

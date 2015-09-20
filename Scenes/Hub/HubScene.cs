@@ -16,9 +16,13 @@ namespace Happiness
         UILabel m_Level;
         UIProgressBar m_ExpBar;
 
+        FloorSelectDialog m_FloorSelect;
+
         public HubScene(Happiness game) : base(game)
         {
             InputController.IC.OnClick += IC_OnClick;
+            InputController.IC.OnDragBegin += IC_OnDragBegin;
+            InputController.IC.OnDrag += IC_OnDrag;
 
             NetworkManager nm = NetworkManager.Net;
 
@@ -57,23 +61,51 @@ namespace Happiness
 
             // Remove input handlers
             InputController.IC.OnClick -= IC_OnClick;
+            InputController.IC.OnDrag -= IC_OnDrag;
+            InputController.IC.OnDragBegin -= IC_OnDragBegin;
         }
 
+        #region InputHandlers
         private void IC_OnClick(object sender, DragArgs e)
         {
-            foreach (Tower t in m_Towers)
+            if (m_FloorSelect != null)
             {
-                if (t.Click(e.CurrentX, e.CurrentY))
+                if( !m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY) )
+                    m_FloorSelect = null;
+            }
+            else
+            {
+                foreach (Tower t in m_Towers)
                 {
-                    ActivateTower(t);
-                    break;
+                    if (t.Click(e.CurrentX, e.CurrentY))
+                    {
+                        //ActivateTower(t);
+                        m_FloorSelect = new FloorSelectDialog(t.Size - 3, Game.ScreenWidth, Game.ScreenHeight, Game);
+                        break;
+                    }
                 }
             }
         }
 
+        private void IC_OnDrag(object sender, DragArgs e)
+        {
+            if( m_FloorSelect != null )
+                m_FloorSelect.Drag(e);
+        }
+
+        private void IC_OnDragBegin(object sender, DragArgs e)
+        {
+            if( m_FloorSelect != null )
+                m_FloorSelect.DragBegin(e);
+        }
+        #endregion
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if( m_FloorSelect != null )
+                m_FloorSelect.Update(gameTime);
         }
                 
         public override void Draw(SpriteBatch spriteBatch)
@@ -84,6 +116,9 @@ namespace Happiness
             m_LevelLabel.Draw(spriteBatch);
             m_Level.Draw(spriteBatch);
             m_ExpBar.Draw(spriteBatch);
+            
+            if ( m_FloorSelect != null )
+                m_FloorSelect.Draw(spriteBatch);
         }
 
         void ActivateTower(Tower t)

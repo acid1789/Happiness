@@ -17,6 +17,7 @@ namespace Happiness
         public SoundManager m_SoundManager;        
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        RasterizerState m_RasterizerState = new RasterizerState() { ScissorTestEnable = true };
 
         public Texture2D m_Logo;
         public Texture2D m_BlueArrow;
@@ -140,7 +141,7 @@ namespace Happiness
         {
             GraphicsDevice.Clear(Color.Black);                        
 
-            spriteBatch.Begin(SpriteSortMode.Immediate);
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, m_RasterizerState);
             spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, m_iScreenWidth, m_iScreenHeight), Color.White);
         
             if ( m_CurrentScene != null )

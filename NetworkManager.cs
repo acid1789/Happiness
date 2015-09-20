@@ -32,6 +32,7 @@ namespace Happiness
         SignInStatus m_SignInStatus;
         GameDataArgs m_GameData;
         VipDataArgs m_VipData;
+        TowerData m_TowerData;
 
         public NetworkManager()
         {
@@ -40,12 +41,23 @@ namespace Happiness
             m_Client = new HClient();
             m_Client.OnAccountResponse += M_Client_OnAccountResponse;
             m_Client.OnGameDataResponse += M_Client_OnGameDataResponse;
+            m_Client.OnTowerDataResponse += M_Client_OnTowerDataResponse;
 
             m_ClientPump = new Thread(new ThreadStart(ClientPumpThread));
             m_ClientPump.Name = "Client Pump Thread";
             m_ClientPump.Start();
 
             m_SignInStatus = SignInStatus.None;
+
+            if (m_VipData == null)
+            {
+                m_VipData = new VipDataArgs();
+                m_VipData.Level = 1;
+                m_VipData.Progress = 0;
+                m_VipData.Hints = 5;
+                m_VipData.MegaHints = 2;
+                m_VipData.UndoSize = 5;
+            }
         }
 
         public void Shutdown()
@@ -143,6 +155,22 @@ namespace Happiness
                 m_Client.SpendCoins(coinCount, spentOn);
         }
 
+        public void RequestTowerData(int tower, bool shortList)
+        {
+            // Clear existing tower data
+            m_TowerData = null;
+
+            if (m_bDisabled)
+            {
+                // load data from disk
+            }
+            else
+            {
+                // Request data from server
+                m_Client.RequestTowerData(tower, shortList);
+            }
+        }
+
         #region Response Handlers
         private void M_Client_OnAccountResponse(object sender, EventArgs e)
         {
@@ -157,6 +185,46 @@ namespace Happiness
         private void M_Client_OnGameDataResponse(object sender, GameDataArgs e)
         {
             m_GameData = e;
+        }
+
+
+        private void M_Client_OnTowerDataResponse(object sender, TowerData e)
+        {
+            // tower data from server is not in order, re-order it now
+
+            // find the highest floor and move into a dictionary
+            int highestFloor = 0;
+            Dictionary<int, TowerFloorRecord> map = new Dictionary<int, TowerFloorRecord>();
+            foreach (TowerFloorRecord floor in e.Floors)
+            {
+                if( floor.Floor > highestFloor )
+                    highestFloor = floor.Floor;
+                map[floor.Floor] = floor;
+            }
+
+            e.Floors = new TowerFloorRecord[highestFloor + 1];
+            e.Floors[0] = new TowerFloorRecord();
+            e.Floors[0].Floor = highestFloor + 1;            
+            foreach (KeyValuePair<int, TowerFloorRecord> kvp in map)
+            {
+                int index = (highestFloor - kvp.Key) + 1;
+                e.Floors[index] = kvp.Value;
+            }
+            
+            // Fix any nulls that might exist
+            for (int i = 1; i < e.Floors.Length; i++)
+            {
+                TowerFloorRecord r = e.Floors[i];
+                if (r == null)
+                {
+                    r = new TowerFloorRecord();
+                    r.Floor = e.Floors[i - 1].Floor - 1;
+                    e.Floors[i] = r;
+                }
+            }           
+            
+            // store the data
+            m_TowerData = e;
         }
         #endregion
 
@@ -242,6 +310,11 @@ namespace Happiness
         public VipDataArgs VipData
         {
             get { return m_VipData; }
+        }
+
+        public TowerData TowerData
+        {
+            get { return m_TowerData; }
         }
 
         public int HardCurrency

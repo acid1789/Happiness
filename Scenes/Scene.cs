@@ -20,6 +20,7 @@ namespace Happiness
 
         public virtual void Update(GameTime gameTime)
         {
+            Assets.WaitIcon.Update(gameTime);
             Assets.HintSprite.Update(gameTime);
             InputController.Update(gameTime);
         }

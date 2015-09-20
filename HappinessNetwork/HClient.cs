@@ -17,12 +17,16 @@ namespace HappinessNetwork
             GameData_Response,
             Puzzle_Complete,
             SpendCoins,
+            TowerData_Request,
+            TowerData_Response,
         }
 
         public event EventHandler OnGameDataRequest;
-        public event EventHandler<GameDataArgs> OnGameDataResponse;   
+        public event EventHandler<GameDataArgs> OnGameDataResponse;
         public event EventHandler<PuzzleCompleteArgs> OnPuzzleComplete;
         public event EventHandler<SpendCoinsArgs> OnSpendCoins;
+        public event EventHandler<TowerDataRequstArgs> OnTowerDataRequest;
+        public event EventHandler<TowerData> OnTowerDataResponse;
 
         public HClient()
             : base(null)
@@ -41,6 +45,8 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.GameData_Response] = GameData_Response_Handler;
             _packetHandlers[(ushort)HPacketType.Puzzle_Complete] = Puzzle_Complete_Handler;
             _packetHandlers[(ushort)HPacketType.SpendCoins] = SpendCoins_Handler;
+            _packetHandlers[(ushort)HPacketType.TowerData_Request] = TowerData_Request_Handler;
+            _packetHandlers[(ushort)HPacketType.TowerData_Response] = TowerData_Response_Handler;
         }
 
         void BeginPacket(HPacketType type)
@@ -59,7 +65,7 @@ namespace HappinessNetwork
         public void SendGameData(GameDataArgs gameData)
         {
             BeginPacket(HPacketType.GameData_Response);
-            for( int i = 0; i < gameData.TowerFloors.Length; i++ )
+            for (int i = 0; i < gameData.TowerFloors.Length; i++)
                 _outgoingBW.Write(gameData.TowerFloors[i]);
 
             _outgoingBW.Write(gameData.Level);
@@ -90,6 +96,33 @@ namespace HappinessNetwork
 
             SendPacket();
         }
+
+        public void RequestTowerData(int tower, bool shortList)
+        {
+            BeginPacket(HPacketType.TowerData_Request);
+
+            _outgoingBW.Write(tower);
+            _outgoingBW.Write(shortList);
+
+            SendPacket();
+        }
+
+        public void SendTowerData(int tower, TowerFloorRecord[] floors)
+        {
+            BeginPacket(HPacketType.TowerData_Response);
+
+            _outgoingBW.Write(tower);
+            _outgoingBW.Write(floors.Length);
+            foreach (TowerFloorRecord floor in floors)
+            {
+                _outgoingBW.Write(floor.Floor);
+                _outgoingBW.Write(floor.BestTime);
+                _outgoingBW.Write(floor.RankFriends);
+                _outgoingBW.Write(floor.RankGlobal);
+            }
+
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -102,7 +135,7 @@ namespace HappinessNetwork
         {
             GameDataArgs args = new GameDataArgs();
             args.TowerFloors = new int[6];
-            for( int i = 0; i < args.TowerFloors.Length; i++ )
+            for (int i = 0; i < args.TowerFloors.Length; i++)
                 args.TowerFloors[i] = br.ReadInt32();
 
             args.Level = br.ReadInt32();
@@ -129,6 +162,33 @@ namespace HappinessNetwork
             HardCurrency -= args.Coins;
 
             OnSpendCoins(this, args);
+        }
+
+        void TowerData_Request_Handler(BinaryReader br)
+        {
+            TowerDataRequstArgs args = new TowerDataRequstArgs();
+            args.Tower = br.ReadInt32();
+            args.ShortList = br.ReadBoolean();
+            OnTowerDataRequest(this, args);
+        }
+
+        void TowerData_Response_Handler(BinaryReader br)
+        {
+            TowerData td = new TowerData();
+            td.Tower = br.ReadInt32();
+            int floors = br.ReadInt32();
+            td.Floors = new TowerFloorRecord[floors];
+            for (int i = 0; i < floors; i++)
+            {
+                TowerFloorRecord record = new TowerFloorRecord();
+                record.Floor = br.ReadInt32();
+                record.BestTime = br.ReadInt32();
+                record.RankFriends = br.ReadInt32();
+                record.RankGlobal = br.ReadInt32();
+                td.Floors[i] = record;
+            }
+
+            OnTowerDataResponse(this, td);
         }
         #endregion
 
@@ -163,5 +223,25 @@ namespace HappinessNetwork
     {
         public int Coins;
         public int SpendOn;
+    }
+
+    public class TowerDataRequstArgs : EventArgs
+    {
+        public int Tower;
+        public bool ShortList;
+    }
+
+    public class TowerFloorRecord
+    {
+        public int Floor;
+        public int BestTime;
+        public int RankFriends;
+        public int RankGlobal;
+    }
+
+    public class TowerData : EventArgs
+    {
+        public int Tower;
+        public TowerFloorRecord[] Floors;
     }
 }
