@@ -164,6 +164,13 @@ namespace Happiness
 
             m_AnimStep = AnimStep.Start;
             m_AnimTimeRemaining = 1.0f;
+
+            //if (!Happiness.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
+            //{
+                //Happiness.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen1, new Vector2(m_ScoreTotalBar.Right + 10, m_ExpBonus.PositionY), Constants.ArrowLeft, 
+                //    new Rectangle(m_ScoreTotalBar.Right + 50, m_ExpBonus.PositionY + Happiness.Tutorial.ArrowHeight, 300, 0),
+                //    "
+            //}
         }
         
         public bool HandleClick(int iX, int iY)

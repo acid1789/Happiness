@@ -125,6 +125,60 @@ namespace Happiness
                 m_Buttons[(int)ButtonID.Confirm].Enabled = false;
                 m_Buttons[(int)ButtonID.Eliminate].Enabled = false;
             }
+            if (!game.Game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EliminateRedNebula))
+            {
+                Rectangle instRect = new Rectangle(m_IconRects[1].Right, m_IconRects[1].Top + (m_IconRects[1].Height >> 1) + game.Game.Tutorial.ArrowHeight, 250, 0);
+                Vector2 rightIconTarget = new Vector2(m_IconRects[1].Right, m_IconRects[1].Top + (m_IconRects[1].Height >> 1));
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EliminateRedNebula, rightIconTarget, Constants.ArrowLeft,
+                    instRect, "Tap the {icon:Hubble[4]} to select it.", TutorialSystem.TutorialPiece.EliminateRedNebula2);
+
+                Rectangle eliminate = m_Buttons[(int)ButtonID.Eliminate].Rect;
+                Vector2 eliminatePos = new Vector2(eliminate.Left + (eliminate.Width >> 1), eliminate.Top);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EliminateRedNebula2, eliminatePos, Constants.ArrowDown, instRect, "Tap the 'Eliminate' button to eliminate the {icon:Hubble[4]}.", TutorialSystem.TutorialPiece.EliminateRedNebula3);
+
+                Rectangle done = m_Buttons[(int)ButtonID.Done].Rect;
+                Vector2 donePos = new Vector2(done.Left, done.Bottom);
+                string doneText = "Tap the '>' button to confirm the changes and return to the puzzle.";
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EliminateRedNebula3, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.BartMan1);
+
+                Vector2 bottomIconTarget = new Vector2(m_IconRects[2].Right, m_IconRects[2].Top + (m_IconRects[2].Height >> 1));
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.BartMan2, bottomIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Simpsons[2]} to select it.", TutorialSystem.TutorialPiece.BartMan3);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.BartMan3, eliminatePos, Constants.ArrowDown, instRect, "Tap the 'Eliminte' button to eliminate the {icon:Simpsons[2]}", TutorialSystem.TutorialPiece.BartMan4);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.BartMan4, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.Hulk1);
+
+                Vector2 icon0Pos = new Vector2(m_IconRects[0].Right, m_IconRects[0].Top + (m_IconRects[0].Height >> 1));
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hulk2, icon0Pos, Constants.ArrowLeft, instRect, "Tap the {icon:Superheros[3]} to select it.", TutorialSystem.TutorialPiece.Hulk3);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hulk3, eliminatePos, Constants.ArrowDown, instRect, "Tap the 'Eliminte' button to eliminate the {icon:Superheros[3]}", TutorialSystem.TutorialPiece.Hulk4);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hulk4, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.HorizontalClue2a);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.CrabNebula1, bottomIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Hubble[2]} to select it.", TutorialSystem.TutorialPiece.CrabNebula2);
+
+                Rectangle confirm = m_Buttons[(int)ButtonID.Confirm].Rect;
+                Vector2 confirmButtonPos = new Vector2(confirm.Left + (confirm.Width >> 1), confirm.Top);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.CrabNebula2, confirmButtonPos, Constants.ArrowDown, instRect, "Tap the 'Confirm' button to confirm the {icon:Hubble[2]} belongs in this grid cell.", TutorialSystem.TutorialPiece.CrabNebula3);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.CrabNebula3, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.HorizontalClue2c);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern1, bottomIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Superheros[2]} to select it.", TutorialSystem.TutorialPiece.GreenLantern2);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern2, eliminatePos, Constants.ArrowDown, instRect, "Tap the 'Eliminate' button to eliminate the {icon:Superheros[2]}", TutorialSystem.TutorialPiece.GreenLantern3);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern3, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.HorizontalClue2d);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Homer1, icon0Pos, Constants.ArrowLeft, instRect, "Tap the {icon:Simpsons[3]} to select it.", TutorialSystem.TutorialPiece.Homer2);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Homer2, confirmButtonPos, Constants.ArrowDown, instRect, "Tap the 'Confirm' button to confirm the {icon:Simpsons[3]} belongs in this grid cell.", TutorialSystem.TutorialPiece.Homer3);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Homer3, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.HorizontalClue4);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern4, bottomIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Superheros[2]} to select it.", TutorialSystem.TutorialPiece.GreenLantern5);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern5, confirmButtonPos, Constants.ArrowDown, instRect, "Tap the 'Confirm' button to confirm the {icon:Superheros[2]} belongs in this grid cell.", TutorialSystem.TutorialPiece.GreenLantern6);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GreenLantern6, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.HideClue1);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Bartman5, bottomIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Simpsons[2]} to select it.", TutorialSystem.TutorialPiece.Bartman6);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Bartman6, confirmButtonPos, Constants.ArrowDown, instRect, "Tap the 'Confirm' button to confirm the {icon:Simpsons[2]} belongs in this grid cell.", TutorialSystem.TutorialPiece.Bartman7);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Bartman7, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.Undo);
+
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.RedNebula4, rightIconTarget, Constants.ArrowLeft, instRect, "Tap the {icon:Hubble[4]} to select it.", TutorialSystem.TutorialPiece.RedNebula5);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.RedNebula5, eliminatePos, Constants.ArrowDown, instRect, "Tap the 'Eliminate' button to eliminate the {icon:Hubble[4]}.", TutorialSystem.TutorialPiece.RedNebula6);
+                game.Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.RedNebula6, donePos, Constants.ArrowDiagonalUpRight, instRect, doneText, TutorialSystem.TutorialPiece.EndScreen1);
+            }
         }
 
         public bool Click(int x, int y)
@@ -158,6 +212,15 @@ namespace Happiness
                     return false;
                 case ButtonID.Done:
                     Commit();
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EliminateRedNebula3);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.BartMan4);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Hulk4);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.CrabNebula3);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern3);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Homer3);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern6);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Bartman7);
+                    m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.RedNebula6);
                     return false;
                 case ButtonID.Reset:
                     {
@@ -168,11 +231,32 @@ namespace Happiness
                     break;
                 case ButtonID.Confirm:
                     m_iLargeIcon = m_iSelectedIcon;
+                    if (m_iSelectedIcon == 2)
+                    {
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.CrabNebula2);
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern5);
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Bartman6);
+                    }
+                    else if( m_iSelectedIcon == 0 )
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Homer2);
                     SelectIcon(-1);
                     break;
                 case ButtonID.Eliminate:
                     m_bIconStatus[m_iSelectedIcon] = !m_bIconStatus[m_iSelectedIcon];
                     SelectIcon(m_iSelectedIcon);
+
+                    if (m_iSelectedIcon == 1)
+                    {
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EliminateRedNebula2);
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.RedNebula5);
+                    }
+                    else if (m_iSelectedIcon == 2)
+                    {
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.BartMan3);
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern2);
+                    }
+                    else if (m_iSelectedIcon == 0)
+                        m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Hulk3);
                     break;
 
             }
@@ -196,6 +280,25 @@ namespace Happiness
             {
                 m_Buttons[(int)ButtonID.Confirm].Enabled = false;
                 m_Buttons[(int)ButtonID.Eliminate].Enabled = false;
+            }
+
+            if (m_iSelectedIcon == 1)
+            {
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EliminateRedNebula);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.RedNebula4);
+            }
+            else if (m_iSelectedIcon == 2)
+            {
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.BartMan2);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.CrabNebula1);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern1);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.GreenLantern4);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Bartman5);
+            }
+            else if (m_iSelectedIcon == 0)
+            {
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Hulk2);
+                m_Game.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Homer1);
             }
         }
 

@@ -11,6 +11,7 @@ namespace Happiness
     class SignInDialog
     {
         Rectangle m_Rect;
+        Rectangle m_WaitRect;
         int m_iCenterDialogX;
         bool m_bInputEnabled;
 
@@ -93,6 +94,11 @@ namespace Happiness
             m_DialogButtons[2] = new UIButton(2, "Skip", Assets.DialogFont, new Rectangle(m_Rect.Right - (btnSmallW + btnX), btnY, btnSmallW, btnH), Assets.ScrollBar);
 
             m_Email.Focused = true;
+
+            m_bInputEnabled = true;
+            int waitSize = (int)(Constants.SignInDialog_WaitIconSize * screenHeight);
+            int waitSpace = (int)(Constants.SignInDialog_WaitIconSpace * screenHeight);
+            m_WaitRect = new Rectangle(m_DialogButtons[2].Rect.Right - waitSize, m_DialogButtons[2].Rect.Top - (waitSpace + waitSize), waitSize, waitSize);
         }
 
         #region Input
@@ -207,6 +213,10 @@ namespace Happiness
             // Draw dialog buttons
             foreach( UIButton b in m_DialogButtons )
                 b.Draw(sb);
+
+            // Draw wait icon
+            if( !m_bInputEnabled )
+                Assets.WaitIcon.Draw(sb, m_WaitRect, Color.White);
         }
 
         #region Accessors

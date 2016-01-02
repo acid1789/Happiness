@@ -62,6 +62,7 @@ namespace Happiness
                 m_SmallRects[topRowCount + i] = new Rectangle(botRowLeft + (i * iconSize), iconSize, iconSize, iconSize);
         }
 
+        #region Input
         public override void Click(int x, int y)
         {
             if (m_CellDialog != null)
@@ -77,6 +78,34 @@ namespace Happiness
 
                 // Show the cell dialog
                 m_CellDialog = new CellDialog(GameScene, row, col);
+
+                if (row == 1 && col == 1)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.SpanHelp1);
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue2b);
+                }
+                else if (row == 2 && col == 1)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.BartMan1);
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue3b);
+                }
+                else if (row == 0 && col == 1)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Hulk1);
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue2c);
+                }
+                else if (row == 0 && col == 2)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue5b);
+                }
+                else if (row == 2 && col == 2)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Hint3);
+                }
+                else if (row == 1 && col == 2)
+                {
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue4c);
+                }
             }
         }
 
@@ -102,6 +131,7 @@ namespace Happiness
 
             return base.Contains(x, y);
         }
+        #endregion
 
         #region Drawing
         public override void Draw(SpriteBatch sb)
@@ -179,10 +209,25 @@ namespace Happiness
         }
         #endregion
 
+        public Vector2 IconPosition(int row, int col, int icon)
+        {
+            int cellX = m_Rect.Left + (col * m_iCellWidth);
+            int cellY = m_Rect.Top + (row * m_iCellHeight);
+            Rectangle r = m_SmallRects[icon];
+            r.Offset(cellX, cellY);
+
+            return new Vector2(r.Left, r.Bottom);
+        }
+
         #region Accessors
         public GameScene GameScene
         {
             get { return (GameScene)m_Scene; }
+        }
+
+        public int IconSize
+        {
+            get { return m_SmallRects[0].Width; }
         }
         #endregion
 

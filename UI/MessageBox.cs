@@ -12,6 +12,7 @@ namespace Happiness
         OK,
         YesNo,
         BuyCoinsCancel,
+        None,
     }
 
     public enum MessageBoxResult
@@ -29,7 +30,7 @@ namespace Happiness
     public class MessageBox
     {
         int m_iContext;
-        List<string> m_Lines;
+        FormattedLine[] m_Lines;
         UIButton[] m_Buttons;
 
         Rectangle m_Rect;
@@ -56,7 +57,7 @@ namespace Happiness
             int checkboxHeight = checkboxText == null ? 0 : m_iMarginTopBottom + iCheckboxSize;
 
             int width = (int)(Constants.MessageBox_Width * screenWidth);            
-            SetupLines(width - (m_iMarginLeftRight * 2), message);
+            m_Lines = Happiness.FormatLines(width - (m_iMarginLeftRight * 2), message, Assets.DialogFont);
 
             int buttonWidth = (int)(Constants.MessageBox_ButtonWidth * screenWidth);
             int buttonHeight = (int)(Constants.MessageBox_ButtonHeight * screenHeight);
@@ -65,7 +66,8 @@ namespace Happiness
             Vector2 testTextSize = Assets.DialogFont.MeasureString("TEST");
             m_iTextLineHeight = (int)testTextSize.Y + lineSpace;
             
-            int dialogHeight = (m_iMarginTopBottom + m_iMarginTopBottom) + (m_iTextLineHeight * m_Lines.Count) + m_iMarginTopBottom + buttonHeight + checkboxHeight;
+            int buttonAreaHeight = buttons == MessageBoxButtons.None ? 0 : m_iMarginTopBottom + buttonHeight;
+            int dialogHeight = (m_iMarginTopBottom + m_iMarginTopBottom) + (m_iTextLineHeight * m_Lines.Length) + buttonAreaHeight + checkboxHeight;
 
             int halfScreenW = screenWidth >> 1;
             int halfScreenH = screenHeight >> 1;
@@ -94,6 +96,8 @@ namespace Happiness
                     m_Buttons[0] = new UIButton((int)MessageBoxResult.BuyCoins, "Buy Coins", Assets.HelpFont, new Rectangle(halfScreenW - (halfButtonWidth + buttonWidth), buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
                     m_Buttons[1] = new UIButton((int)MessageBoxResult.Cancel, "Cancel", Assets.HelpFont, new Rectangle(halfScreenW + halfButtonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
                     break;
+                case MessageBoxButtons.None:
+                    break;
             }
 
             if (checkboxText != null)
@@ -101,61 +105,7 @@ namespace Happiness
                 m_CheckBox = new UICheckbox(checkboxText, 0, buttonY - (m_iMarginTopBottom + iCheckboxSize), screenHeight);
                 m_CheckBox.Left = m_iCenterDialogX - (m_CheckBox.Rect.Width >> 1);
             }
-        }
-
-        void SetupLines(int width, string message)
-        {
-            m_Lines = new List<string>();
-
-            // Do all requested line breaks
-            int start = 0;
-            int idx = message.IndexOf('\n');
-            while (idx >= 0)
-            {
-                string line = message.Substring(start, idx - start);
-                start = idx + 1;
-                m_Lines.Add(line);
-
-                idx = message.IndexOf('\n', start);
-            }
-            m_Lines.Add(message.Substring(start, message.Length - start));
-
-            // Now wrap all lines that are to long
-            string[] longLines = m_Lines.ToArray();
-            m_Lines = new List<string>();
-            foreach (string line in longLines)
-            {
-                Vector2 size = Assets.DialogFont.MeasureString(line);
-                if (size.X > width)
-                {
-                    // this line is to long, wrap it
-                    string[] words = line.Split(' ');
-                    string smallLine = "";
-                    foreach (string word in words)
-                    {
-                        string testLine = smallLine + " " + word;
-                        size = Assets.DialogFont.MeasureString(testLine);
-                        if (size.X > width)
-                        {
-                            // Adding this word doesnt fit, add a line break right before this word
-                            m_Lines.Add(smallLine);
-                            smallLine = word;
-                        }
-                        else
-                        {
-                            // This line still fits, keep going
-                            smallLine = testLine;
-                        }
-                    }
-                    m_Lines.Add(smallLine);
-                }
-                else
-                {
-                    // this line fits, just add it
-                    m_Lines.Add(line);
-                }
-            }
-        }
+        }        
         #endregion
 
         public MessageBoxResult HandleClick(int x, int y)
@@ -165,11 +115,14 @@ namespace Happiness
                 m_CheckBox.HandleClick(x, y);
             }
 
-            foreach (UIButton b in m_Buttons)
+            if (m_Buttons != null)
             {
-                if (b.Click(x, y))
+                foreach (UIButton b in m_Buttons)
                 {
-                    return (MessageBoxResult)b.ButtonID;
+                    if (b.Click(x, y))
+                    {
+                        return (MessageBoxResult)b.ButtonID;
+                    }
                 }
             }
 
@@ -187,11 +140,11 @@ namespace Happiness
 
             // Draw text lines
             int iY = m_Rect.Top + m_iMarginTopBottom;
-            foreach (string line in m_Lines)
+            foreach (FormattedLine line in m_Lines)
             {
-                Vector2 strSize = Assets.DialogFont.MeasureString(line);
-
-                sb.DrawString(Assets.DialogFont, line, new Vector2(m_iCenterDialogX - (strSize.X * 0.5f), iY), m_TextColor);
+                Vector2 strSize = line.Size(Assets.DialogFont);
+                
+                line.Draw(sb, Assets.DialogFont, new Vector2(m_iCenterDialogX - (strSize.X * 0.5f), iY), m_TextColor);
                 iY += m_iTextLineHeight;
             }
 
@@ -202,9 +155,12 @@ namespace Happiness
             }
 
             // Draw buttons
-            foreach (UIButton b in m_Buttons)
+            if (m_Buttons != null)
             {
-                b.Draw(sb);
+                foreach (UIButton b in m_Buttons)
+                {
+                    b.Draw(sb);
+                }
             }
         }
         #endregion
@@ -223,7 +179,7 @@ namespace Happiness
 
         public bool Checkbox
         {
-            get { return m_CheckBox.Checked; }
+            get { return m_CheckBox != null ? m_CheckBox.Checked : false; }
             set { m_CheckBox.Checked = value; }
         }
         #endregion

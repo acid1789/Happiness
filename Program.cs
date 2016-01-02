@@ -11,6 +11,7 @@ namespace Happiness
         {
             using (Happiness game = new Happiness())
             {
+                Happiness.Game = game;
                 game.Run();
             }
         }

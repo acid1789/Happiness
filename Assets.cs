@@ -25,12 +25,14 @@ namespace Happiness
         public static Texture2D[] Puppies;
         public static Texture2D[] Simpsons;
         public static Texture2D[] Superheros;
+        public static Dictionary<string, Texture2D> IconMap;
 
         // Markers
         public static AnimatedSprite WaitIcon;
         public static AnimatedSprite HintSprite;
         public static Texture2D SelectionIconWide;
         public static Texture2D SelectionIconTall;
+        public static Texture2D Arrow;
 
         // Clue Overlays
         public static Texture2D NotOverlay;
@@ -160,6 +162,72 @@ namespace Happiness
             Superheros[5] = Content.Load<Texture2D>("Superheros/Superman");
             Superheros[6] = Content.Load<Texture2D>("Superheros/Wolverine");
             Superheros[7] = Content.Load<Texture2D>("Superheros/WonderWoman");
+            
+            IconMap = new Dictionary<string, Texture2D>();
+            IconMap["Superheros[0]"] = Superheros[0];
+            IconMap["Superheros[1]"] = Superheros[1];
+            IconMap["Superheros[2]"] = Superheros[2];
+            IconMap["Superheros[3]"] = Superheros[3];
+            IconMap["Superheros[4]"] = Superheros[4];
+            IconMap["Superheros[5]"] = Superheros[5];
+            IconMap["Superheros[6]"] = Superheros[6];
+            IconMap["Superheros[7]"] = Superheros[7];
+            IconMap["Simpsons[0]"] = Simpsons[0];
+            IconMap["Simpsons[1]"] = Simpsons[1];
+            IconMap["Simpsons[2]"] = Simpsons[2];
+            IconMap["Simpsons[3]"] = Simpsons[3];
+            IconMap["Simpsons[4]"] = Simpsons[4];
+            IconMap["Simpsons[5]"] = Simpsons[5];
+            IconMap["Simpsons[6]"] = Simpsons[6];
+            IconMap["Simpsons[7]"] = Simpsons[7];
+            IconMap["Puppies[0]"] = Puppies[0];
+            IconMap["Puppies[1]"] = Puppies[1];
+            IconMap["Puppies[2]"] = Puppies[2];
+            IconMap["Puppies[3]"] = Puppies[3];
+            IconMap["Puppies[4]"] = Puppies[4];
+            IconMap["Puppies[5]"] = Puppies[5];
+            IconMap["Puppies[6]"] = Puppies[6];
+            IconMap["Puppies[7]"] = Puppies[7];
+            IconMap["Princesses[0]"] = Princesses[0];
+            IconMap["Princesses[1]"] = Princesses[1];
+            IconMap["Princesses[2]"] = Princesses[2];
+            IconMap["Princesses[3]"] = Princesses[3];
+            IconMap["Princesses[4]"] = Princesses[4];
+            IconMap["Princesses[5]"] = Princesses[5];
+            IconMap["Princesses[6]"] = Princesses[6];
+            IconMap["Princesses[7]"] = Princesses[7];
+            IconMap["Hubble[0]"] = Hubble[0];
+            IconMap["Hubble[1]"] = Hubble[1];
+            IconMap["Hubble[2]"] = Hubble[2];
+            IconMap["Hubble[3]"] = Hubble[3];
+            IconMap["Hubble[4]"] = Hubble[4];
+            IconMap["Hubble[5]"] = Hubble[5];
+            IconMap["Hubble[6]"] = Hubble[6];
+            IconMap["Hubble[7]"] = Hubble[7];
+            IconMap["Flowers[0]"] = Flowers[0];
+            IconMap["Flowers[1]"] = Flowers[1];
+            IconMap["Flowers[2]"] = Flowers[2];
+            IconMap["Flowers[3]"] = Flowers[3];
+            IconMap["Flowers[4]"] = Flowers[4];
+            IconMap["Flowers[5]"] = Flowers[5];
+            IconMap["Flowers[6]"] = Flowers[6];
+            IconMap["Flowers[7]"] = Flowers[7];
+            IconMap["Cats[0]"] = Cats[0];
+            IconMap["Cats[1]"] = Cats[1];
+            IconMap["Cats[2]"] = Cats[2];
+            IconMap["Cats[3]"] = Cats[3];
+            IconMap["Cats[4]"] = Cats[4];
+            IconMap["Cats[5]"] = Cats[5];
+            IconMap["Cats[6]"] = Cats[6];
+            IconMap["Cats[7]"] = Cats[7];
+            IconMap["Cars[0]"] = Cars[0];
+            IconMap["Cars[1]"] = Cars[1];
+            IconMap["Cars[2]"] = Cars[2];
+            IconMap["Cars[3]"] = Cars[3];
+            IconMap["Cars[4]"] = Cars[4];
+            IconMap["Cars[5]"] = Cars[5];
+            IconMap["Cars[6]"] = Cars[6];
+            IconMap["Cars[7]"] = Cars[7];            
         }
 
         static void LoadMarkers(ContentManager Content)
@@ -185,6 +253,8 @@ namespace Happiness
 
             SelectionIconWide = Content.Load<Texture2D>("SelectionIconWide");
             SelectionIconTall = Content.Load<Texture2D>("SelectionIcon3Tall");
+
+            Arrow = Content.Load<Texture2D>("BlueArrow");
         }
 
         static void LoadOverlays(ContentManager Content)
@@ -210,6 +280,8 @@ namespace Happiness
             GoldCoin = Content.Load<Texture2D>("GoldCoin");
             CheckBox = Content.Load<Texture2D>("CheckBox");
             Check = Content.Load<Texture2D>("Check");
+
+            IconMap["GoldCoin"] = GoldCoin;
         }
 
         static void LoadFonts(ContentManager Content)

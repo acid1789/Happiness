@@ -54,7 +54,19 @@ namespace Happiness
             float virtY = y - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtY / (m_IconSize + m_ClueSpace));
             if (m_iSelectedIndex < m_Clues.Count)
+            {
                 GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+                if( m_iSelectedIndex == 0 )
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClueArea);
+                else if( m_iSelectedIndex == 1 )
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue2a);
+                else if( m_iSelectedIndex == 2 )
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue3a);
+                else if( m_iSelectedIndex == 3 )
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue4b);
+                else if ( m_iSelectedIndex == 4 )
+                    GameScene.Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.HorizontalClue5a);
+            }
             else
             {
                 GameScene.SelectClue(null, this);
@@ -238,6 +250,11 @@ namespace Happiness
         public Clue[] Clues
         {
             get { return m_Clues.ToArray(); }
+        }
+
+        public int ClueHeight
+        {
+            get { return m_IconSize + m_ClueSpace; }
         }
         #endregion
     }

@@ -117,6 +117,7 @@ namespace Happiness
                 // Left button release
                 m_DragArgs.CurrentX = state.X;
                 m_DragArgs.CurrentY = state.Y;
+                m_DragArgs.Abort = false;
                 if (m_bDragging)
                 {
                     if( OnDragEnd != null)
@@ -139,6 +140,7 @@ namespace Happiness
                 {
                     m_DragArgs.CurrentX = state.X;
                     m_DragArgs.CurrentY = state.Y;
+                    m_DragArgs.Abort = false;
                     if (!m_bDragging)
                     {
                         // Start dragging
@@ -247,6 +249,7 @@ namespace Happiness
         public int StartY;
         public int CurrentX;
         public int CurrentY;
+        public bool Abort;
     }
 
     public class KeyArgs : EventArgs

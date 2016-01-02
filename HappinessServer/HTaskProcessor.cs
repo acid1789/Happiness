@@ -69,6 +69,12 @@ namespace HappinessServer
                 string sql = string.Format("INSERT INTO game_data SET account_id={0},tower_floor_0=1;", task.Client.AccountId);
                 t.Type = (int)HTask.HTaskType.GameData_Fetch;
                 AddDBQuery(sql, t);
+
+                // Also give this user 100 coins
+                SpendCoinsArgs args = new SpendCoinsArgs();
+                args.Coins = -100;
+                args.SpendOn = 0;
+                AddTask(new HTask(HTask.HTaskType.SpendCoins, task.Client, args));
             }
             else
             {

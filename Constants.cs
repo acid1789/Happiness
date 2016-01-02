@@ -76,6 +76,8 @@ namespace Happiness
         public static float SignInDialog_ButtonWidthLarge = 200f / 1280f;
         public static float SignInDialog_ButtonWidthSmall = 80f / 1280f;
         public static float SignInDialog_ButtonHeight = 50f / 720f;
+        public static float SignInDialog_WaitIconSize = 40f / 720f;
+        public static float SignInDialog_WaitIconSpace = 10f / 720f;
 
         public static float DisplayNameDialog_Width = 600f / 1280f;
         public static float DisplayNameDialog_Height = 175f / 720f;
@@ -116,6 +118,7 @@ namespace Happiness
         public static float HubScene_ExpBarHeight = 10f / 720f;
         public static float HubScene_MarginLeftRight = 20f / 1280f;
         public static float HubScene_MarginTopBottom = 10f / 720f;
+        public static float HubScene_TutorialWidth = 170f / 1280f;
 
         public static float FloorSelectDialog_Width = 1000f / 1280f;
         public static float FloorSelectDialog_Height = 600 / 720f;
@@ -127,7 +130,23 @@ namespace Happiness
         public static float FloorSelectDialog_LBButtonHeight = 50f / 720f;
         public static float FloorSelectDialog_FloorScrollWidth = 400f / 1280f;
         public static float FloorSelectDialog_WaitIconSize = 100f / 720f;
+        public static float FloorSelectDialog_FloorSelectTutorialWidth = 180f / 1280f;
+        public static float FloorSelectDialog_PlayTutorialWidth = 200f / 1280f;
+
+        public static float TutorialSystem_ArrowTravelDistance = 8f / 1280f;
+        public static float TutorialSystem_ArrowSpeed = 2.7f;
+        public static float TutorialSystem_ArrowWidth = 120f / 1280f;
+        public static float TutorialSystem_ArrowHeight = 90f / 720f;
+        public static float TutorialSystem_TextMarginTopBottom = 10f / 720f;
+        public static float TutorialSystem_TextMarginLeftRight = 5f / 1280f;
+        public static float TutorialSystem_ButtonWidth = 100f / 1280f;
+        public static float TutorialSystem_ButtonHeight = 30f / 720f;
 
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
+
+        public static float ArrowUp = (float)-Math.PI / 2;
+        public static float ArrowDown = (float)Math.PI / 2;
+        public static float ArrowLeft = (float)Math.PI;
+        public static float ArrowDiagonalUpRight = (float)-Math.PI / 4;
     }
 }

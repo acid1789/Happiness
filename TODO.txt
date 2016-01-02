@@ -3,13 +3,14 @@
 	Google Auth
 	Apple Auth
 	Better text input on PC
+	Sign in cancel
 
 Hub Scene
 	General Layout
 	Coin Display
 	Feature Buttons
 	Exit
-	Tower floor selection
+	Vip Display
 
 Gameplay
 	Reconnect to server	
@@ -24,6 +25,5 @@ Overall
 	Quest system
 	Audio
 	VipData
-	WaitIcon
 	Buy Coins
 	Particles

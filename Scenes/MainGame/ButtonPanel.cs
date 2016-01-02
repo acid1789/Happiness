@@ -150,6 +150,26 @@ namespace Happiness
             set { m_Buttons[4].Enabled = value; }
         }
 
+        public Rectangle HintRect
+        {
+            get { return m_Buttons[1].Rect; }
+        }
+
+        public Rectangle MegaHintRect
+        {
+            get { return m_Buttons[2].Rect; }
+        }
+
+        public Rectangle UndoRect
+        {
+            get { return m_Buttons[3].Rect; }
+        }
+
+        public Rectangle HideClueRect
+        {
+            get { return m_Buttons[4].Rect; }
+        }
+
         public GameScene GameScene
         {
             get { return (GameScene)Scene; }

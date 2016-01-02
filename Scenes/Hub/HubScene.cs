@@ -53,6 +53,10 @@ namespace Happiness
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;
             m_ExpBar.Progress = (float)gd.Exp / Balance.ExpForNextLevel(gd.Level);
+
+            int tutorialWidth = (int)(Constants.HubScene_TutorialWidth * Game.ScreenWidth);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None);
+            Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.ClickTower);
         }
 
         public override void Shutdown()
@@ -80,6 +84,7 @@ namespace Happiness
                     if (t.Click(e.CurrentX, e.CurrentY))
                     {
                         //ActivateTower(t);
+                        Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.ClickTower);
                         m_FloorSelect = new FloorSelectDialog(t.Size - 3, Game.ScreenWidth, Game.ScreenHeight, Game);
                         break;
                     }

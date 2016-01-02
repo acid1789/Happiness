@@ -14,6 +14,9 @@ namespace Happiness
         Happiness m_Game;
         int m_iTower;
 
+        int m_iLeftRightMargin;
+        int m_iFloorSelectTutorialWidth;
+
         UILabel m_Title;
         UIButton[] m_Buttons;
 
@@ -51,16 +54,16 @@ namespace Happiness
             m_Title = new UILabel(title, iCenterX, m_Rect.Top + iTopMargin, Color.Goldenrod, Assets.MenuFont, UILabel.XMode.Center);
 
             // Buttons
-            int iLeftRightMargin = (int)(Constants.FloorSelectDialog_MarginLeftRight * screenWidth);
+            m_iLeftRightMargin = (int)(Constants.FloorSelectDialog_MarginLeftRight * screenWidth);
             int navButtonTop = m_Rect.Top + iTopMargin;
             int navButtonWidth = (int)(Constants.FloorSelectDialog_NavButtonWidth * screenWidth);
             int navButtonHeight = (int)(Constants.FloorSelectDialog_NavButtonHeight * screenHeight);
             int lbButtonWidth = (int)(Constants.FloorSelectDialog_LBButtonWidth * screenWidth);
             int lbButtonHeight = (int)(Constants.FloorSelectDialog_LBButtonHeight * screenHeight);
             m_Buttons = new UIButton[3];
-            m_Buttons[0] = new UIButton(0, "<", Assets.MenuFont, new Rectangle(m_Rect.Left + iLeftRightMargin, navButtonTop, navButtonWidth, navButtonHeight), Assets.ScrollBar);
-            m_Buttons[1] = new UIButton(1, ">", Assets.MenuFont, new Rectangle(m_Rect.Right - (iLeftRightMargin + navButtonWidth), navButtonTop, navButtonWidth, navButtonHeight), Assets.ScrollBar);
-            m_Buttons[2] = new UIButton(2, "Leaderboard", Assets.DialogFont, new Rectangle(m_Rect.Right - (iLeftRightMargin + lbButtonWidth), m_Rect.Bottom - (iTopMargin + lbButtonHeight), lbButtonWidth, lbButtonHeight), Assets.ScrollBar);
+            m_Buttons[0] = new UIButton(0, "<", Assets.MenuFont, new Rectangle(m_Rect.Left + m_iLeftRightMargin, navButtonTop, navButtonWidth, navButtonHeight), Assets.ScrollBar);
+            m_Buttons[1] = new UIButton(1, ">", Assets.MenuFont, new Rectangle(m_Rect.Right - (m_iLeftRightMargin + navButtonWidth), navButtonTop, navButtonWidth, navButtonHeight), Assets.ScrollBar);
+            m_Buttons[2] = new UIButton(2, "Leaderboard", Assets.DialogFont, new Rectangle(m_Rect.Right - (m_iLeftRightMargin + lbButtonWidth), m_Rect.Bottom - (iTopMargin + lbButtonHeight), lbButtonWidth, lbButtonHeight), Assets.ScrollBar);
             m_Buttons[1].Enabled = false;
             m_Buttons[2].Enabled = false;
 
@@ -80,6 +83,11 @@ namespace Happiness
 
             // Request the data from the server
             NetworkManager.Net.RequestTowerData(tower, true);
+
+            m_iFloorSelectTutorialWidth = (int)(Constants.FloorSelectDialog_FloorSelectTutorialWidth * screenWidth);
+            int floorPlayTutorialWidth = (int)(Constants.FloorSelectDialog_PlayTutorialWidth * screenWidth);
+            m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,
+                                                                                 new Rectangle(m_FloorScrollRect.Right + m_iLeftRightMargin, m_Buttons[1].Rect.Bottom + m_Game.Tutorial.ArrowWidth, floorPlayTutorialWidth, 0), "Press this button to play the selected floor.", TutorialSystem.TutorialPiece.None);
         }
 
         void SetupFloorData(TowerData td)
@@ -94,6 +102,12 @@ namespace Happiness
             float floorHeight = m_Floors[0].Height;
             int visibleFloors = (int)(m_FloorScrollRect.Height / floorHeight);
             m_ScrollMin = -((m_Floors.Count - visibleFloors) * m_Floors[0].Height);
+
+            // Set tutorial stuff
+            float tutorialArrowY = m_FloorScrollRect.Top + m_Floors[0].Height * 0.5f;
+            m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorSelect, new Vector2(m_FloorScrollRect.Left, tutorialArrowY), 0,
+                                                                                    new Rectangle(m_FloorScrollRect.Left - (m_iFloorSelectTutorialWidth + m_iLeftRightMargin), m_FloorScrollRect.Top + m_Game.Tutorial.ArrowHeight, m_iFloorSelectTutorialWidth, 0), "Here you can select the next incomplete tower floor or any floor you have previously completed.\n\nTap the first floor now to select it.", TutorialSystem.TutorialPiece.None);
+            m_Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.FloorSelect);
         }
         #endregion
 
@@ -109,6 +123,7 @@ namespace Happiness
                         switch (b.ButtonID)
                         {
                             case 0:
+                                m_Game.Tutorial.CancelPiece();
                                 return false;
                             case 1:
                                 LaunchGame();
@@ -142,6 +157,9 @@ namespace Happiness
             {
                 m_iSelectedFloor = selectFloor;
                 m_Floors[m_iSelectedFloor].Selected = true;
+
+                m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.FloorSelect);
+                m_Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.FloorPlay);
             }
 
             bool enableButtons = m_iSelectedFloor >= 0;
@@ -234,6 +252,7 @@ namespace Happiness
         {
             if (m_iSelectedFloor >= 0)
             {
+                m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.FloorPlay);
                 FloorDisplay floor = m_Floors[m_iSelectedFloor];
 
                 // Launch the puzzle

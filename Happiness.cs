@@ -4,7 +4,6 @@ using System.Collections;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using LogicMatrix;
 
 namespace Happiness
 {
@@ -34,6 +33,7 @@ namespace Happiness
         public int m_iScreenHeight = 720;
 
         Scene m_CurrentScene;
+        TutorialSystem m_Tutorial;
 
         public Happiness()
         {
@@ -58,6 +58,12 @@ namespace Happiness
         protected override void Initialize()
         {         
             base.Initialize();
+
+            InputController.IC.OnClick += IC_OnClick;
+
+            m_iScreenWidth = graphics.GraphicsDevice.Viewport.Width;
+            m_iScreenHeight = graphics.GraphicsDevice.Viewport.Height;
+            m_Tutorial = new TutorialSystem(m_iScreenWidth, m_iScreenHeight);
 
             //m_CurrentScene = new GameScene(this);
             //((GameScene)m_CurrentScene).Initialize(0, 6, true);
@@ -102,6 +108,11 @@ namespace Happiness
             // TODO: Unload any non ContentManager content here
         }
 
+        private void IC_OnClick(object sender, DragArgs e)
+        {
+            e.Abort = m_Tutorial.HandleClick(e.CurrentX, e.CurrentY);
+        }
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -115,6 +126,9 @@ namespace Happiness
             // Cache local width/height
             m_iScreenWidth = graphics.GraphicsDevice.Viewport.Width;
             m_iScreenHeight = graphics.GraphicsDevice.Viewport.Height;
+
+            // Update tutorial
+            m_Tutorial.Update(gameTime);
 
             // Update the scene
             if ( m_CurrentScene != null )
@@ -145,7 +159,9 @@ namespace Happiness
             spriteBatch.Draw(Assets.Background, new Rectangle(0, 0, m_iScreenWidth, m_iScreenHeight), Color.White);
         
             if ( m_CurrentScene != null )
-                m_CurrentScene.Draw(spriteBatch);    
+                m_CurrentScene.Draw(spriteBatch);
+
+            m_Tutorial.Draw(spriteBatch);
 
             spriteBatch.End();
 
@@ -162,6 +178,12 @@ namespace Happiness
         public int ScreenHeight
         {
             get { return m_iScreenHeight; }
+        }
+
+        public static Happiness Game;
+        public TutorialSystem Tutorial
+        {
+            get { return Game.m_Tutorial; }
         }
         #endregion
 
@@ -183,6 +205,65 @@ namespace Happiness
 
             string timeString = string.Format("{0:D2}:{1:D2}:{2:D2}", hours, minutes, (int)seconds);
             return timeString;
+        }
+
+        public static FormattedLine[] FormatLines(int width, string message, SpriteFont font)
+        {
+            List<FormattedLine> lines = new List<FormattedLine>();
+
+            // Do all requested line breaks
+            int start = 0;
+            int idx = message.IndexOf('\n');
+            while (idx >= 0)
+            {
+                string line = message.Substring(start, idx - start);
+                start = idx + 1;
+                lines.Add(new FormattedLine(line));
+
+                idx = message.IndexOf('\n', start);
+            }
+            lines.Add(new FormattedLine(message.Substring(start, message.Length - start)));
+
+            // Now wrap all lines that are to long
+            FormattedLine[] longLines = lines.ToArray();
+            lines = new List<FormattedLine>();
+            foreach (FormattedLine line in longLines)
+            {
+                Vector2 size = line.Size(font);//font.MeasureString(line);
+                if (size.X > width)
+                {
+                    // this line is to long, wrap it
+                    FormattedLine.PieceInfo[] words = line.Split();
+                    FormattedLine smallLine = new FormattedLine();
+                    foreach (FormattedLine.PieceInfo word in words)
+                    {
+                        FormattedLine testLine = smallLine + word;
+                        size = testLine.Size(font);//font.MeasureString(testLine);
+                        if (size.X > width)
+                        {
+                            // Adding this word doesnt fit, add a line break right before this word
+                            smallLine.Merge();
+                            lines.Add(smallLine);
+                            smallLine = new FormattedLine();
+                            smallLine.Add(word);
+                        }
+                        else
+                        {
+                            // This line still fits, keep going
+                            smallLine = testLine;
+                        }
+                    }
+                    smallLine.Merge();
+                    lines.Add(smallLine);
+                }
+                else
+                {
+                    // this line fits, just add it
+                    lines.Add(line);
+                }
+            }
+
+            return lines.ToArray();
         }
     }
 }
