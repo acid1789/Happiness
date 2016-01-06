@@ -196,6 +196,9 @@ namespace Happiness
                 "This clue is telling us that the {icon:Superheros[4]} has the {icon:Hubble[4]} on one side and NOT the {icon:Superheros[3]} on the other side.\nSince the {icon:Superheros[3]} is in the first column, the {icon:Hubble[4]} can not be in the third column.\n\nTap the middle grid cell in the third column.",
                 TutorialSystem.TutorialPiece.RedNebula4);
 
+            // Create a dummy end screen here just so that the tutorial data gets setup correctly for later
+            EndPuzzleScreen tempEnd = new EndPuzzleScreen(false, 3, 0, Game.ScreenWidth, Game.ScreenHeight, Game);
+
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.GameStart);
         }
 
@@ -476,7 +479,7 @@ namespace Happiness
                 if (m_EndScreen == null)
                 {
                     DeleteSavedPuzzle();
-                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, ElapsedTime, Game.ScreenWidth, Game.ScreenHeight);
+                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, ElapsedTime, Game.ScreenWidth, Game.ScreenHeight, Game);
                     m_EndScreen.OnNextPuzzle += M_EndScreen_OnNextPuzzle;
                     m_EndScreen.OnMainMenu += M_EndScreen_OnMainMenu;
                     m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;

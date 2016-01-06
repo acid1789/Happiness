@@ -27,3 +27,4 @@ Overall
 	VipData
 	Buy Coins
 	Particles
+	ExpSlowdown for VIP?

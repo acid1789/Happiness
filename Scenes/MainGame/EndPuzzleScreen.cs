@@ -57,14 +57,17 @@ namespace Happiness
 
         UILabel m_Unlock;
 
+        Happiness m_Game;
+
         public event EventHandler OnNextPuzzle;
         public event EventHandler OnMainMenu;
         public event EventHandler OnRestartPuzzle;
         
-        public EndPuzzleScreen(bool success, int puzzleSize, double seconds, int screenWidth, int screenHeight)
+        public EndPuzzleScreen(bool success, int puzzleSize, double seconds, int screenWidth, int screenHeight, Happiness game)
         {
             m_bLevelUnlocked = false;
             m_bSuccess = success;
+            m_Game = game;
 
             m_iCenterX = screenWidth >> 1;
             int width = (int)(Constants.EndScreen_Width * screenWidth);
@@ -165,12 +168,19 @@ namespace Happiness
             m_AnimStep = AnimStep.Start;
             m_AnimTimeRemaining = 1.0f;
 
-            //if (!Happiness.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
-            //{
-                //Happiness.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen1, new Vector2(m_ScoreTotalBar.Right + 10, m_ExpBonus.PositionY), Constants.ArrowLeft, 
-                //    new Rectangle(m_ScoreTotalBar.Right + 50, m_ExpBonus.PositionY + Happiness.Tutorial.ArrowHeight, 300, 0),
-                //    "
-            //}
+            if (!game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
+            {
+                int instRW = (screenWidth - 20) - (m_ScoreTotalBar.Right + 30);
+                Rectangle instRect = new Rectangle(m_ScoreTotalBar.Right + 30, m_ExpBonus.PositionY + game.Tutorial.ArrowHeight, instRW, 0);
+                game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen1, new Vector2(m_ScoreTotalBar.Right + 10, m_ExpBonus.PositionY), Constants.ArrowLeft, instRect,
+                    "When you complete a puzzle you gain a set amount of experience points based on the puzzle difficulty.\n\nYou also get a bonus amount of experience points that varies depending on the amount of time it took you to finish the puzzle.", TutorialSystem.TutorialPiece.EndScreen2, true);
+
+                game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen2, new Vector2(m_iCenterX, m_ExpBar.Rect.Top - 5), Constants.ArrowDown, instRect,
+                    "As you gain experience, you will increase in levels.\n\nAs you increase in levels, you will unlock the larger towers for harder puzzles.", TutorialSystem.TutorialPiece.EndScreen3, true);
+
+                game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen3, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
+                    "Tap the Next Puzzle button to move on to the second puzzle.", TutorialSystem.TutorialPiece.None);
+            }
         }
         
         public bool HandleClick(int iX, int iY)
@@ -182,7 +192,8 @@ namespace Happiness
                     switch (b.ButtonID)
                     {
                         case 0:
-                            if( OnNextPuzzle != null )
+                            m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EndScreen3);
+                            if ( OnNextPuzzle != null )
                                 OnNextPuzzle(this, null);
                             break;
                         case 1:

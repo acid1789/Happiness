@@ -66,6 +66,14 @@ namespace Happiness
             RedNebula5,
             RedNebula6,
             EndScreen1,
+            EndScreen2,
+            EndScreen3,
+
+            Horizontal_NextTo,
+            Vertical_Two,
+            Vertical_Three,
+            Vertical_EitherOr,
+            Vertical_Not,
 
             None
         }
@@ -238,7 +246,10 @@ namespace Happiness
                 if (m_Pieces[piece].NextPiece != TutorialPiece.None)
                     TriggerPiece(m_Pieces[piece].NextPiece);
                 else
+                {
                     m_CurrentPiece = TutorialPiece.None;
+                    m_OKButton = null;
+                }
             }
         }
 
