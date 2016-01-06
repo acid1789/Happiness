@@ -48,6 +48,7 @@ namespace Happiness
             int expBarLeft = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
             int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);
             GameDataArgs gd = NetworkManager.Net.GameData;
+            game.Tutorial.Load(gd.Tutorial);
             m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
             m_Level = new UILabel(gd.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));

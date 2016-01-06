@@ -19,6 +19,7 @@ namespace HappinessNetwork
             SpendCoins,
             TowerData_Request,
             TowerData_Response,
+            TutorialData,
         }
 
         public event EventHandler OnGameDataRequest;
@@ -27,6 +28,7 @@ namespace HappinessNetwork
         public event EventHandler<SpendCoinsArgs> OnSpendCoins;
         public event EventHandler<TowerDataRequstArgs> OnTowerDataRequest;
         public event EventHandler<TowerData> OnTowerDataResponse;
+        public event Action<HClient, ulong> OnTutorialData;
 
         public HClient()
             : base(null)
@@ -47,6 +49,7 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.SpendCoins] = SpendCoins_Handler;
             _packetHandlers[(ushort)HPacketType.TowerData_Request] = TowerData_Request_Handler;
             _packetHandlers[(ushort)HPacketType.TowerData_Response] = TowerData_Response_Handler;
+            _packetHandlers[(ushort)HPacketType.TutorialData] = TutorialData_Handler;
         }
 
         void BeginPacket(HPacketType type)
@@ -70,6 +73,7 @@ namespace HappinessNetwork
 
             _outgoingBW.Write(gameData.Level);
             _outgoingBW.Write(gameData.Exp);
+            _outgoingBW.Write(gameData.Tutorial);
 
             SendPacket();
         }
@@ -123,6 +127,14 @@ namespace HappinessNetwork
 
             SendPacket();
         }
+
+        public void SendTutorialData(ulong tutorialData)
+        {
+            BeginPacket(HPacketType.TutorialData);
+
+            _outgoingBW.Write(tutorialData);
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -140,6 +152,7 @@ namespace HappinessNetwork
 
             args.Level = br.ReadInt32();
             args.Exp = br.ReadInt32();
+            args.Tutorial = br.ReadUInt64();
 
             OnGameDataResponse(this, args);
         }
@@ -190,6 +203,12 @@ namespace HappinessNetwork
 
             OnTowerDataResponse(this, td);
         }
+
+        void TutorialData_Handler(BinaryReader br)
+        {
+            ulong tutorialData = br.ReadUInt64();
+            OnTutorialData(this, tutorialData);
+        }
         #endregion
 
         #region Accessors
@@ -201,6 +220,7 @@ namespace HappinessNetwork
         public int[] TowerFloors;
         public int Level;
         public int Exp;
+        public ulong Tutorial;
     }
 
     public class PuzzleCompleteArgs : EventArgs

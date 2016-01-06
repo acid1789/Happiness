@@ -34,6 +34,9 @@ namespace Happiness
         VipDataArgs m_VipData;
         TowerData m_TowerData;
 
+        ulong m_pendingTutorialData;
+        DateTime m_tutorialDataTime;
+
         public NetworkManager()
         {
             m_NetworkLog = new NetworkLog();
@@ -80,6 +83,13 @@ namespace Happiness
 
                     if (m_Client.Connected)
                         m_Client.Update();
+
+
+                    if (m_Client.Connected && m_pendingTutorialData != 0 && (DateTime.Now - m_tutorialDataTime).TotalSeconds >= 30)
+                    {
+                        m_Client.SendTutorialData(m_pendingTutorialData);
+                        m_pendingTutorialData = 0;
+                    }
                 }
                 Thread.Sleep(100);
             }
@@ -169,6 +179,12 @@ namespace Happiness
                 // Request data from server
                 m_Client.RequestTowerData(tower, shortList);
             }
+        }
+
+        public void SaveTutorialData(ulong tutorialData)
+        {
+            m_pendingTutorialData = tutorialData;
+            m_tutorialDataTime = DateTime.Now;
         }
 
         #region Response Handlers

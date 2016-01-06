@@ -196,8 +196,17 @@ namespace Happiness
                 "This clue is telling us that the {icon:Superheros[4]} has the {icon:Hubble[4]} on one side and NOT the {icon:Superheros[3]} on the other side.\nSince the {icon:Superheros[3]} is in the first column, the {icon:Hubble[4]} can not be in the third column.\n\nTap the middle grid cell in the third column.",
                 TutorialSystem.TutorialPiece.RedNebula4);
 
-            // Create a dummy end screen here just so that the tutorial data gets setup correctly for later
-            EndPuzzleScreen tempEnd = new EndPuzzleScreen(false, 3, 0, Game.ScreenWidth, Game.ScreenHeight, Game);
+            if (!Game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
+            {
+                // Create a dummy end screen here just so that the tutorial data gets setup correctly for later
+                EndPuzzleScreen tempEnd = new EndPuzzleScreen(false, 3, 0, Game.ScreenWidth, Game.ScreenHeight, Game);
+            }
+
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Puzzle2, new Vector2(-1000, -1000), 0, 
+                new Rectangle(Game.ScreenWidth - 170, Game.ScreenHeight - 80, 150, 0), "Solve this puzzle", TutorialSystem.TutorialPiece.EndScreen4);
+
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Horizontal_NextTo, clue2Position, 0, bottomTutorialRect,
+                "This clue is a Next To type clue. It tells us that the {icon:Superheros[5]} is in a column directly next to the column with the {icon:Flowers[2]}.\n\nThis doesn't help you any right now, but it will come in handy as you learn more about the puzzle.", TutorialSystem.TutorialPiece.None, true);
 
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.GameStart);
         }

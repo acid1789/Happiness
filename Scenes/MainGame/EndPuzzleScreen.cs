@@ -178,9 +178,14 @@ namespace Happiness
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen2, new Vector2(m_iCenterX, m_ExpBar.Rect.Top - 5), Constants.ArrowDown, instRect,
                     "As you gain experience, you will increase in levels.\n\nAs you increase in levels, you will unlock the larger towers for harder puzzles.", TutorialSystem.TutorialPiece.EndScreen3, true);
 
+                instRect.Y -= 10;
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen3, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
-                    "Tap the Next Puzzle button to move on to the second puzzle.", TutorialSystem.TutorialPiece.None);
+                    "Tap the Next Puzzle button to move on to the second puzzle.", TutorialSystem.TutorialPiece.Puzzle2);
+
+                game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen4, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
+                    "Tap the Next Puzzle button to move on to the next puzzle.", TutorialSystem.TutorialPiece.Horizontal_NextTo);
             }
+            game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Puzzle2);
         }
         
         public bool HandleClick(int iX, int iY)
@@ -193,6 +198,7 @@ namespace Happiness
                     {
                         case 0:
                             m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EndScreen3);
+                            m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EndScreen4);
                             if ( OnNextPuzzle != null )
                                 OnNextPuzzle(this, null);
                             break;

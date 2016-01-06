@@ -19,6 +19,7 @@ namespace HappinessServer
             TowerData_Fetch,
             TowerData_Process,
             FloorRecord_Process,
+            TutorialData_Store,
         }
 
         public HTask(HTaskType type, HClient client = null, object args = null)
@@ -49,6 +50,7 @@ namespace HappinessServer
             _taskHandlers[(int)HTask.HTaskType.TowerData_Fetch] = TowerData_Fetch_Handler;
             _taskHandlers[(int)HTask.HTaskType.TowerData_Process] = TowerData_Process_Handler;
             _taskHandlers[(int)HTask.HTaskType.FloorRecord_Process] = FloorRecord_Process_Handler;
+            _taskHandlers[(int)HTask.HTaskType.TutorialData_Store] = TutorialData_Store_Handler;
         }
 
         #region Task Handlers
@@ -224,6 +226,14 @@ namespace HappinessServer
                 AddDBQuery(sql, null, false);
             }
         }
+
+        void TutorialData_Store_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+            ulong tutorialData = (ulong)t.Args;
+            string sql = string.Format("UPDATE game_data SET tutorial_data={0} WHERE account_id={1};", tutorialData, task.Client.AccountId);
+            AddDBQuery(sql, null, false);
+        }
         #endregion
 
         #region Data Functions
@@ -238,6 +248,7 @@ namespace HappinessServer
 
             gameData.Level = (int)row[7];
             gameData.Exp = (int)row[8];
+            gameData.Tutorial = (ulong)row[9];
 
             return gameData;
         }

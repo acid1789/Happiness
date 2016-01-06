@@ -68,6 +68,8 @@ namespace Happiness
             EndScreen1,
             EndScreen2,
             EndScreen3,
+            Puzzle2,
+            EndScreen4,
 
             Horizontal_NextTo,
             Vertical_Two,
@@ -156,8 +158,27 @@ namespace Happiness
             }
         }
 
+        public void Load(ulong data)
+        {
+            for (int i = 0; i < (int)TutorialPiece.None; i++)
+            {
+                m_Pieces[(TutorialPiece)i].Finished = ((data & (1UL << i)) != 0);
+            }
+        }
+
         void Save()
         {
+            ulong bitfield = 0;
+            for (int i = 0; i < (int)TutorialPiece.None; i++)
+            {
+                if (m_Pieces[(TutorialPiece)i].Finished)
+                {
+                    ulong bit = (ulong)1 << i;
+                    bitfield |= bit;
+                }
+            }
+
+            NetworkManager.Net.SaveTutorialData(bitfield);
         }
         #endregion
 
@@ -230,6 +251,13 @@ namespace Happiness
                 SetArrow(pd.ArrowTarget, pd.ArrowRotation);
                 SetInstructions(pd.InstructionRect, pd.Instructions, pd.OkButton);
                 m_CurrentPiece = piece;
+            }
+            else if (!pd.Triggered)
+            {
+                // Set this as triggered and move down the chain
+                pd.Triggered = true;
+                if( pd.NextPiece != TutorialPiece.None )
+                    TriggerPiece(pd.NextPiece);
             }
         }
 

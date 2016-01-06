@@ -26,6 +26,7 @@ namespace HappinessServer
             client.OnPuzzleComplete += Client_OnPuzzleComplete;
             client.OnSpendCoins += Client_OnSpendCoins;
             client.OnTowerDataRequest += Client_OnTowerDataRequest;
+            client.OnTutorialData += Client_OnTutorialData;
 
             return client;
         }
@@ -54,6 +55,11 @@ namespace HappinessServer
         private void Client_OnTowerDataRequest(object sender, TowerDataRequstArgs e)
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.TowerData_Fetch, (HClient)sender, e));
+        }
+
+        private void Client_OnTutorialData(HClient arg1, ulong arg2)
+        {
+            TaskProcessor.AddTask(new HTask(HTask.HTaskType.TutorialData_Store, arg1, arg2));
         }
         #endregion
 
