@@ -56,7 +56,7 @@ namespace Happiness
             m_ExpBar.Progress = (float)gd.Exp / Balance.ExpForNextLevel(gd.Level);
 
             int tutorialWidth = (int)(Constants.HubScene_TutorialWidth * Game.ScreenWidth);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None, m_Towers[0].Rect);
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.ClickTower);
         }
 
@@ -73,6 +73,9 @@ namespace Happiness
         #region InputHandlers
         private void IC_OnClick(object sender, DragArgs e)
         {
+            if( e.Abort )
+                return;
+
             if (m_FloorSelect != null)
             {
                 if( !m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY) )

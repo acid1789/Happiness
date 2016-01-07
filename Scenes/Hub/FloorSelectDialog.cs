@@ -87,7 +87,7 @@ namespace Happiness
             m_iFloorSelectTutorialWidth = (int)(Constants.FloorSelectDialog_FloorSelectTutorialWidth * screenWidth);
             int floorPlayTutorialWidth = (int)(Constants.FloorSelectDialog_PlayTutorialWidth * screenWidth);
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,
-                                                                                 new Rectangle(m_FloorScrollRect.Right + m_iLeftRightMargin, m_Buttons[1].Rect.Bottom + m_Game.Tutorial.ArrowWidth, floorPlayTutorialWidth, 0), "Press this button to play the selected floor.", TutorialSystem.TutorialPiece.None);
+                                                                                 new Rectangle(m_FloorScrollRect.Right + m_iLeftRightMargin, m_Buttons[1].Rect.Bottom + m_Game.Tutorial.ArrowWidth, floorPlayTutorialWidth, 0), "Press this button to play the selected floor.", TutorialSystem.TutorialPiece.None, m_Buttons[1].Rect);
         }
 
         void SetupFloorData(TowerData td)
@@ -106,7 +106,9 @@ namespace Happiness
             // Set tutorial stuff
             float tutorialArrowY = m_FloorScrollRect.Top + m_Floors[0].Height * 0.5f;
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorSelect, new Vector2(m_FloorScrollRect.Left, tutorialArrowY), 0,
-                                                                                    new Rectangle(m_FloorScrollRect.Left - (m_iFloorSelectTutorialWidth + m_iLeftRightMargin), m_FloorScrollRect.Top + m_Game.Tutorial.ArrowHeight, m_iFloorSelectTutorialWidth, 0), "Here you can select the next incomplete tower floor or any floor you have previously completed.\n\nTap the first floor now to select it.", TutorialSystem.TutorialPiece.None);
+                                         new Rectangle(m_FloorScrollRect.Left - (m_iFloorSelectTutorialWidth + m_iLeftRightMargin), m_FloorScrollRect.Top + m_Game.Tutorial.ArrowHeight, m_iFloorSelectTutorialWidth, 0), 
+                                         "Here you can select the next incomplete tower floor or any floor you have previously completed.\n\nTap the first floor now to select it.", TutorialSystem.TutorialPiece.None, 
+                                         new Rectangle(m_FloorScrollRect.Left, m_FloorScrollRect.Top, m_FloorScrollRect.Width, (int)m_Floors[0].Height));
             m_Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.FloorSelect);
         }
         #endregion

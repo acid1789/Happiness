@@ -80,6 +80,11 @@ namespace Happiness
         {
             get { return m_iSize; }
         }
+
+        public Rectangle Rect
+        {
+            get { return m_Rect; }
+        }
         #endregion
     }
 }

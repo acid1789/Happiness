@@ -229,6 +229,16 @@ namespace Happiness
         {
             get { return m_SmallRects[0].Width; }
         }
+
+        public int CellWidth
+        {
+            get { return m_iCellWidth; }        
+        }
+
+        public int CellHeight
+        {
+            get { return m_iCellHeight; }
+        }
         #endregion
 
     }

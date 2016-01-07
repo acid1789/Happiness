@@ -129,6 +129,11 @@ namespace Happiness
             return MessageBoxResult.NoResult;
         }
 
+        public Rectangle GetButtonRect(int button)
+        {
+            return m_Buttons[button].Rect;
+        }
+
         #region Drawing
         public void Draw(SpriteBatch sb)
         {

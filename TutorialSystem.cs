@@ -88,6 +88,7 @@ namespace Happiness
             public string Instructions;
             public bool OkButton;
             public TutorialPiece NextPiece;
+            public Rectangle ClickRestriction;
 
             public bool Triggered;
             public bool Finished;
@@ -194,7 +195,10 @@ namespace Happiness
             }
 
             // Return true if we are to eat all input
-            return ( m_OKButton != null );
+            bool inClickArea = true;
+            if( m_CurrentPiece != TutorialPiece.None )
+                inClickArea = m_Pieces[m_CurrentPiece].ClickRestriction.Contains(x, y);
+            return ( m_OKButton != null ) || !inClickArea;
         }
         #endregion
 
@@ -232,7 +236,7 @@ namespace Happiness
             return false;
         }
 
-        public void SetPieceData(TutorialPiece piece, Vector2 arrowTarget, float arrowRotation, Rectangle instructionRect, string instructions, TutorialPiece nextPiece, bool okButton = false)
+        public void SetPieceData(TutorialPiece piece, Vector2 arrowTarget, float arrowRotation, Rectangle instructionRect, string instructions, TutorialPiece nextPiece, Rectangle clickRestriction, bool okButton = false)
         {
             m_Pieces[piece].ArrowTarget = arrowTarget;
             m_Pieces[piece].ArrowRotation = arrowRotation;
@@ -240,6 +244,7 @@ namespace Happiness
             m_Pieces[piece].Instructions = instructions;
             m_Pieces[piece].OkButton = okButton;
             m_Pieces[piece].NextPiece = nextPiece;
+            m_Pieces[piece].ClickRestriction = clickRestriction;
         }
 
         public void TriggerPiece(TutorialPiece piece)

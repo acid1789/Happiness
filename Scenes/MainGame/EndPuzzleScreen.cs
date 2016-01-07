@@ -173,17 +173,17 @@ namespace Happiness
                 int instRW = (screenWidth - 20) - (m_ScoreTotalBar.Right + 30);
                 Rectangle instRect = new Rectangle(m_ScoreTotalBar.Right + 30, m_ExpBonus.PositionY + game.Tutorial.ArrowHeight, instRW, 0);
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen1, new Vector2(m_ScoreTotalBar.Right + 10, m_ExpBonus.PositionY), Constants.ArrowLeft, instRect,
-                    "When you complete a puzzle you gain a set amount of experience points based on the puzzle difficulty.\n\nYou also get a bonus amount of experience points that varies depending on the amount of time it took you to finish the puzzle.", TutorialSystem.TutorialPiece.EndScreen2, true);
+                    "When you complete a puzzle you gain a set amount of experience points based on the puzzle difficulty.\n\nYou also get a bonus amount of experience points that varies depending on the amount of time it took you to finish the puzzle.", TutorialSystem.TutorialPiece.EndScreen2, Rectangle.Empty, true);
 
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen2, new Vector2(m_iCenterX, m_ExpBar.Rect.Top - 5), Constants.ArrowDown, instRect,
-                    "As you gain experience, you will increase in levels.\n\nAs you increase in levels, you will unlock the larger towers for harder puzzles.", TutorialSystem.TutorialPiece.EndScreen3, true);
+                    "As you gain experience, you will increase in levels.\n\nAs you increase in levels, you will unlock the larger towers for harder puzzles.", TutorialSystem.TutorialPiece.EndScreen3, Rectangle.Empty, true);
 
                 instRect.Y -= 10;
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen3, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
-                    "Tap the Next Puzzle button to move on to the second puzzle.", TutorialSystem.TutorialPiece.Puzzle2);
+                    "Tap the Next Puzzle button to move on to the second puzzle.", TutorialSystem.TutorialPiece.Puzzle2, m_Buttons[0].Rect);
 
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen4, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
-                    "Tap the Next Puzzle button to move on to the next puzzle.", TutorialSystem.TutorialPiece.Horizontal_NextTo);
+                    "Tap the Next Puzzle button to move on to the next puzzle.", TutorialSystem.TutorialPiece.Horizontal_NextTo, m_Buttons[0].Rect);
             }
             game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Puzzle2);
         }

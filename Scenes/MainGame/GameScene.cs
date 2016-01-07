@@ -113,88 +113,102 @@ namespace Happiness
             Rectangle bottomTutorialRect = new Rectangle(gamePanelCenterX + Game.Tutorial.ArrowHeight, m_GamePanel.Rect.Bottom + 10, m_GamePanel.Rect.Width - ((m_GamePanel.Rect.Width / 6) + (Game.Tutorial.ArrowHeight >> 1)), 0);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.GameStart, new Vector2(gamePanelCenterX, m_GamePanel.Rect.Bottom), Constants.ArrowUp,
                                                                                bottomTutorialRect, "The object of the game is to figure out which icon belongs in each cell of the puzzle grid area.\nThe puzzle is solved when all of the icons are in the correct places.",
-                                                                               TutorialSystem.TutorialPiece.HorizontalClueArea, true);
+                                                                               TutorialSystem.TutorialPiece.HorizontalClueArea, Rectangle.Empty, true);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClueArea, clueArrow, 0,
                 bottomTutorialRect, "This area is for the horizontal clues.\nHorizontal clues give hints about the icons from left to right or right to left.\n\nTap this first Horizontal Clue.", 
-                TutorialSystem.TutorialPiece.SpanExplanation);
+                TutorialSystem.TutorialPiece.SpanExplanation, new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top, m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.SpanExplanation, clueArrow, 0, 
                 bottomTutorialRect, "The arrow across the top of the clue indicates that this is a span clue.\nA span clue describes a series of 3 neighboring columns. The span can go from left to right or right to left but the center column will always be inbetween the two outer columns.",
-                TutorialSystem.TutorialPiece.ClueHelp, true);
+                TutorialSystem.TutorialPiece.ClueHelp, Rectangle.Empty, true);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClueHelp, new Vector2(m_HelpPanel.Rect.Left, m_HelpPanel.Rect.Bottom), Constants.ArrowDiagonalUpRight,
                 bottomTutorialRect, "This area gives a brief description of the currently highlighted clue.\n\nSince this clue is a span type clue, it is showing that in a group of 3 columns {icon:Simpsons[2]} is on one edge of the group and {icon:Superheros[3]} is on the other edge.\nSince there is a NOT icon in the center of this span, in the center column can not have the {icon:Hubble[4]}.", 
-                TutorialSystem.TutorialPiece.SpanHelp1, true);
+                TutorialSystem.TutorialPiece.SpanHelp1, Rectangle.Empty, true);
+
+            Rectangle centerGridArea = new Rectangle(m_GamePanel.Rect.Left + m_GamePanel.CellWidth, m_GamePanel.Rect.Top + m_GamePanel.CellHeight, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.SpanHelp1, m_GamePanel.IconPosition(1, 1, 1), Constants.ArrowDiagonalUpRight,
                 bottomTutorialRect, "This is a 3x3 puzzle so the center column of this span has to be the center column of this puzzle.\nWe can eliminate the {icon:Hubble[4]} from the center column.\n\nTap the center grid area.",
-                TutorialSystem.TutorialPiece.EliminateRedNebula);
+                TutorialSystem.TutorialPiece.EliminateRedNebula, centerGridArea);
+
+            Rectangle centerBottomGridArea = new Rectangle(m_GamePanel.Rect.Left + m_GamePanel.CellWidth, m_GamePanel.Rect.Top + (m_GamePanel.CellHeight * 2), m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.BartMan1, m_GamePanel.IconPosition(2, 1, 1), Constants.ArrowDown,
                 bottomTutorialRect, "The {icon:Simpsons[2]} has to be on one of the edges of the column group so it can not be in the center column.\n\nTap the bottom grid area of the center column.",
-                TutorialSystem.TutorialPiece.BartMan2);
+                TutorialSystem.TutorialPiece.BartMan2, centerBottomGridArea);
 
+            Rectangle centerTopGridArea = new Rectangle(m_GamePanel.Rect.Left + m_GamePanel.CellWidth, m_GamePanel.Rect.Top, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Vector2 iconBotOffset = new Vector2(m_GamePanel.IconSize >> 1, 0);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hulk1, Vector2.Add(m_GamePanel.IconPosition(0, 1, 0), iconBotOffset), Constants.ArrowUp,
                 bottomTutorialRect, "The {icon:Superheros[3]} has to be on one of the edges of the column group so it can not be in the center column.\n\nTap the top grid area of the center column.",
-                TutorialSystem.TutorialPiece.Hulk2);
+                TutorialSystem.TutorialPiece.Hulk2, centerTopGridArea);
 
             Vector2 clue2Position = new Vector2(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight) + (m_HorizontalCluePanel.ClueHeight >> 1));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2a, clue2Position, 0, 
                 bottomTutorialRect, "We have done all we can right now with the first clue.\nLets move on to the next clue.\n\nTap the second horizontal clue.",
-                TutorialSystem.TutorialPiece.HorizontalClue2b);
+                TutorialSystem.TutorialPiece.HorizontalClue2b, new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
             Vector2 iconTopOffset = new Vector2(m_GamePanel.IconSize >> 1, -m_GamePanel.IconSize);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2b, Vector2.Add(m_GamePanel.IconPosition(1, 1, 2), iconTopOffset), Constants.ArrowDown,
                 bottomTutorialRect, "This clue is also a span type clue with the {icon:Hubble[2]} in the center column, the {icon:Superheros[2]} on one edge and NOT the {icon:Hubble[3]} on the other edge.\nSince this is a 3x3 puzzle, we know the center of the span is the center column of the puzzle so we now know where the {icon:Hubble[2]} goes.\n\nTap the center grid area.",
-                TutorialSystem.TutorialPiece.CrabNebula1);
+                TutorialSystem.TutorialPiece.CrabNebula1, centerGridArea);
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2c, Vector2.Add(m_GamePanel.IconPosition(0, 1, 2), iconTopOffset), Constants.ArrowDown, bottomTutorialRect,
-                "We know that the {icon:Superheros[2]} has to be on one of the outer edges, so it cant be in the center column.\n\nTap the top grid area of the center column.", TutorialSystem.TutorialPiece.GreenLantern1);
+                "We know that the {icon:Superheros[2]} has to be on one of the outer edges, so it cant be in the center column.\n\nTap the top grid area of the center column.", TutorialSystem.TutorialPiece.GreenLantern1, centerTopGridArea);
 
             Vector2 iconSideOffset = new Vector2(0, -(m_GamePanel.IconSize >> 1));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2d, m_GamePanel.IconPosition(0, 1, 0), 0, bottomTutorialRect,
                 "Notice that the {icon:Superheros[4]} is confirmed in the center column now. This is because it was the only posibility left after eliminating the {icon:Superheros[3]} and the {icon:Superheros[2]}.",
-                TutorialSystem.TutorialPiece.HorizontalClue3a, true);
+                TutorialSystem.TutorialPiece.HorizontalClue3a, Rectangle.Empty, true);
 
             Vector2 clueHeightOffset = new Vector2(0, m_HorizontalCluePanel.ClueHeight);
             Vector2 clue3Position = Vector2.Add(clue2Position, clueHeightOffset);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3a, clue3Position, 0, bottomTutorialRect, "There is nothing else we can do with this clue for now so lets move on to the next clue.\n\nTap the third horizontal clue.\n", TutorialSystem.TutorialPiece.HorizontalClue3b);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3a, clue3Position, 0, bottomTutorialRect, "There is nothing else we can do with this clue for now so lets move on to the next clue.\n\nTap the third horizontal clue.\n", TutorialSystem.TutorialPiece.HorizontalClue3b,
+                new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight * 2), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3b, m_GamePanel.IconPosition(2, 1, 0), Constants.ArrowDiagonalUpRight, bottomTutorialRect, 
                 "This is another span type clue. Most of what it is telling us, we already know. It is however telling us that the {icon:Simpsons[3]} is in the center column.\n\nTap the bottom grid area of the center column.",
-                TutorialSystem.TutorialPiece.Homer1);
+                TutorialSystem.TutorialPiece.Homer1, centerBottomGridArea);
 
             Vector2 clue4Position = Vector2.Add(clue3Position, clueHeightOffset);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue4, clue4Position, 0, bottomTutorialRect, "The fourth clue doesn't have any useful information for us right now since we already know the {icon:Superheros[4]} is in the center column and we dont know where either the {icon:Hubble[4]} or the {icon:Superheros[2]} are.", TutorialSystem.TutorialPiece.HorizontalClue5a, true);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue4, clue4Position, 0, bottomTutorialRect, "The fourth clue doesn't have any useful information for us right now since we already know the {icon:Superheros[4]} is in the center column and we dont know where either the {icon:Hubble[4]} or the {icon:Superheros[2]} are.", TutorialSystem.TutorialPiece.HorizontalClue5a, Rectangle.Empty, true);
 
             Vector2 clue5Position = Vector2.Add(clue4Position, clueHeightOffset);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5a, clue5Position, 0, bottomTutorialRect, "Tap the fifth clue to select it.", TutorialSystem.TutorialPiece.HorizontalClue5b);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5a, clue5Position, 0, bottomTutorialRect, "Tap the fifth clue to select it.", TutorialSystem.TutorialPiece.HorizontalClue5b,
+                new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight * 4), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
+            Rectangle rightTopGridArea = new Rectangle(m_GamePanel.Rect.Right - m_GamePanel.CellWidth, m_GamePanel.Rect.Top, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5b, Vector2.Add(iconSideOffset, m_GamePanel.IconPosition(0, 2, 2)), 0, bottomTutorialRect, 
-                "This clue tells us that the {icon:Superheros[2]} is in a column somewhere to the right of the {icon:Simpsons[3]}.\nSince we already know where the {icon:Simpsons[3]} is, and there is only one column to the right of it, we know where the {icon:Superheros[2]} is.\n\nTap the top right grid cell.", TutorialSystem.TutorialPiece.GreenLantern4);
+                "This clue tells us that the {icon:Superheros[2]} is in a column somewhere to the right of the {icon:Simpsons[3]}.\nSince we already know where the {icon:Simpsons[3]} is, and there is only one column to the right of it, we know where the {icon:Superheros[2]} is.\n\nTap the top right grid cell.", TutorialSystem.TutorialPiece.GreenLantern4, rightTopGridArea);
 
             Vector2 hideClueTarget = new Vector2(m_ButtonPanel.HideClueRect.Right, m_ButtonPanel.HideClueRect.Top + (m_ButtonPanel.HideClueRect.Height >> 1));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HideClue1, hideClueTarget, Constants.ArrowLeft, bottomTutorialRect,
                 "We have learned all we possibly can from this clue since we know where both the {icon:Simpsons[3]} and the {icon:Superheros[2]} are.\nWe can now hide this clue so we can more easily see the relevant clues.\nYou can unhide all the clues anytime you want in the pause menu.\n\nTap the 'HC' button to hide this clue.",
-                TutorialSystem.TutorialPiece.Hint1);
+                TutorialSystem.TutorialPiece.Hint1, m_ButtonPanel.HideClueRect);
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hint1, new Vector2(m_ButtonPanel.HintRect.Right, m_ButtonPanel.HintRect.Top + (m_ButtonPanel.HintRect.Height >> 1)), Constants.ArrowLeft, bottomTutorialRect,
-                "If you get stuck on a puzzle you can spend {icon:GoldCoin}2 to get a hint of what to do next.\nThere are a maximum number of hints you can use per puzzle, this number increases with your VIP level.\n\nTap the 'H' button to get a hint.", TutorialSystem.TutorialPiece.Hint2);
+                "If you get stuck on a puzzle you can spend {icon:GoldCoin}2 to get a hint of what to do next.\nThere are a maximum number of hints you can use per puzzle, this number increases with your VIP level.\n\nTap the 'H' button to get a hint.", TutorialSystem.TutorialPiece.Hint2, m_ButtonPanel.HintRect);
 
+            m_MessageBox = new MessageBox("Would you like to spend 2 coins for a hint?", MessageBoxButtons.YesNo, (int)MessageBoxContext.InsufficientFunds_Hint, Game.ScreenWidth, Game.ScreenHeight, "Don't ask again");
+            Rectangle hintYes = m_MessageBox.GetButtonRect(0);
+            m_MessageBox = null;
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hint2, m_GamePanel.IconPosition(2, 1, 0), Constants.ArrowDiagonalUpRight, bottomTutorialRect,
                 "When you tap the hint button, you are asked for confirmation before proceding. You can skip this confirmation for the rest of the puzzle by tapping the checkbox. If the box remains unchecked, you will be asked to confirm each hint used in this puzzle.\n\nTap the 'Yes' button to confirm we want a hint.",
-                TutorialSystem.TutorialPiece.Hint3);
+                TutorialSystem.TutorialPiece.Hint3, hintYes);
             
+            Rectangle rightBottomGridArea = new Rectangle(m_GamePanel.Rect.Right - m_GamePanel.CellWidth, m_GamePanel.Rect.Bottom - m_GamePanel.CellHeight, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hint3, Vector2.Add(iconTopOffset, m_GamePanel.IconPosition(2, 2, 2)), Constants.ArrowDown, bottomTutorialRect,
                 "The hint is showing us that this clue should effect the {icon:Simpsons[2]} in the third column.\nThis span clue has the {icon:Superheros[3]} on one edge of the span and the {icon:Simpsons[2]} on the other edge. Since we know the {icon:Superheros[3]} is in the first column, the {icon:Simpsons[2]} belongs in the third column.\n\nTap the bottom right grid cell.",
-                TutorialSystem.TutorialPiece.Bartman5);
+                TutorialSystem.TutorialPiece.Bartman5, rightBottomGridArea);
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Undo, new Vector2(m_ButtonPanel.UndoRect.Right, m_ButtonPanel.UndoRect.Top + (m_ButtonPanel.UndoRect.Height >> 1)), Constants.ArrowLeft, bottomTutorialRect,
                 "If you make a mistake, you can undo previous actions by tapping the 'U' button.\nThere are a limited number of actions that you can undo indicated by the number under the 'U' button. The number on the left is the number of actions currently in the history. The number on the right is the maximum number of actions stored in the history. The maximum increases with your VIP level.", 
-                TutorialSystem.TutorialPiece.HorizontalClue4b, true);
+                TutorialSystem.TutorialPiece.HorizontalClue4b, Rectangle.Empty, true);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue4b, clue4Position, 0, bottomTutorialRect,
                 "There are only two cells left to solve. We need to figure out which cells the {icon:Hubble[4]} and the {icon:Hubble[3]} belong in.\nLets go back to the fourth horizontal clue.\n\nTap the fourth horizontal clue.\n",
-                TutorialSystem.TutorialPiece.HorizontalClue4c);
+                TutorialSystem.TutorialPiece.HorizontalClue4c, new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight * 3), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
+
+            Rectangle rightCenterGridArea = new Rectangle(m_GamePanel.Rect.Right - m_GamePanel.CellWidth, m_GamePanel.Rect.Top + m_GamePanel.CellHeight, m_GamePanel.CellHeight, m_GamePanel.CellWidth);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue4c, m_GamePanel.IconPosition(1, 2, 1), Constants.ArrowDiagonalUpRight, bottomTutorialRect,
                 "This clue is telling us that the {icon:Superheros[4]} has the {icon:Hubble[4]} on one side and NOT the {icon:Superheros[3]} on the other side.\nSince the {icon:Superheros[3]} is in the first column, the {icon:Hubble[4]} can not be in the third column.\n\nTap the middle grid cell in the third column.",
-                TutorialSystem.TutorialPiece.RedNebula4);
+                TutorialSystem.TutorialPiece.RedNebula4, rightCenterGridArea);
 
             if (!Game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
             {
@@ -203,10 +217,10 @@ namespace Happiness
             }
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Puzzle2, new Vector2(-1000, -1000), 0, 
-                new Rectangle(Game.ScreenWidth - 170, Game.ScreenHeight - 80, 150, 0), "Solve this puzzle", TutorialSystem.TutorialPiece.EndScreen4);
+                new Rectangle(Game.ScreenWidth - 170, Game.ScreenHeight - 80, 150, 0), "Solve this puzzle", TutorialSystem.TutorialPiece.EndScreen4, new Rectangle(0, 0, Game.ScreenWidth, Game.ScreenHeight));
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Horizontal_NextTo, clue2Position, 0, bottomTutorialRect,
-                "This clue is a Next To type clue. It tells us that the {icon:Superheros[5]} is in a column directly next to the column with the {icon:Flowers[2]}.\n\nThis doesn't help you any right now, but it will come in handy as you learn more about the puzzle.", TutorialSystem.TutorialPiece.None, true);
+                "This clue is a Next To type clue. It tells us that the {icon:Superheros[5]} is in a column directly next to the column with the {icon:Flowers[2]}.\n\nThis doesn't help you any right now, but it will come in handy as you learn more about the puzzle.", TutorialSystem.TutorialPiece.None, Rectangle.Empty, true);
 
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.GameStart);
         }
