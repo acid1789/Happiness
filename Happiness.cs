@@ -180,10 +180,15 @@ namespace Happiness
             get { return m_iScreenHeight; }
         }
 
+        public Scene CurrentScene
+        {
+            get { return m_CurrentScene; }
+        }
+        
         public static Happiness Game;
         public TutorialSystem Tutorial
         {
-            get { return Game.m_Tutorial; }
+            get { return m_Tutorial; }
         }
         #endregion
 

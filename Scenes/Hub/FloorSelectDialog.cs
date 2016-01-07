@@ -96,7 +96,7 @@ namespace Happiness
             m_Floors = new List<FloorDisplay>();
             foreach (TowerFloorRecord floor in td.Floors)
             {
-                m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, floor.Floor, floor.RankFriends, floor.RankGlobal, (double)floor.BestTime, parTime));
+                m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, floor.Floor, floor.RankFriends, floor.RankGlobal, floor.BestTime, parTime));
             }
 
             float floorHeight = m_Floors[0].Height;

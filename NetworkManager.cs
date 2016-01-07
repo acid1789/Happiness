@@ -141,16 +141,37 @@ namespace Happiness
 
         public void PuzzleComplete(int tower, int floor, double completionTime)
         {
-            if (m_GameData.TowerFloors[tower] >= floor)
+            if (m_bDisabled)
             {
-                m_GameData.TowerFloors[tower] = floor + 1;
-
-                if (m_bDisabled)
+                StoreStaticData();
+                int floorIndex = m_TowerData.Floors.Length - floor;
+                if (floorIndex < m_TowerData.Floors.Length)
                 {
-                    StoreStaticData();
+                    if (m_TowerData.Floors[floorIndex].BestTime == 0 || m_TowerData.Floors[floorIndex].BestTime > completionTime)
+                        m_TowerData.Floors[floorIndex].BestTime = (int)completionTime;
                 }
-                else
-                    m_Client.PuzzleComplete(tower, floor, (float)completionTime);
+                SaveStaticTowerData(tower, m_TowerData);
+            }
+            else
+            {
+                // Tell the server
+                m_Client.PuzzleComplete(tower, floor, (float)completionTime);
+            }
+
+            int maxFloor = m_GameData.TowerFloors[tower];
+            if (maxFloor == floor)
+            {
+                // Unlock the next floor
+                m_GameData.TowerFloors[tower]++;
+
+                if (m_TowerData.Floors.Length == floor)
+                {
+                    List<TowerFloorRecord> records = new List<TowerFloorRecord>(m_TowerData.Floors);
+                    TowerFloorRecord nf = new TowerFloorRecord();
+                    nf.Floor = floor + 1;
+                    records.Insert(0, nf);
+                    m_TowerData.Floors = records.ToArray();
+                }
             }
         }
 
@@ -173,6 +194,7 @@ namespace Happiness
             if (m_bDisabled)
             {
                 // load data from disk
+                LoadStaticTowerData(tower);
             }
             else
             {
@@ -185,6 +207,10 @@ namespace Happiness
         {
             m_pendingTutorialData = tutorialData;
             m_tutorialDataTime = DateTime.Now;
+            m_GameData.Tutorial = tutorialData;
+
+            if( m_bDisabled )
+                StoreStaticData();
         }
 
         #region Response Handlers
@@ -237,8 +263,8 @@ namespace Happiness
                     r.Floor = e.Floors[i - 1].Floor - 1;
                     e.Floors[i] = r;
                 }
-            }           
-            
+            }
+                                    
             // store the data
             m_TowerData = e;
         }
@@ -263,6 +289,7 @@ namespace Happiness
                     gd.TowerFloors[i] = br.ReadInt32();
                 gd.Level = br.ReadInt32();
                 gd.Exp = br.ReadInt32();
+                gd.Tutorial = br.ReadUInt32();
                 m_Client.HardCurrency = br.ReadInt32();
 
                 br.Close();
@@ -277,6 +304,7 @@ namespace Happiness
                 gd.TowerFloors[5] = 0;
                 gd.Level = 1;
                 gd.Exp = 0;
+                gd.Tutorial = 0;
                 m_Client.HardCurrency = 1000;
             }
 
@@ -305,10 +333,66 @@ namespace Happiness
                     bw.Write(floor);
                 bw.Write(m_GameData.Level);
                 bw.Write(m_GameData.Exp);
+                bw.Write(m_GameData.Tutorial);
                 bw.Write(m_Client.HardCurrency);
 
                 bw.Close();
             }
+        }
+
+        const string s_TowerDataFile = "towerdata";
+        void LoadStaticTowerData(int tower)
+        {
+            string file = s_TowerDataFile + tower;
+            TowerData td = new TowerData();
+            td.Tower = tower;
+            List<TowerFloorRecord> floorRecords = new List<TowerFloorRecord>();
+            if (File.Exists(file))
+            {
+                BinaryReader br = new BinaryReader(File.OpenRead(file));
+                int floorCount = br.ReadInt32();
+                if (floorCount > 0)
+                {
+                    for (int i = 0; i < floorCount; i++)
+                    {
+                        TowerFloorRecord tfr = new TowerFloorRecord();
+                        tfr.Floor = i + 1;
+                        tfr.BestTime = br.ReadInt32();
+                        tfr.RankFriends = 0;
+                        tfr.RankGlobal = 0;
+                        floorRecords.Add(tfr);
+                    }
+                }
+                br.Close();
+            }
+
+            // Add 'next' floor
+            TowerFloorRecord nextFloor = new TowerFloorRecord();
+            nextFloor.Floor = floorRecords.Count + 1;
+            floorRecords.Add(nextFloor);
+            floorRecords.Reverse();
+            td.Floors = floorRecords.ToArray();
+            
+            m_TowerData = td;
+        }
+
+        void SaveStaticTowerData(int tower, TowerData td)
+        {
+            string file = s_TowerDataFile + tower;
+
+            FileStream fs = File.Open(file, FileMode.Create);
+            BinaryWriter bw = new BinaryWriter(fs);            
+            bw.Write(td.Floors.Length);
+            if (td.Floors.Length > 0)
+            {
+                List<TowerFloorRecord> floors = new List<TowerFloorRecord>(td.Floors);
+                floors.Reverse();
+                foreach (TowerFloorRecord tfr in floors)
+                {
+                    bw.Write(tfr.BestTime);
+                }
+            }
+            bw.Close();
         }
         #endregion
 
