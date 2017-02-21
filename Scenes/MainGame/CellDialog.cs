@@ -124,6 +124,7 @@ namespace Happiness
 
                 m_Buttons[(int)ButtonID.Confirm].Enabled = false;
                 m_Buttons[(int)ButtonID.Eliminate].Enabled = false;
+                m_Buttons[(int)ButtonID.Eliminate].ClickSound = SoundManager.SEInst.MenuCancel;
             }
             if (!game.Game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EliminateRedNebula))
             {
@@ -264,6 +265,7 @@ namespace Happiness
 
         void SelectIcon(int icon)
         {
+            SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
             m_iSelectedIcon = icon;
             if (m_iSelectedIcon >= 0)
             {

@@ -63,10 +63,10 @@ namespace Happiness
         public static float MessageBox_CheckboxSize = 20f / 720f;
 
         public static float SignInDialog_Width = 600f / 1280f;
-        public static float SignInDialog_Height = 400f / 720f;
+        public static float SignInDialog_Height = 500f / 720f;
         public static float SignInDialog_Margin = 20f / 720f;
         public static float SignInDialog_InputWidth = 350f / 1280f;
-        public static float SignInDialog_InputLeft = 150f / 1280f;
+        public static float SignInDialog_InputLeft = 180f / 1280f;
         public static float SignInDialog_InputTop = 100f / 720f;
         public static float SignInDialog_AuthGap = 10f / 720f;
         public static float SignInDialog_AuthSize = 60f / 720f;

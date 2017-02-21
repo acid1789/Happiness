@@ -20,6 +20,9 @@ namespace HappinessNetwork
             TowerData_Request,
             TowerData_Response,
             TutorialData,
+
+            ValidateGameInfo_Request,
+            ValidateGameInfo_Response,
         }
 
         public event EventHandler OnGameDataRequest;
@@ -29,6 +32,11 @@ namespace HappinessNetwork
         public event EventHandler<TowerDataRequstArgs> OnTowerDataRequest;
         public event EventHandler<TowerData> OnTowerDataResponse;
         public event Action<HClient, ulong> OnTutorialData;
+        public event Action<HClient, string, string> OnValidateGameInfo;
+        public event Action<HClient, GameInfo> OnGameInfoResponse;
+
+        public static string ServerAddress = "127.0.0.1";
+        public static int ServerPort = 1255;
 
         public HClient()
             : base(null)
@@ -50,6 +58,9 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.TowerData_Request] = TowerData_Request_Handler;
             _packetHandlers[(ushort)HPacketType.TowerData_Response] = TowerData_Response_Handler;
             _packetHandlers[(ushort)HPacketType.TutorialData] = TutorialData_Handler;
+            
+            _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Request] = ValidateGameInfo_Request_Handler;
+            _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Response] = ValidateGameInfo_Response_Handler;
         }
 
         void BeginPacket(HPacketType type)
@@ -135,6 +146,26 @@ namespace HappinessNetwork
             _outgoingBW.Write(tutorialData);
             SendPacket();
         }
+
+        public void SendValidateGameInfoRequest(string authString, string hash)
+        {
+            BeginPacket(HPacketType.ValidateGameInfo_Request);
+
+            _outgoingBW.Write(authString);
+            _outgoingBW.Write(hash);
+            SendPacket();
+        }
+
+        public void SendValidateGameInfoResponse(int hardCurrency, int vip, bool hashMatches, GameInfo serverData)
+        {
+            BeginPacket(HPacketType.ValidateGameInfo_Response);
+
+            _outgoingBW.Write(hardCurrency);
+            _outgoingBW.Write(vip);
+            _outgoingBW.Write(hashMatches);
+            if( !hashMatches )
+                serverData.Save(_outgoingBW);
+        }
         #endregion
 
         #region Packet Handlers
@@ -208,6 +239,29 @@ namespace HappinessNetwork
         {
             ulong tutorialData = br.ReadUInt64();
             OnTutorialData(this, tutorialData);
+        }
+
+        void ValidateGameInfo_Request_Handler(BinaryReader br)
+        {
+            string authString = br.ReadString();
+            string hash = br.ReadString();
+
+            OnValidateGameInfo(this, authString, hash);
+        }
+
+        void ValidateGameInfo_Response_Handler(BinaryReader br)
+        {
+            HardCurrency = br.ReadInt32();
+            Vip = br.ReadInt32();
+            bool hashMatches = br.ReadBoolean();
+            GameInfo serverData = null;
+            if (hashMatches)
+            {
+                serverData = new GameInfo();
+                serverData.Load(br);
+            }
+
+            OnGameInfoResponse(this, serverData);
         }
         #endregion
 

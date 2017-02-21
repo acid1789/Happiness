@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace Happiness
 {
@@ -63,7 +65,27 @@ namespace Happiness
         // Signin Icons
         public static Texture2D Facebook;
         public static Texture2D Google;
-        public static Texture2D Apple;
+        public static Texture2D Email;
+
+        // Music
+        public static Song MenuSong;
+        public static Song[] GameSongs;
+
+        // Sounds
+        public static SoundEffect MenuNavigate;
+        public static SoundEffect SliderMove;
+        public static SoundEffect MenuAccept;
+        public static SoundEffect GameLoad;
+        public static SoundEffect GameSave;
+        public static SoundEffect UnhideClues;
+        public static SoundEffect GameAction1;
+        public static SoundEffect GameAction2;
+        public static SoundEffect GameAction3;
+        public static SoundEffect GameAction4;
+        public static SoundEffect GameAction5;
+        public static SoundEffect GameAction6;
+        public static SoundEffect PuzzleFailed;
+        public static SoundEffect PuzzleComplete;
 
 
         public static void LoadAll(ContentManager Content)
@@ -78,6 +100,9 @@ namespace Happiness
             LoadFonts(Content);
             LoadTowers(Content);
             LoadSignInIcons(Content);
+
+            LoadMusic(Content);
+            LoadSounds(Content);
         }
 
         static void LoadIcons(ContentManager Content)
@@ -304,7 +329,43 @@ namespace Happiness
         {
             Facebook = content.Load<Texture2D>("facebook");
             Google = content.Load<Texture2D>("google");
-            Apple = content.Load<Texture2D>("apple_id");
+            Email = content.Load<Texture2D>("email");
+        }
+
+        static void LoadMusic(ContentManager content)
+        {
+            MenuSong = content.Load<Song>("Audio/jenkees/02_-_Ronald_Jenkees_-_Neptune");            
+
+            GameSongs = new Song[11];
+            GameSongs[0] = content.Load<Song>("Audio/jenkees/01_-_Ronald_Jenkees_-_Derty");
+            GameSongs[1] = content.Load<Song>("Audio/jenkees/03_-_Ronald_Jenkees_-_Canon_in_D_Remix");
+            GameSongs[2] = content.Load<Song>("Audio/jenkees/04_-_Ronald_Jenkees_-_Clutter");
+            GameSongs[3] = content.Load<Song>("Audio/jenkees/05_-_Ronald_Jenkees_-_Super-Fun");
+            GameSongs[4] = content.Load<Song>("Audio/jenkees/06_-_Ronald_Jenkees_-_The_Rocky_Song_Remixed");
+            GameSongs[5] = content.Load<Song>("Audio/jenkees/07_-_Ronald_Jenkees_-_Snap");
+            GameSongs[6] = content.Load<Song>("Audio/jenkees/08_-_Ronald_Jenkees_-_The_Sunfish_Song");
+            GameSongs[7] = content.Load<Song>("Audio/jenkees/09_-_Ronald_Jenkees_-_Loui");
+            GameSongs[8] = content.Load<Song>("Audio/jenkees/10_-_Ronald_Jenkees_-_Gold_Spinners");
+            GameSongs[9] = content.Load<Song>("Audio/jenkees/11_-_Ronald_Jenkees_-_Remix_To_A_Remix");
+            GameSongs[10] = content.Load<Song>("Audio/jenkees/12_-_Ronald_Jenkees_-_Almost_Undamaged");
+        }
+
+        static void LoadSounds(ContentManager content)
+        {
+            MenuNavigate = content.Load<SoundEffect>("Audio/menu_navigate");
+            MenuAccept = content.Load<SoundEffect>("Audio/menu_accept");
+            GameLoad = content.Load<SoundEffect>("Audio/game_load");
+            SliderMove = content.Load<SoundEffect>("Audio/slider_move");
+            GameSave = content.Load<SoundEffect>("Audio/game_save");
+            UnhideClues = content.Load<SoundEffect>("Audio/unhide_clues");
+            GameAction1 = content.Load<SoundEffect>("Audio/game_action1");
+            GameAction2 = content.Load<SoundEffect>("Audio/game_action2");
+            GameAction3 = content.Load<SoundEffect>("Audio/game_action3");
+            GameAction4 = content.Load<SoundEffect>("Audio/game_action4");
+            GameAction5 = content.Load<SoundEffect>("Audio/game_action5");
+            GameAction6 = content.Load<SoundEffect>("Audio/game_action6");
+            PuzzleFailed = content.Load<SoundEffect>("Audio/puzzle_failed");
+            PuzzleComplete = content.Load<SoundEffect>("Audio/puzzle_complete");
         }
     }
 }

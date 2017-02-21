@@ -42,8 +42,11 @@ namespace Happiness
 
         public void HandleClick(int x, int y)
         {
-            if( m_bEnabled && m_Rect.Contains(x, y) )
+            if (m_bEnabled && m_Rect.Contains(x, y))
+            {
                 m_bChecked = !m_bChecked;
+                Happiness.Game.SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
+            }
         }
 
         public void HandleKey(KeyArgs key)

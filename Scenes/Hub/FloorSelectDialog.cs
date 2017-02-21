@@ -66,6 +66,7 @@ namespace Happiness
             m_Buttons[2] = new UIButton(2, "Leaderboard", Assets.DialogFont, new Rectangle(m_Rect.Right - (m_iLeftRightMargin + lbButtonWidth), m_Rect.Bottom - (iTopMargin + lbButtonHeight), lbButtonWidth, lbButtonHeight), Assets.ScrollBar);
             m_Buttons[1].Enabled = false;
             m_Buttons[2].Enabled = false;
+            m_Buttons[0].ClickSound = SoundManager.SEInst.MenuCancel;
 
             // Floors
             int floorScrollWidth = (int)(Constants.FloorSelectDialog_FloorScrollWidth * screenWidth);
@@ -162,6 +163,8 @@ namespace Happiness
 
                 m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.FloorSelect);
                 m_Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.FloorPlay);
+
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
             }
 
             bool enableButtons = m_iSelectedFloor >= 0;

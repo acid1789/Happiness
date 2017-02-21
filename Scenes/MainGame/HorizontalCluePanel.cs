@@ -55,6 +55,7 @@ namespace Happiness
             m_iSelectedIndex = (int)(virtY / (m_IconSize + m_ClueSpace));
             if (m_iSelectedIndex < m_Clues.Count)
             {
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
                 GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
                 if (m_iSelectedIndex == 0)
                 {

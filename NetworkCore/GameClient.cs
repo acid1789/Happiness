@@ -27,13 +27,17 @@ namespace NetworkCore
         #region Account Info
         int _accountId;
         string _displayName;
+        string _authString;
         int _hardCurrency;
+        int _vip;
         #endregion
 
         #region Chat Info
         List<uint> _blockList;
         uint _chatChannels;
         #endregion
+
+        object _pendingAuthTask;
 
 
         public GameClient()
@@ -91,13 +95,14 @@ namespace NetworkCore
             SendPacket();
         }
 
-        public void SendAccountResponse(int accountId, string displayName)
+        public void SendAccountResponse(int accountId, string displayName, string authString = null)
         {
             BeginPacket(GCPacketType.AccountResponse);
 
             _outgoingBW.Write(_sessionKey);
             _outgoingBW.Write(accountId);
             WriteUTF8String(displayName);
+            WriteUTF8String(authString);
 
             SendPacket();
         }
@@ -193,10 +198,22 @@ namespace NetworkCore
             set { _hardCurrency = value; }
         }
 
+        public int Vip
+        {
+            get { return _vip; }
+            set { _vip = value; }
+        }
+
         public string DisplayName
         {
             get { return _displayName; }
             set { _displayName = value; }
+        }
+
+        public string AuthString
+        {
+            get { return _authString; }
+            set { _authString = value; }
         }
 
         public List<uint> BlockList
@@ -208,6 +225,12 @@ namespace NetworkCore
         {
             get { return _chatChannels; }
             set { _chatChannels = value; }
+        }
+
+        public object PendingAuthTask
+        {
+            get { return _pendingAuthTask; }
+            set { _pendingAuthTask = value; }
         }
         #endregion
     }

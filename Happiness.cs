@@ -40,6 +40,8 @@ namespace Happiness
             //m_MainMenu = new MainMenu(this);
             //m_Options = new Options(this); 
 
+            m_SoundManager = SoundManager.Inst;
+
             graphics = new GraphicsDeviceManager(this);
 
             graphics.PreferredBackBufferWidth = m_iScreenWidth;
@@ -63,7 +65,7 @@ namespace Happiness
 
             m_iScreenWidth = graphics.GraphicsDevice.Viewport.Width;
             m_iScreenHeight = graphics.GraphicsDevice.Viewport.Height;
-            m_Tutorial = new TutorialSystem(m_iScreenWidth, m_iScreenHeight);
+            m_Tutorial = new TutorialSystem(m_iScreenWidth, m_iScreenHeight);            
 
             //m_CurrentScene = new GameScene(this);
             //((GameScene)m_CurrentScene).Initialize(0, 6, true);
@@ -88,17 +90,7 @@ namespace Happiness
             // Load everything
             Assets.LoadAll(Content);
         }
-
-        /*
-        private void FullLoad()
-        {
-            m_Logo = Content.Load<Texture2D>("Logo");
-                        
-            m_SoundManager.Load();
-            ShowMainMenu();
-        }
-        */
-
+        
         /// <summary>
         /// UnloadContent will be called once per game and is the place to unload
         /// all content.
@@ -190,6 +182,11 @@ namespace Happiness
         {
             get { return m_Tutorial; }
         }
+
+        public SoundManager SoundManager
+        {
+            get { return m_SoundManager; }
+        }
         #endregion
 
 
@@ -199,6 +196,12 @@ namespace Happiness
         {
             sb.DrawString(font, text, new Vector2(position.X + 2, position.Y + 2), Color.Black);
             sb.DrawString(font, text, position, color);
+        }
+
+        public static Vector2 CenterText(Point center, string text, SpriteFont font)
+        {
+            Vector2 size = font.MeasureString(text);
+            return new Vector2(center.X - (size.X / 2), center.Y - (size.Y / 2));
         }
 
         public static string TimeString(double seconds)

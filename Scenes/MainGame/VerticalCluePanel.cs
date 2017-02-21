@@ -51,7 +51,10 @@ namespace Happiness
             float virtX = x - m_ScrollPosition;
             m_iSelectedIndex = (int)(virtX / (m_IconSize + m_ClueSpace));
             if (m_iSelectedIndex < m_Clues.Count)
+            {
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
                 GameScene.SelectClue(m_Clues[m_iSelectedIndex], this);
+            }
             else
             {
                 GameScene.SelectClue(null, this);

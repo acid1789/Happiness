@@ -76,6 +76,8 @@ namespace Happiness
             m_iHintCount = 0;
             m_iMegaHintCount = 0;
             m_History = new List<Action>();
+            
+            Game.SoundManager.PlayGameMusic();
 
             // Create the puzzle
             m_iPuzzleIndex = puzzleIndex;

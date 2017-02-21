@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Balance.cs" />
+    <Compile Include="GameInfo.cs" />
     <Compile Include="HClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

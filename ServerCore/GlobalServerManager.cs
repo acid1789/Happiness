@@ -55,6 +55,11 @@ namespace ServerCore
             _gc.RequestAccountInfo(clientKey, email, password, displayName);
         }
 
+        public void FetchAuthString(string authString, uint clientKey)
+        {
+            _gc.RequestAccountInfoFromAuthString(authString, clientKey);
+        }
+
         public void SpendCoins(int accountId, int amount, ulong gameServerSpendRecord)
         {
             _gc.SpendCoins(accountId, amount, gameServerSpendRecord);

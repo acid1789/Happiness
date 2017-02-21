@@ -28,6 +28,7 @@ namespace GlobalServer
 
             gclient.OnAccountInfoRequest += new EventHandler<AccountInfoRequestArgs>(gclient_OnAccountInfoRequest);
             gclient.OnSpendCoins += Gclient_OnSpendCoins;
+            gclient.OnAuthStringRequest += Gclient_OnAuthStringRequest;
 
             _server.InputThread.AddConnection(gclient);
         }
@@ -50,6 +51,15 @@ namespace GlobalServer
             gst.Args = e;
 
             _server.TaskProcessor.AddTask(gst);
+        }
+
+        private static void Gclient_OnAuthStringRequest(GlobalClient arg1, string arg2, uint clientKey)
+        {
+            GlobalTask gt = new GlobalTask();
+            gt.Type = (int)GlobalTask.GlobalType.AuthStringRequest;
+            gt.Client = arg1;
+            gt.Args = new object[] { arg2, clientKey };
+            _server.TaskProcessor.AddTask(gt);
         }
 
         #region Accessors

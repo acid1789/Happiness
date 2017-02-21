@@ -78,6 +78,7 @@ namespace Happiness
 
                 // Show the cell dialog
                 m_CellDialog = new CellDialog(GameScene, row, col);
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
 
                 if (row == 1 && col == 1)
                 {

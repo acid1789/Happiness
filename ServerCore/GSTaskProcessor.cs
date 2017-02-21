@@ -33,7 +33,7 @@ namespace ServerCore
 
     public class GSTaskProcessor : TaskProcessor
     {
-        GameServer _server;
+        protected GameServer _server;
 
         public GSTaskProcessor(GameServer server)
             : base()
@@ -74,16 +74,28 @@ namespace ServerCore
                 // Account exists but password is wrong
                 client.SendAccountResponse(args.AccountId, null);
             }
+            else if (client.PendingAuthTask != null)
+            {
+                // Cache this auth string for later
+                _server.AuthManager.RegisterAuthString(args.AuthString, args.AccountId, args.HardCurrency, args.Vip);
+
+                // Add the task to process this
+                GSTask authTask = (GSTask)client.PendingAuthTask;
+                
+                AddTask(authTask);
+            }
             else
             {
                 // Valid account
-                client.SendAccountResponse(args.AccountId, args.DisplayName);
+                client.SendAccountResponse(args.AccountId, args.DisplayName, args.AuthString);
                 client.CurrencyUpdate(args.HardCurrency);
 
                 // Store stuff
                 client.AccountId = args.AccountId;
                 client.HardCurrency = args.HardCurrency;
+                client.Vip = args.Vip;
                 client.DisplayName = args.DisplayName;
+                client.AuthString = args.AuthString;
 
                 // Let the server do new client stuff
                 _server.NewAuthorizedClient(client);

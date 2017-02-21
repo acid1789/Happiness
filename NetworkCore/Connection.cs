@@ -278,6 +278,16 @@ namespace NetworkCore
         {
             get { return _sessionKey; }
         }
+
+        public string IPAddress
+        {
+            get
+            {
+                if( _socket != null && _socket.Connected )
+                    return _socket.RemoteEndPoint.ToString();
+                return "*disconnected*";
+            }
+        }
         #endregion
     }
 }

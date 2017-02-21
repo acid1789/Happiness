@@ -445,6 +445,6 @@ namespace Happiness
         {
             get { if (s_NetworkManager == null) s_NetworkManager = new NetworkManager(); return s_NetworkManager; }
         }
-        #endregion
+        #endregion        
     }
 }

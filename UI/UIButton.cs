@@ -17,7 +17,8 @@ namespace Happiness
         int m_ButtonID;
 
         string m_Text;
-        Vector2 m_TextPosition;
+        Vector2[] m_TextPositions;
+        string[] m_TextLines;
         SpriteFont m_Font;
         Color m_TextColor;
         Color m_TextColorDisabled;
@@ -27,6 +28,8 @@ namespace Happiness
         SpriteFont m_UnderTextFont;
         Color m_UnderTextColor;
         Color m_UnderTextColorDisabled;
+
+        SoundManager.SEInst m_ClickSound;
 
         bool m_bDisabled;
         
@@ -40,7 +43,8 @@ namespace Happiness
             m_MainColor = Color.White;
             m_DisabledTexture = main;
             m_DisabledColor = Color.DarkGray;
-            
+            m_ClickSound = SoundManager.SEInst.MenuAccept;
+
 
             m_ButtonID = buttonID;
             m_Text = text;
@@ -61,6 +65,7 @@ namespace Happiness
         {
             if (!m_bDisabled && m_Rect.Contains(x, y))
             {
+                SoundManager.Inst.PlaySound(m_ClickSound);
                 if( OnClick != null )
                     OnClick(m_ButtonID, null);
                 return true;
@@ -72,13 +77,30 @@ namespace Happiness
         {
             if (m_Text != null)
             {
-                Vector2 textSize = m_Font.MeasureString(m_Text);
+                m_TextLines = m_Text.Split('\n');
+                if (m_TextLines.Length > 0)
+                {
+                    m_TextPositions = new Vector2[m_TextLines.Length];
 
-                int halfWidth = m_Rect.Width >> 1;
-                int halfHeight = m_Rect.Height >> 1;
+                    Vector2 textSize = m_Font.MeasureString(m_TextLines[0]);
+                    int halfWidth = m_Rect.Width >> 1;
+                    int halfHeight = m_Rect.Height >> 1;
+                    int rectCenterY = m_Rect.Top + halfHeight;
+                    
+                    float allLinesHeight = textSize.Y * m_TextLines.Length;
+                    float textY = rectCenterY - (allLinesHeight / 2);                    
+                    
+                    for (int i = 0; i < m_TextLines.Length; i++)
+                    {
+                        textSize = m_Font.MeasureString(m_TextLines[i]);
 
-                m_TextPosition.X = m_Rect.Left + halfWidth - (textSize.X * 0.5f);
-                m_TextPosition.Y = m_Rect.Top + halfHeight - (textSize.Y * 0.5f);
+
+                        m_TextPositions[i].X = m_Rect.Left + halfWidth - (textSize.X * 0.5f);
+                        m_TextPositions[i].Y = textY;
+
+                        textY += textSize.Y;
+                    }
+                }
             }
         }
 
@@ -95,11 +117,14 @@ namespace Happiness
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        public virtual void Draw(SpriteBatch sb)
         {        
-            sb.Draw(m_bDisabled ? m_DisabledTexture : m_MainTexture, m_Rect, m_bDisabled ? m_DisabledColor : m_MainColor);            
-            if( m_Text != null )
-                sb.DrawString(m_Font, m_Text, m_TextPosition, m_bDisabled ? m_TextColorDisabled : m_TextColor);   
+            sb.Draw(m_bDisabled ? m_DisabledTexture : m_MainTexture, m_Rect, m_bDisabled ? m_DisabledColor : m_MainColor);
+            if (m_TextLines != null)
+            {
+                for( int i = 0; i < m_TextLines.Length; i++ )
+                    sb.DrawString(m_Font, m_TextLines[i], m_TextPositions[i], m_bDisabled ? m_TextColorDisabled : m_TextColor);
+            }
             
             if( m_UnderText != null )
                 sb.DrawString(m_UnderTextFont, m_UnderText, m_UnderTextPosition, m_bDisabled ? m_UnderTextColorDisabled : m_UnderTextColor); 
@@ -174,6 +199,12 @@ namespace Happiness
         {
             get { return m_DisabledColor; }
             set { m_DisabledColor = value; }
+        }
+
+        public SoundManager.SEInst ClickSound
+        {
+            get { return m_ClickSound; }
+            set { m_ClickSound = value; }
         }
         #endregion
     }

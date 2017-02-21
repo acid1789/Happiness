@@ -18,6 +18,8 @@ namespace Happiness
 
         FloorSelectDialog m_FloorSelect;
 
+        SoundDialog m_SoundDialog;
+
         public HubScene(Happiness game) : base(game)
         {
             InputController.IC.OnClick += IC_OnClick;
@@ -25,6 +27,8 @@ namespace Happiness
             InputController.IC.OnDrag += IC_OnDrag;
 
             NetworkManager nm = NetworkManager.Net;
+
+            //m_SoundDialog = new SoundDialog(game.ScreenWidth, game.ScreenHeight, game);
 
             // Setup Towers
             int centerX = Game.ScreenWidth >> 1;
@@ -76,11 +80,16 @@ namespace Happiness
             if( e.Abort )
                 return;
 
+            if (m_SoundDialog != null)
+            {
+                m_SoundDialog.HandleClick(e.CurrentX, e.CurrentY);
+            }
+
             if (m_FloorSelect != null)
             {
-                if( !m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY) )
+                if (!m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY))
                     m_FloorSelect = null;
-            }
+            }            
             else
             {
                 foreach (Tower t in m_Towers)
@@ -88,6 +97,7 @@ namespace Happiness
                     if (t.Click(e.CurrentX, e.CurrentY))
                     {
                         //ActivateTower(t);
+                        SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
                         Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.ClickTower);
                         m_FloorSelect = new FloorSelectDialog(t.Size - 3, Game.ScreenWidth, Game.ScreenHeight, Game);
                         break;
@@ -128,6 +138,9 @@ namespace Happiness
             
             if ( m_FloorSelect != null )
                 m_FloorSelect.Draw(spriteBatch);
+
+            if(m_SoundDialog != null )
+                m_SoundDialog.Draw(spriteBatch);
         }
 
         void ActivateTower(Tower t)

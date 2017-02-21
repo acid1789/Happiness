@@ -16,12 +16,14 @@ namespace ServerCore
             AccountInfoResponse,
             SpendCoins,
             CurrencyUpdate,
+            AuthStringRequest,
         }
 
         public event EventHandler<AccountInfoRequestArgs> OnAccountInfoRequest;
         public event EventHandler<AccountInfoResponseArgs> OnAccountInfoResponse;
         public event EventHandler<GlobalSpendCoinArgs> OnSpendCoins;
         public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
+        public event Action<GlobalClient, string, uint> OnAuthStringRequest;
 
         public GlobalClient() : base (null)
         {
@@ -40,6 +42,7 @@ namespace ServerCore
             _packetHandlers[(ushort)GPacketType.AccountInfoResponse] = AccountInfoResponseHandler;
             _packetHandlers[(ushort)GPacketType.SpendCoins] = SpendCoinsHandler;
             _packetHandlers[(ushort)GPacketType.CurrencyUpdate] = CurrencyUpdteHandler;
+            _packetHandlers[(ushort)GPacketType.AuthStringRequest] = AuthStringRequestHandler;
         }
 
         void BeginPacket(GPacketType gt)
@@ -61,14 +64,16 @@ namespace ServerCore
             SendPacket();
         }
 
-        public void SendAccountInfo(uint clientKey, int accountId, string displayName, int hardCurrency)
+        public void SendAccountInfo(uint clientKey, int accountId, string displayName, int hardCurrency, int vip, string authString)
         {
             BeginPacket(GPacketType.AccountInfoResponse);
 
             _outgoingBW.Write(clientKey);
             _outgoingBW.Write(accountId);
             _outgoingBW.Write(hardCurrency);
+            _outgoingBW.Write(vip);
             WriteUTF8String(displayName);
+            WriteUTF8String(authString);
 
             SendPacket();
         }
@@ -93,6 +98,16 @@ namespace ServerCore
 
             SendPacket();
         }
+
+        public void RequestAccountInfoFromAuthString(string authString, uint clientKey)
+        {
+            BeginPacket(GPacketType.AuthStringRequest);
+
+            _outgoingBW.Write(authString);
+            _outgoingBW.Write(clientKey);
+
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -112,7 +127,9 @@ namespace ServerCore
             args.ClientKey = br.ReadUInt32();
             args.AccountId = br.ReadInt32();
             args.HardCurrency = br.ReadInt32();
+            args.Vip = br.ReadInt32();
             args.DisplayName = ReadUTF8String(br);
+            args.AuthString = ReadUTF8String(br);
             OnAccountInfoResponse(this, args);
         }
 
@@ -133,6 +150,13 @@ namespace ServerCore
 
             OnCurrencyUpdate(this, args);
         }
+
+        void AuthStringRequestHandler(BinaryReader br)
+        {
+            string authString = br.ReadString();
+            uint clientKey = br.ReadUInt32();
+            OnAuthStringRequest(this, authString, clientKey);
+        }
         #endregion
     }
 
@@ -150,7 +174,9 @@ namespace ServerCore
         public uint ClientKey;
         public int AccountId;
         public int HardCurrency;
+        public int Vip;
         public string DisplayName;
+        public string AuthString;
     }
 
     public class GlobalSpendCoinArgs : EventArgs

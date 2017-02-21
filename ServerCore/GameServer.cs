@@ -10,10 +10,13 @@ namespace ServerCore
     public abstract class GameServer : ServerBase
     {
         GlobalServerManager _gs;
+        AuthStringManager _authManager;
 
         public GameServer(int listenPort, string dbConnectionString, string globalAddress, int globalPort)
             : base(listenPort, dbConnectionString)
         {
+            _authManager = new AuthStringManager();
+
             // Start the global server manager
             _gs = new GlobalServerManager(globalAddress, globalPort);
             _gs.OnAccountInfoResponse += new EventHandler<AccountInfoResponseArgs>(_gs_OnAccountInfoResponse);
@@ -38,6 +41,8 @@ namespace ServerCore
         {
             // Get the chat info
             //FetchChatInfo(client);
+
+            _authManager.RegisterAuthString(client.AuthString, client.AccountId, client.HardCurrency, client.Vip);
         }
 
         #region Server Tasks
@@ -98,6 +103,11 @@ namespace ServerCore
         public GlobalServerManager GlobalServer
         {
             get { return _gs; }
+        }
+
+        public AuthStringManager AuthManager
+        {
+            get { return _authManager; }
         }
         #endregion
     }

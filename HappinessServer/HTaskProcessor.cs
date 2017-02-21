@@ -20,9 +20,13 @@ namespace HappinessServer
             TowerData_Process,
             FloorRecord_Process,
             TutorialData_Store,
+
+            ValidateGameInfo,
+            ValidateGameInfo_GameDataProcess,
+            ValidateGameInfo_FloorInfoProcess,
         }
 
-        public HTask(HTaskType type, HClient client = null, object args = null)
+        public HTask(HTaskType type, HClient client = null, params object[] args)
         {
             Type = (int)type;
             _client = client;
@@ -51,6 +55,10 @@ namespace HappinessServer
             _taskHandlers[(int)HTask.HTaskType.TowerData_Process] = TowerData_Process_Handler;
             _taskHandlers[(int)HTask.HTaskType.FloorRecord_Process] = FloorRecord_Process_Handler;
             _taskHandlers[(int)HTask.HTaskType.TutorialData_Store] = TutorialData_Store_Handler;
+
+            _taskHandlers[(int)HTask.HTaskType.ValidateGameInfo] = ValidateGameInfo_Handler;
+            _taskHandlers[(int)HTask.HTaskType.ValidateGameInfo_GameDataProcess] = ValidateGameInfo_GameDataProcess_Handler;
+            _taskHandlers[(int)HTask.HTaskType.ValidateGameInfo_FloorInfoProcess] = ValidateGameInfo_FloorInfoProcess_Handler;
         }
 
         #region Task Handlers
@@ -181,25 +189,8 @@ namespace HappinessServer
             HTask task = (HTask)t;
             TowerDataRequstArgs args = (TowerDataRequstArgs)t.Args;
 
-            // get the records
-            List<TowerFloorRecord> floors = new List<TowerFloorRecord>();
-            foreach (object[] row in t.Query.Rows)
-            {
-                // 0: account_id
-                // 1: tower
-                // 2: floor
-                // 3: best_time
-                // 4: friend_rank
-                // 5: global_rank
-
-                TowerFloorRecord record = new TowerFloorRecord();
-                record.Floor = (int)row[2];
-                record.BestTime = (int)row[3];
-                record.RankFriends = (int)row[4];
-                record.RankGlobal = (int)row[5];
-                floors.Add(record);
-            }
-            task.Client.SendTowerData(args.Tower, floors.ToArray());
+            // get the records            
+            task.Client.SendTowerData(args.Tower, ReadTowerFloors(t));
         }
 
         void FloorRecord_Process_Handler(Task t)
@@ -234,7 +225,102 @@ namespace HappinessServer
             string sql = string.Format("UPDATE game_data SET tutorial_data={0} WHERE account_id={1};", tutorialData, task.Client.AccountId);
             AddDBQuery(sql, null, false);
         }
+
+        void ValidateGameInfo_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+
+            object[] args = (object[])t.Args;
+            string authString = (string)args[0];
+            string hash = (string)args[1];
+
+
+            // Validate auth string
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(authString);
+            if (aai == null)
+            {
+                // This account isnt in the cache, need to go fetch from global server   
+                task.Client.PendingAuthTask = task;
+                _server.GlobalServer.FetchAuthString(authString, task.Client.SessionKey);
+                return;
+            }
+
+            ValidateGameInfoArgs gia = new ValidateGameInfoArgs(authString, hash);
+
+            task.Client.AccountId = aai.AccountID;
+            task.Client.HardCurrency = aai.HardCurrency;
+
+            // Fetch game data
+            string sql = string.Format("SELECT * FROM game_data WHERE account_id={0};", task.Client.AccountId);
+            AddDBQuery(sql, new HTask(HTask.HTaskType.ValidateGameInfo_GameDataProcess, task.Client, gia));
+
+            // Fetch floor data
+            sql = string.Format("SELECT * FROM floor_records WHERE account_id={0};", task.Client.AccountId);
+            AddDBQuery(sql, new HTask(HTask.HTaskType.ValidateGameInfo_FloorInfoProcess, task.Client, gia));
+        }
+
+        void ValidateGameInfo_GameDataProcess_Handler(Task t)
+        {
+            GameDataArgs gameData = ReadGameData(t.Query);
+
+            HTask task = (HTask)t;
+            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)task.Args;
+            gia.GameInfo.GameData = gameData;
+
+            if( gia.RequestFinished)
+                ProcessValidateGameInfo(gia, task.Client);
+        }
+
+        void ValidateGameInfo_FloorInfoProcess_Handler(Task t)
+        {
+            Dictionary<int, List<TowerFloorRecord> > towerData = new Dictionary<int, List<TowerFloorRecord>>();
+            foreach (object[] row in t.Query.Rows)
+            {
+                // 0: account_id
+                // 1: tower
+                // 2: floor
+                // 3: best_time
+                // 4: friend_rank
+                // 5: global_rank
+
+                TowerFloorRecord record = new TowerFloorRecord();
+                int tower = (int)row[1];
+
+                if (!towerData.ContainsKey(tower))
+                    towerData[tower] = new List<TowerFloorRecord>();
+
+                record.Floor = (int)row[2];
+                record.BestTime = (int)row[3];
+                record.RankFriends = (int)row[4];
+                record.RankGlobal = (int)row[5];
+                towerData[tower].Add(record);
+            }
+
+            TowerData[] td = new TowerData[6];
+            for (int i = 0; i < td.Length; i++)
+            {
+                td[i].Tower = i;
+                td[i].Floors = towerData.ContainsKey(i) ? towerData[i].ToArray() : null;
+            }
+
+            HTask task = (HTask)t;
+            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)task.Args;
+            gia.GameInfo.TowerData = td;
+
+            if (gia.RequestFinished)
+               ProcessValidateGameInfo(gia, task.Client);
+        }
         #endregion
+
+        void ProcessValidateGameInfo(ValidateGameInfoArgs gia, HClient client)
+        {
+            byte[] hash = gia.GameInfo.GenerateHash();
+            string serverHash = Encoding.UTF8.GetString(hash);
+            string clientHash = gia.Hash;
+
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(gia.AuthString);
+            client.SendValidateGameInfoResponse(aai.HardCurrency, aai.Vip, serverHash == clientHash, gia.GameInfo);
+        }
 
         #region Data Functions
         GameDataArgs ReadGameData(DBQuery query)
@@ -252,6 +338,28 @@ namespace HappinessServer
 
             return gameData;
         }
+
+        TowerFloorRecord[] ReadTowerFloors(Task t)
+        {
+            List<TowerFloorRecord> floors = new List<TowerFloorRecord>();
+            foreach (object[] row in t.Query.Rows)
+            {
+                // 0: account_id
+                // 1: tower
+                // 2: floor
+                // 3: best_time
+                // 4: friend_rank
+                // 5: global_rank
+
+                TowerFloorRecord record = new TowerFloorRecord();
+                record.Floor = (int)row[2];
+                record.BestTime = (int)row[3];
+                record.RankFriends = (int)row[4];
+                record.RankGlobal = (int)row[5];
+                floors.Add(record);
+            }
+            return floors.ToArray();
+        }
         #endregion
 
         
@@ -260,6 +368,25 @@ namespace HappinessServer
         {
             string sql = string.Format("INSERT INTO errors SET account_id={0}, error_str=\"{1}\", timestamp={2};", accountId, error, DateTime.Now.Ticks);
             AddDBQuery(sql, null, false);
+        }
+
+        class ValidateGameInfoArgs
+        {
+            public string AuthString;
+            public string Hash;
+            public GameInfo GameInfo;
+
+            public ValidateGameInfoArgs(string authString, string hash)
+            {
+                AuthString = authString;
+                Hash = hash;
+                GameInfo = new GameInfo();
+            }
+
+            public bool RequestFinished
+            {
+                get { return (GameInfo.GameData != null && GameInfo.TowerData != null); }
+            }
         }
     }
 }

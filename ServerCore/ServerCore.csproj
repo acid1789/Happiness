@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthStringManager.cs" />
     <Compile Include="DatabaseThread.cs" />
     <Compile Include="GameServer.cs" />
     <Compile Include="GlobalClient.cs" />
