@@ -163,7 +163,8 @@ namespace NetworkCore
 
         protected void BeginPacket(PacketType type)
         {
-            LogInterface.Log(string.Format("BeginPacket({0})", type), LogInterface.LogMessageType.Debug);
+            if( type != PacketType.Ping && type != PacketType.Pong )
+                LogInterface.Log(string.Format("BeginPacket({0})", type), LogInterface.LogMessageType.Debug);
             BeginPacket((ushort)type);
         }
 

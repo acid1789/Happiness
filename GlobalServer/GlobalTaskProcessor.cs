@@ -118,7 +118,7 @@ namespace GlobalServer
                         authString = GenerateAuthString((string)row[1], pw, displayName, accountId);
 
                         // Store it in the database
-                        DBQuery q = AddDBQuery(string.Format("UPDATE accounts SET auth_string=\"{0}\" WHERE accountId={1};", authString, accountId), null);
+                        DBQuery q = AddDBQuery(string.Format("UPDATE accounts SET auth_string=\"{0}\" WHERE account_id={1};", authString, accountId), null);
                     }
                     else
                         authString = (string)row[5];
@@ -137,7 +137,7 @@ namespace GlobalServer
                     sendAccountInfo = false;
 
                     task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
-                    DBQuery q = AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",password=\"{1}\",display_name=\"{2}\",hard_currency=\"{3}\";", args.Email, args.Password, args.DisplayName, 0), task);
+                    DBQuery q = AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",password=\"{1}\",display_name=\"{2}\",hard_currency={3},vip={4};", args.Email, args.Password, args.DisplayName, 0, 0), task);
                 }
             }
             if(sendAccountInfo )

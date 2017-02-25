@@ -81,10 +81,7 @@ namespace Happiness
             m_FloorDataFetchText = new UILabel("Fetching Data...", iCenterX, m_FloorWaitRectangle.Bottom, Color.White, Assets.DialogFont, UILabel.XMode.Center);
 
             m_ScrollFrame = new UIFrame(5, m_FloorScrollRect);
-
-            // Request the data from the server
-            NetworkManager.Net.RequestTowerData(tower, true);
-
+            
             m_iFloorSelectTutorialWidth = (int)(Constants.FloorSelectDialog_FloorSelectTutorialWidth * screenWidth);
             int floorPlayTutorialWidth = (int)(Constants.FloorSelectDialog_PlayTutorialWidth * screenWidth);
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,

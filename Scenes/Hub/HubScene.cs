@@ -39,25 +39,24 @@ namespace Happiness
             int midX = centerX - (towerSize >> 1);
             int rightX = centerX + towerSize;
             m_Towers = new Tower[6];
-            m_Towers[0] = new Tower(3, nm.GameData.TowerFloors[0], new Rectangle(leftX, towerTop, towerSize, towerSize), Assets.Towers[0]);
-            m_Towers[1] = new Tower(4, nm.GameData.TowerFloors[1], new Rectangle(midX, towerTop, towerSize, towerSize), Assets.Towers[1]);
-            m_Towers[2] = new Tower(5, nm.GameData.TowerFloors[2], new Rectangle(rightX, towerTop, towerSize, towerSize), Assets.Towers[2]);
-            m_Towers[3] = new Tower(6, nm.GameData.TowerFloors[3], new Rectangle(leftX, centerY, towerSize, towerSize), Assets.Towers[3]);
-            m_Towers[4] = new Tower(7, nm.GameData.TowerFloors[4], new Rectangle(midX, centerY, towerSize, towerSize), Assets.Towers[0]);
-            m_Towers[5] = new Tower(8, nm.GameData.TowerFloors[5], new Rectangle(rightX, centerY, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[0] = new Tower(3, game.m_GameInfo.GameData.TowerFloors[0], new Rectangle(leftX, towerTop, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[1] = new Tower(4, game.m_GameInfo.GameData.TowerFloors[1], new Rectangle(midX, towerTop, towerSize, towerSize), Assets.Towers[1]);
+            m_Towers[2] = new Tower(5, game.m_GameInfo.GameData.TowerFloors[2], new Rectangle(rightX, towerTop, towerSize, towerSize), Assets.Towers[2]);
+            m_Towers[3] = new Tower(6, game.m_GameInfo.GameData.TowerFloors[3], new Rectangle(leftX, centerY, towerSize, towerSize), Assets.Towers[3]);
+            m_Towers[4] = new Tower(7, game.m_GameInfo.GameData.TowerFloors[4], new Rectangle(midX, centerY, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[5] = new Tower(8, game.m_GameInfo.GameData.TowerFloors[5], new Rectangle(rightX, centerY, towerSize, towerSize), Assets.Towers[0]);
 
             // Level/Exp display
             int expBarWidth = (int)(Constants.HubScene_ExpBarWidth * Game.ScreenWidth);
             int expBarHeight = (int)(Constants.HubScene_ExpBarHeight * Game.ScreenHeight);
             int expBarLeft = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
-            int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);
-            GameDataArgs gd = NetworkManager.Net.GameData;
-            game.Tutorial.Load(gd.Tutorial);
+            int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);            
+            game.Tutorial.Load(game.m_GameInfo.GameData.Tutorial);
             m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
-            m_Level = new UILabel(gd.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;
-            m_ExpBar.Progress = (float)gd.Exp / Balance.ExpForNextLevel(gd.Level);
+            m_ExpBar.Progress = (float)game.m_GameInfo.GameData.Exp / Balance.ExpForNextLevel(game.m_GameInfo.GameData.Level);
 
             int tutorialWidth = (int)(Constants.HubScene_TutorialWidth * Game.ScreenWidth);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None, m_Towers[0].Rect);

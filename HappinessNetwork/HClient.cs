@@ -31,7 +31,7 @@ namespace HappinessNetwork
         public event EventHandler<SpendCoinsArgs> OnSpendCoins;
         public event EventHandler<TowerDataRequstArgs> OnTowerDataRequest;
         public event EventHandler<TowerData> OnTowerDataResponse;
-        public event Action<HClient, ulong> OnTutorialData;
+        public event Action<HClient, ulong, string> OnTutorialData;
         public event Action<HClient, string, string> OnValidateGameInfo;
         public event Action<HClient, GameInfo> OnGameInfoResponse;
 
@@ -139,11 +139,12 @@ namespace HappinessNetwork
             SendPacket();
         }
 
-        public void SendTutorialData(ulong tutorialData)
+        public void SendTutorialData(ulong tutorialData, string authToken)
         {
             BeginPacket(HPacketType.TutorialData);
 
             _outgoingBW.Write(tutorialData);
+            _outgoingBW.Write(authToken);
             SendPacket();
         }
 
@@ -165,6 +166,8 @@ namespace HappinessNetwork
             _outgoingBW.Write(hashMatches);
             if( !hashMatches )
                 serverData.Save(_outgoingBW);
+
+            SendPacket();
         }
         #endregion
 
@@ -238,7 +241,8 @@ namespace HappinessNetwork
         void TutorialData_Handler(BinaryReader br)
         {
             ulong tutorialData = br.ReadUInt64();
-            OnTutorialData(this, tutorialData);
+            string authToken = br.ReadString();
+            OnTutorialData(this, tutorialData, authToken);
         }
 
         void ValidateGameInfo_Request_Handler(BinaryReader br)
@@ -255,7 +259,7 @@ namespace HappinessNetwork
             Vip = br.ReadInt32();
             bool hashMatches = br.ReadBoolean();
             GameInfo serverData = null;
-            if (hashMatches)
+            if (!hashMatches)
             {
                 serverData = new GameInfo();
                 serverData.Load(br);

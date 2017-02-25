@@ -85,11 +85,7 @@ namespace ServerCore
                 AddTask(authTask);
             }
             else
-            {
-                // Valid account
-                client.SendAccountResponse(args.AccountId, args.DisplayName, args.AuthString);
-                client.CurrencyUpdate(args.HardCurrency);
-
+            {                
                 // Store stuff
                 client.AccountId = args.AccountId;
                 client.HardCurrency = args.HardCurrency;

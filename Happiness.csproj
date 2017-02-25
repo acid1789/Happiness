@@ -48,6 +48,7 @@
     <Compile Include="Scenes\Hub\FloorSelectDialog.cs" />
     <Compile Include="Scenes\Hub\SoundDialog.cs" />
     <Compile Include="Scenes\MainGame\Action.cs" />
+    <Compile Include="ServerWriter.cs" />
     <Compile Include="TutorialSystem.cs" />
     <Compile Include="UI\IconButton.cs" />
     <Compile Include="UI\UIFrame.cs" />

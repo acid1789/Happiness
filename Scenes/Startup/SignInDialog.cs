@@ -18,7 +18,6 @@ namespace Happiness
         }
 
         Rectangle m_Rect;
-        Rectangle m_WaitRect;
         int m_iCenterDialogX;
         int m_iMargin;
         bool m_bInputEnabled;
@@ -45,7 +44,6 @@ namespace Happiness
         UIButton[] m_DialogButtons;
 
         string m_szStatusText;
-        float m_fStatusTextY;
         Color m_StatusColor;
 
         Mode m_Mode;

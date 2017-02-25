@@ -24,6 +24,9 @@ namespace HappinessNetwork
 
         public void Load(BinaryReader br, int version = GameInfoVersion)
         {
+            int length = br.ReadInt32();
+            byte[] ascii = br.ReadBytes(length);
+            _authString = Encoding.ASCII.GetString(ascii);
             LoadGameData(br, version);
             LoadTowerData(br, version);
         }
@@ -46,6 +49,9 @@ namespace HappinessNetwork
 
         public void Save(BinaryWriter bw)
         {
+            byte[] authString = Encoding.ASCII.GetBytes(_authString);
+            bw.Write(authString.Length);
+            bw.Write(authString);
             SaveGameData(bw);
             SaveTowerData(bw);
         }
@@ -53,6 +59,8 @@ namespace HappinessNetwork
         void SaveGameData(BinaryWriter bw)
         {
             bw.Write(_gameData.TowerFloors.Length);
+            foreach( int towerFloor in _gameData.TowerFloors )
+                bw.Write(towerFloor);
             bw.Write(_gameData.Level);
             bw.Write(_gameData.Exp);
             bw.Write(_gameData.Tutorial);
@@ -88,10 +96,13 @@ namespace HappinessNetwork
                 {
                     bw.Write(td.Tower);
                     bw.Write(td.Floors == null ? 0 : td.Floors.Length);
-                    foreach (TowerFloorRecord tfr in td.Floors)
+                    if (td.Floors != null)
                     {
-                        bw.Write(tfr.Floor);
-                        bw.Write(tfr.BestTime);
+                        foreach (TowerFloorRecord tfr in td.Floors)
+                        {
+                            bw.Write(tfr.Floor);
+                            bw.Write(tfr.BestTime);
+                        }
                     }
                 }
             }

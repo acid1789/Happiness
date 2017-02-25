@@ -34,7 +34,9 @@ namespace HappinessServer
 
         public override void NewAuthorizedClient(GameClient client)
         {
-            base.NewAuthorizedClient(client);            
+            base.NewAuthorizedClient(client);
+
+            TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, (HClient)client, client.AuthString, null));
         }
 
         #region Client Event Handlers
@@ -58,9 +60,9 @@ namespace HappinessServer
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.TowerData_Fetch, (HClient)sender, e));
         }
 
-        private void Client_OnTutorialData(HClient arg1, ulong arg2)
+        private void Client_OnTutorialData(HClient arg1, ulong arg2, string authString)
         {
-            TaskProcessor.AddTask(new HTask(HTask.HTaskType.TutorialData_Store, arg1, arg2));
+            TaskProcessor.AddTask(new HTask(HTask.HTaskType.TutorialData_Store, arg1, arg2, authString));
         }
 
         private void Client_OnValidateGameInfo(HClient arg1, string authString, string hash)

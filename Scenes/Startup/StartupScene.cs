@@ -19,7 +19,6 @@ namespace Happiness
 
         SignInStep m_Step;
         SignInDialog m_SignInDialog;
-        MessageBox m_MessageBox;
         DisplayNameDialog m_DisplayNameDialog;
 
         Rectangle m_LogoRectangle;
@@ -29,7 +28,6 @@ namespace Happiness
         Vector2 m_vMusicCreditPosition;
 
         GameInfoValidator m_GIV;
-        GameInfo m_GameInfo;
         Rectangle m_WaitRect;
         Point m_WaitTextCenter;
         string m_szWaitText;
@@ -110,6 +108,8 @@ namespace Happiness
                     break;
                 case GameInfoValidator.LoadStatus.ServerFetchComplete:
                     m_szWaitText = "Fetched from server";
+                    Game.m_GameInfo = m_GIV.m_GameInfo;
+                    GotoHubScene();
                     break;
                 case GameInfoValidator.LoadStatus.NoFile:
                     m_szWaitText = null;
@@ -120,66 +120,9 @@ namespace Happiness
 
 
             if (m_SignInDialog != null)
-                m_SignInDialog.Update(gameTime);
-            /*
-                        if(m_DisplayNameDialog != null )
-                            m_DisplayNameDialog.Update(gameTime);
-
-                        switch (m_Step)
-                        {
-                            case SignInStep.InputCredentials:
-                                break;
-                            case SignInStep.Connecting:
-                                if (NetworkManager.Net.Connected)
-                                {
-                                    // Done connecting, now sign in
-                                    NetworkManager.Net.SignIn(m_SignInDialog.Email, m_SignInDialog.Password, null);
-                                    m_SignInDialog.Status = "Signing In...";
-                                    m_Step = SignInStep.WaitingForSignIn;
-                                }
-                                break;
-                            case SignInStep.WaitingForSignIn:
-                                if (NetworkManager.Net.SignInState != NetworkManager.SignInStatus.CredentialsSent)
-                                {
-                                    switch (NetworkManager.Net.SignInState)
-                                    {
-                                        case NetworkManager.SignInStatus.InvalidAccount:
-                                            if (m_MessageBox == null)
-                                            {
-                                                string message = string.Format("An account for email address '{0}' does not exist.\nWould you like to create one now?", m_SignInDialog.Email);
-                                                m_MessageBox = new MessageBox(message, MessageBoxButtons.YesNo, (int)NetworkManager.SignInStatus.InvalidAccount, Game.ScreenWidth, Game.ScreenHeight);
-                                            }
-                                            break;
-                                        case NetworkManager.SignInStatus.InvalidPassword:
-                                            m_SignInDialog.Status = "Invalid Account or Password";
-                                            m_SignInDialog.StatusColor = Color.Red;
-                                            m_SignInDialog.InputEnabled = true;
-                                            m_Step = SignInStep.InputCredentials;
-                                            break;
-                                        case NetworkManager.SignInStatus.SignedIn:
-                                            NetworkManager.Net.FetchGameData();
-                                            m_SignInDialog.StatusColor = Color.Green;
-                                            m_SignInDialog.Status = "Waiting for game data...";
-                                            m_Step = SignInStep.WaitingForGameData;
-                                            break;
-                                    }
-                                }
-                                break;
-                            case SignInStep.WaitingForGameData:
-                                if (NetworkManager.Net.GameData != null)
-                                {
-                                    m_Step = SignInStep.Finished;
-                                    SaveStartupDetails();
-                                    GotoHubScene();
-                                }
-                                break;
-                            case SignInStep.Finished:
-                            default:
-                                break;                   
-                        }
-                        */
+                m_SignInDialog.Update(gameTime);           
         }
-
+        
         void GotoHubScene()
         {
             Game.GotoScene(new HubScene(Game));
@@ -238,8 +181,8 @@ namespace Happiness
             m_SignInDialog = null;
             m_szWaitText = "Signing In...";
 
-
-            M_SignInDialog_OnSkip(null, null);
+            m_GIV.RequestFromServer(email, password, createMode);
+            //M_SignInDialog_OnSkip(null, null);
         }
 
         private void M_SignInDialog_OnSkip(object sender, EventArgs e)
@@ -248,7 +191,7 @@ namespace Happiness
             NetworkManager.Net.Disabled = true;
 
             // Load static gamedata
-            NetworkManager.Net.LoadStaticData();
+            //NetworkManager.Net.LoadStaticData();
 
             GotoHubScene();
         }

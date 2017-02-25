@@ -29,7 +29,8 @@ namespace NetworkCore
 
         public static void Log(string message, LogMessageType type = LogMessageType.Normal, bool logToConsole = false)
         {
-            _log.Log(type, logToConsole, message);
+            if( _log != null )
+                _log.Log(type, logToConsole, message);
         }
 
         public static bool AlwaysPrintToConsole

@@ -67,9 +67,9 @@ namespace Happiness
         {
             if (m_CurrentMusic != PlayingMusic.Menu)
             {
-                //MediaPlayer.Play(Assets.MenuSong);
-                //MediaPlayer.IsRepeating = true;
-                //m_CurrentMusic = PlayingMusic.Menu;
+                MediaPlayer.Play(Assets.MenuSong);
+                MediaPlayer.IsRepeating = true;
+                m_CurrentMusic = PlayingMusic.Menu;
             }
         }
         

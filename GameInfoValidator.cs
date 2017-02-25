@@ -25,7 +25,11 @@ namespace Happiness
         
         Thread _loadThread;
         LoadStatus _loadStatus;
-        GameInfo _gi;
+        public GameInfo m_GameInfo;
+
+        string _userName;
+        string _passWord;
+        bool _accountCreate;
 
         public GameInfoValidator()
         {
@@ -40,20 +44,21 @@ namespace Happiness
                 _loadThread.Abort();
                 _loadThread = null;
             }
-            _gi = null;
+            m_GameInfo = null;
             _loadStatus = LoadStatus.Idle;
         }
 
-        public void BeginLoadFromDisk()
+        public void RequestFromServer(string username, string password, bool createMode)
         {
-            if (_loadStatus != LoadStatus.Loading &&
-                _loadStatus != LoadStatus.FetchingFromServer )
-            {
-                _loadThread = new Thread(new ThreadStart(LoadThreadFunc));
-                _loadThread.Name = "GameInfo Loading Thread";
-                _loadThread.Start();
-                _loadStatus = LoadStatus.Loading;
-            }
+            _userName = username;
+            _passWord = password;
+            _accountCreate = createMode;
+            StartThread(new ThreadStart(ServerRequestFunc));
+        }
+
+        public void BeginLoadFromDisk()
+        {            
+            StartThread(new ThreadStart(LoadThreadFunc));            
         }
 
         void SaveToDisk()
@@ -62,13 +67,25 @@ namespace Happiness
             BinaryWriter bw = new BinaryWriter(fs);
 
             bw.Write(GameInfo.GameInfoVersion);
-            bw.Write(_gi.AuthString);
-            _gi.Save(bw);
+            m_GameInfo.Save(bw);
             bw.Close();
+        }
+
+        void StartThread(ThreadStart ts)
+        {
+            if (_loadStatus != LoadStatus.Loading &&
+                _loadStatus != LoadStatus.FetchingFromServer)
+            {
+                _loadThread = new Thread(ts);
+                _loadThread.Name = "Game Info Thread";
+                _loadThread.Start();
+            }
         }
 
         void LoadThreadFunc()
         {
+            _loadStatus = LoadStatus.Loading;
+
             // Check for the local file
             if (File.Exists(LocalFileName))
             {
@@ -77,15 +94,15 @@ namespace Happiness
                 BinaryReader br = new BinaryReader(fs);
 
                 int version = br.ReadInt32();
-                _gi.AuthString = br.ReadString();
-                _gi.Load(br, version);
+                m_GameInfo = new GameInfo();
+                m_GameInfo.Load(br, version);
                 br.Close();
 
                 // Hash the data
-                _gi.GenerateHash();
+                m_GameInfo.GenerateHash();
 
                 // Validate with the server
-                if (_gi.AuthString != null)
+                if (m_GameInfo.AuthString != null)
                     ValidateWithServer();
                 else
                     _loadStatus = LoadStatus.LoadedNoValidation;
@@ -94,6 +111,29 @@ namespace Happiness
                 _loadStatus = LoadStatus.NoFile;
 
             _loadThread = null;
+        }
+
+        void ServerRequestFunc()
+        {
+            _loadStatus = LoadStatus.FetchingFromServer;
+
+            // Connect to server
+            HClient client = new HClient();
+            client.Connect(HClient.ServerAddress, HClient.ServerPort);
+            client.OnGameInfoResponse += Client_OnGameInfoResponse;
+            client.OnAccountResponse += Client_OnAccountResponse;
+
+            // Send request
+            client.SendAccountRequest(_userName, _passWord, _accountCreate ? null : _userName);
+
+            // Wait for response
+            while (client.Connected && _loadStatus == LoadStatus.FetchingFromServer)
+            {
+                client.Update();
+                Thread.Sleep(10);
+            }
+
+            client.Close();
         }
 
         void ValidateWithServer()
@@ -107,7 +147,7 @@ namespace Happiness
             client.OnAccountResponse += Client_OnAccountResponse;
 
             // Send request
-            client.SendValidateGameInfoRequest(_gi.AuthString, Encoding.UTF8.GetString(_gi.Hash));
+            client.SendValidateGameInfoRequest(m_GameInfo.AuthString, Encoding.UTF8.GetString(m_GameInfo.Hash));
 
             // Wait for response
             while (client.Connected && _loadStatus == LoadStatus.FetchingFromServer)
@@ -129,9 +169,8 @@ namespace Happiness
         {
             if (arg2 != null)
             {
-                arg2.AuthString = _gi.AuthString;
-                _gi = arg2;
-                _gi.GenerateHash();
+                m_GameInfo = arg2;
+                m_GameInfo.GenerateHash();
                 SaveToDisk();
             }
 

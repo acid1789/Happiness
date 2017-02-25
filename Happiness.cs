@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using HappinessNetwork;
 
 namespace Happiness
 {
@@ -34,6 +35,8 @@ namespace Happiness
 
         Scene m_CurrentScene;
         TutorialSystem m_Tutorial;
+        public GameInfo m_GameInfo;
+        ServerWriter m_ServerWriter;
 
         public Happiness()
         {
@@ -48,7 +51,7 @@ namespace Happiness
             graphics.PreferredBackBufferHeight = m_iScreenHeight;            
 
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;                
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -60,12 +63,13 @@ namespace Happiness
         protected override void Initialize()
         {         
             base.Initialize();
+            m_ServerWriter = new ServerWriter();
 
             InputController.IC.OnClick += IC_OnClick;
 
             m_iScreenWidth = graphics.GraphicsDevice.Viewport.Width;
             m_iScreenHeight = graphics.GraphicsDevice.Viewport.Height;
-            m_Tutorial = new TutorialSystem(m_iScreenWidth, m_iScreenHeight);            
+            m_Tutorial = new TutorialSystem(m_iScreenWidth, m_iScreenHeight, this);            
 
             //m_CurrentScene = new GameScene(this);
             //((GameScene)m_CurrentScene).Initialize(0, 6, true);
@@ -74,6 +78,7 @@ namespace Happiness
 
         public void ExitGame()
         {
+            m_ServerWriter.Shutdown();
             NetworkManager.Net.Shutdown();
             Exit();
         }
@@ -137,7 +142,20 @@ namespace Happiness
             
             m_CurrentScene = nextScene;            
         }
-                
+
+        public void SaveTutorialData(ulong tutorialData)
+        {
+            // Store local copy
+            m_GameInfo.GameData.Tutorial = tutorialData;
+
+            // Send to the server
+            ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
+        }
+
+        public void SavePuzzleData()
+        {
+        }
+
         #region Drawing
         /// <summary>
         /// This is called when the game should draw itself.

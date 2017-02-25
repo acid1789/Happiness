@@ -221,7 +221,19 @@ namespace HappinessServer
         void TutorialData_Store_Handler(Task t)
         {
             HTask task = (HTask)t;
-            ulong tutorialData = (ulong)t.Args;
+            object[] args = (object[])t.Args;
+            ulong tutorialData = (ulong)args[0];
+            string authToken = (string)args[1];
+
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(authToken);
+            if (aai == null)
+            {
+                // This account isnt in the cache, need to go fetch from global server   
+                task.Client.PendingAuthTask = task;
+                _server.GlobalServer.FetchAuthString(authToken, task.Client.SessionKey);
+                return;
+            }
+
             string sql = string.Format("UPDATE game_data SET tutorial_data={0} WHERE account_id={1};", tutorialData, task.Client.AccountId);
             AddDBQuery(sql, null, false);
         }
@@ -261,13 +273,28 @@ namespace HappinessServer
 
         void ValidateGameInfo_GameDataProcess_Handler(Task t)
         {
-            GameDataArgs gameData = ReadGameData(t.Query);
-
             HTask task = (HTask)t;
-            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)task.Args;
-            gia.GameInfo.GameData = gameData;
+            object[] args = (object[])t.Args;
+            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)args[0];
+            
+            if (t.Query.Rows.Count > 0)
+            {
+                gia.GameInfo.GameData = ReadGameData(t.Query);
+            }
+            else
+            {
+                // Put this record in the database
+                string sql = string.Format("INSERT INTO game_data SET account_id={0},tower0=1;", task.Client.AccountId);                
+                t.Type = -1;
+                AddDBQuery(sql, t);
 
-            if( gia.RequestFinished)
+                // Setup the default info
+                gia.GameInfo.GameData = new GameDataArgs();
+                gia.GameInfo.GameData.TowerFloors = new int[6];
+                gia.GameInfo.GameData.TowerFloors[0] = 1;
+            }
+
+            if (gia.RequestFinished)
                 ProcessValidateGameInfo(gia, task.Client);
         }
 
@@ -299,12 +326,14 @@ namespace HappinessServer
             TowerData[] td = new TowerData[6];
             for (int i = 0; i < td.Length; i++)
             {
+                td[i] = new TowerData();
                 td[i].Tower = i;
                 td[i].Floors = towerData.ContainsKey(i) ? towerData[i].ToArray() : null;
             }
 
             HTask task = (HTask)t;
-            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)task.Args;
+            object[] args = (object[])t.Args;
+            ValidateGameInfoArgs gia = (ValidateGameInfoArgs)args[0];
             gia.GameInfo.TowerData = td;
 
             if (gia.RequestFinished)
@@ -319,6 +348,7 @@ namespace HappinessServer
             string clientHash = gia.Hash;
 
             AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(gia.AuthString);
+            gia.GameInfo.AuthString = gia.AuthString;
             client.SendValidateGameInfoResponse(aai.HardCurrency, aai.Vip, serverHash == clientHash, gia.GameInfo);
         }
 

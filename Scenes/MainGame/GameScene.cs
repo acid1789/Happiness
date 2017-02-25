@@ -529,7 +529,7 @@ namespace Happiness
                     if (m_Puzzle.IsSolved())
                     {
                         //m_SoundManager.PlayPuzzleComplete();
-                        NetworkManager.Net.PuzzleComplete(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime);
+                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime);
                     }
                     else
                     {

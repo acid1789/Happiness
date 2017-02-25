@@ -96,6 +96,7 @@ namespace Happiness
         
         Dictionary<TutorialPiece, PieceData> m_Pieces;
         TutorialPiece m_CurrentPiece;
+        Happiness m_Game;
 
         #region Arrow Variables
         Vector2 m_vArrowTarget;
@@ -126,8 +127,9 @@ namespace Happiness
         UIButton m_OKButton;
         #endregion
 
-        public TutorialSystem(int screenWidth, int screenHeight)
+        public TutorialSystem(int screenWidth, int screenHeight, Happiness game)
         {
+            m_Game = game;
             m_Pieces = new Dictionary<TutorialPiece, PieceData>();
             m_CurrentPiece = TutorialPiece.None;
 
@@ -178,8 +180,8 @@ namespace Happiness
                     bitfield |= bit;
                 }
             }
-
-            NetworkManager.Net.SaveTutorialData(bitfield);
+            
+            m_Game.SaveTutorialData(bitfield);
         }
         #endregion
 

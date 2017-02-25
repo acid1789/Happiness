@@ -26,8 +26,7 @@ namespace Happiness
         AnimStep m_AnimStep;
         double m_AnimTimeRemaining;
         bool m_bLevelUnlocked;
-
-        GameDataArgs m_GameData;
+        
         int m_iTotalExp;
         int m_iExpStep;
         int m_iCenterX;
@@ -151,10 +150,9 @@ namespace Happiness
             int expBarWidth = (int)(Constants.EndScreen_ExpBarWidth * screenWidth);
             int expBarHeight = (int)(Constants.EndScreen_ExpBarHeight * screenHeight);
             int expBarLeft = m_iCenterX - (expBarWidth >> 1);
-            int levelY = iScoreY + scoreSpace + (int)(Constants.EndScreen_ScoreLevelGap * screenHeight);
-            m_GameData = NetworkManager.Net.GameData;
+            int levelY = iScoreY + scoreSpace + (int)(Constants.EndScreen_ScoreLevelGap * screenHeight);            
             m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
-            m_Level = new UILabel(m_GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;            
             
@@ -270,7 +268,7 @@ namespace Happiness
             if (m_iTotalExp > 0)
             {
                 int expAdj = Math.Min(m_iTotalExp, m_iExpStep);
-                m_GameData.Exp += expAdj;
+                m_Game.m_GameInfo.GameData.Exp += expAdj;
                 m_iTotalExp -= expAdj;
 
                 SetupExpDisplay();
@@ -283,25 +281,23 @@ namespace Happiness
 
         void SetupExpDisplay()
         {
-            int expForNextLevel = Balance.ExpForNextLevel(m_GameData.Level);
-            while (m_GameData.Exp >= expForNextLevel)
+            int expForNextLevel = Balance.ExpForNextLevel(m_Game.m_GameInfo.GameData.Level);
+            while (m_Game.m_GameInfo.GameData.Exp >= expForNextLevel)
             {
-                m_GameData.Exp -= expForNextLevel;
-                m_GameData.Level++;
-                expForNextLevel = Balance.ExpForNextLevel(m_GameData.Level);
-                m_Level.Text = m_GameData.Level.ToString();
+                m_Game.m_GameInfo.GameData.Exp -= expForNextLevel;
+                m_Game.m_GameInfo.GameData.Level++;
+                expForNextLevel = Balance.ExpForNextLevel(m_Game.m_GameInfo.GameData.Level);
+                m_Level.Text = m_Game.m_GameInfo.GameData.Level.ToString();
                 m_Level.Color = Color.Yellow;
                 m_Level.Font = Assets.DialogFont;
                 m_Level.PositionY -= 4;
 
-                m_bLevelUnlocked = m_iTower < (m_GameData.TowerFloors.Length - 1) && m_GameData.Level >= Balance.UnlockThreshold(m_iTower) && m_GameData.TowerFloors[m_iTower + 1] == 0;
+                m_bLevelUnlocked = m_iTower < (m_Game.m_GameInfo.GameData.TowerFloors.Length - 1) && m_Game.m_GameInfo.GameData.Level >= Balance.UnlockThreshold(m_iTower) && m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
                 if( m_bLevelUnlocked )
-                    m_GameData.TowerFloors[m_iTower + 1] = 1;
-                if( NetworkManager.Net.Disabled )
-                    NetworkManager.Net.StoreStaticData();
+                    m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] = 1;
             }
-            m_ExpBar.Progress = (float)m_GameData.Exp / (float)expForNextLevel;
-            string expString = string.Format("{0:N0} / {1:N0}", m_GameData.Exp, expForNextLevel);
+            m_ExpBar.Progress = (float)m_Game.m_GameInfo.GameData.Exp / (float)expForNextLevel;
+            string expString = string.Format("{0:N0} / {1:N0}", m_Game.m_GameInfo.GameData.Exp, expForNextLevel);
             m_ExpPoints = new UILabel(expString, m_iCenterX, m_ExpBar.Rect.Bottom, Color.LightGray, Assets.HelpFont, UILabel.XMode.Center);
         }
 
