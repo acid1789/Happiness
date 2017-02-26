@@ -86,6 +86,9 @@ namespace Happiness
             int floorPlayTutorialWidth = (int)(Constants.FloorSelectDialog_PlayTutorialWidth * screenWidth);
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,
                                                                                  new Rectangle(m_FloorScrollRect.Right + m_iLeftRightMargin, m_Buttons[1].Rect.Bottom + m_Game.Tutorial.ArrowWidth, floorPlayTutorialWidth, 0), "Press this button to play the selected floor.", TutorialSystem.TutorialPiece.None, m_Buttons[1].Rect);
+
+            SetupFloorData(game.m_GameInfo.TowerData[m_iTower]);
+            m_bFloorDataRetrieved = true;
         }
 
         void SetupFloorData(TowerData td)
@@ -96,6 +99,9 @@ namespace Happiness
             {
                 m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, floor.Floor, floor.RankFriends, floor.RankGlobal, floor.BestTime, parTime));
             }
+
+            if( m_Floors.Count <= 0 )
+                m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, 1, 0, 0, 0, parTime));
 
             float floorHeight = m_Floors[0].Height;
             int visibleFloors = (int)(m_FloorScrollRect.Height / floorHeight);
@@ -190,16 +196,7 @@ namespace Happiness
         #endregion
 
         public void Update(GameTime gt)
-        {
-            if (!m_bFloorDataRetrieved)
-            {
-                TowerData td = NetworkManager.Net.TowerData;
-                if (td != null)
-                {
-                    SetupFloorData(td);
-                    m_bFloorDataRetrieved = true;
-                }
-            }
+        {            
         }
 
         #region Drawing

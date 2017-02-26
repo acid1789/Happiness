@@ -100,22 +100,31 @@ namespace Happiness
 
         public void SetHintCount(int current, int max)
         {
+            if (max < 0)
+                max = int.MaxValue;
+
             SetButtonCount(1, current, max);
         }
 
         public void SetMegaHintCount(int current, int max)
         {
+            if (max < 0)
+                max = int.MaxValue;
+
             SetButtonCount(2, current, max);
         }
 
         public void SetUndoCount(int current, int max)
         {
+            if( max < 0 )
+                max = int.MaxValue;
+
             SetButtonCount(3, current, max);
         }
 
         void SetButtonCount(int button, int current, int max)
         {
-            m_Buttons[button].UnderText = string.Format("{0} / {1}", current, max);
+            m_Buttons[button].UnderText = max == int.MaxValue ? string.Format("∞") : string.Format("{0} / {1}", current, max);
             m_Buttons[button].Enabled = (current > 0);
         }
 

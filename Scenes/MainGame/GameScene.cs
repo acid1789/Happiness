@@ -94,11 +94,11 @@ namespace Happiness
             m_HelpPanel = new HelpPanel(this, new Rectangle(buttonPanelWidth, 0, m_GamePanel.Rect.Width, m_GamePanel.Rect.Top));
             m_ButtonPanel = new ButtonPanel(this, new Rectangle(0, 0, buttonPanelWidth, m_VerticalCluePanel.Rect.Top));
 
-            HappinessNetwork.VipDataArgs vip = NetworkManager.Net.VipData;
+            HappinessNetwork.VipDataArgs vip = Game.m_GameInfo.VipData;
             m_ButtonPanel.SetHintCount(vip.Hints - m_iHintCount, vip.Hints);
             m_ButtonPanel.SetMegaHintCount(vip.MegaHints - m_iMegaHintCount, vip.MegaHints);
             m_ButtonPanel.SetUndoCount(m_History.Count, vip.UndoSize);
-            m_ButtonPanel.SetCoins(NetworkManager.Net.HardCurrency);
+            m_ButtonPanel.SetCoins(Game.m_GameInfo.HardCurrency);
 
             m_UIPanels = new List<UIPanel>();
             m_UIPanels.Add(m_GamePanel);
@@ -180,8 +180,8 @@ namespace Happiness
             Rectangle rightTopGridArea = new Rectangle(m_GamePanel.Rect.Right - m_GamePanel.CellWidth, m_GamePanel.Rect.Top, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5b, Vector2.Add(iconSideOffset, m_GamePanel.IconPosition(0, 2, 2)), 0, bottomTutorialRect, 
                 "This clue tells us that the {icon:Superheros[2]} is in a column somewhere to the right of the {icon:Simpsons[3]}.\nSince we already know where the {icon:Simpsons[3]} is, and there is only one column to the right of it, we know where the {icon:Superheros[2]} is.\n\nTap the top right grid cell.", TutorialSystem.TutorialPiece.GreenLantern4, rightTopGridArea);
-
-            bool online = !NetworkManager.Net.Disabled;
+            
+            bool online = true;
 
             Vector2 hideClueTarget = new Vector2(m_ButtonPanel.HideClueRect.Right, m_ButtonPanel.HideClueRect.Top + (m_ButtonPanel.HideClueRect.Height >> 1));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HideClue1, hideClueTarget, Constants.ArrowLeft, bottomTutorialRect,
@@ -309,9 +309,9 @@ namespace Happiness
         #region Puzzle File
         string PuzzleSaveName(int puzzleSize, int puzzleIndex)
         {
-            string saveName = string.Format("{0}/{1}_{2}.save", NetworkManager.Net.DisplayName, puzzleSize, puzzleIndex);
-            if( !Directory.Exists(NetworkManager.Net.DisplayName) )
-                Directory.CreateDirectory(NetworkManager.Net.DisplayName);
+            string saveName = string.Format("{0}/{1}_{2}.save", Game.m_GameInfo.DisplayName, puzzleSize, puzzleIndex);
+            if( !Directory.Exists(Game.m_GameInfo.DisplayName) )
+                Directory.CreateDirectory(Game.m_GameInfo.DisplayName);
             return saveName;
         }
 
@@ -394,7 +394,7 @@ namespace Happiness
 
             if (m_Hint == null)
             {
-                if (NetworkManager.Net.HardCurrency < 2)
+                if (Game.m_GameInfo.HardCurrency < 2)
                 {
                     m_MessageBox = new MessageBox("You don't have enough coins for a hint (2)", MessageBoxButtons.BuyCoinsCancel, (int)MessageBoxContext.InsufficientFunds_Hint, Game.ScreenWidth, Game.ScreenHeight);
                 }
@@ -415,7 +415,7 @@ namespace Happiness
 
                     // Modify the count
                     m_iHintCount++;
-                    int maxHints = NetworkManager.Net.VipData.Hints;
+                    int maxHints = Game.m_GameInfo.VipData.Hints;
                     m_ButtonPanel.SetHintCount(maxHints - m_iHintCount, maxHints);
 
                     SavePuzzle();
@@ -428,7 +428,7 @@ namespace Happiness
 
         public void DoMegaHint(bool verified = false)
         {
-            if (NetworkManager.Net.HardCurrency < 50)
+            if (Game.m_GameInfo.HardCurrency < 50)
             {
                 m_MessageBox = new MessageBox("You don't have enough coins for a Mega Hint (50)", MessageBoxButtons.BuyCoinsCancel, (int)MessageBoxContext.InusfficientFunds_MegaHint, Game.ScreenWidth, Game.ScreenHeight);
             }
@@ -443,7 +443,7 @@ namespace Happiness
 
                 // Modify the count
                 m_iMegaHintCount++;
-                int maxHints = NetworkManager.Net.VipData.MegaHints;
+                int maxHints = Game.m_GameInfo.VipData.MegaHints;
                 m_ButtonPanel.SetMegaHintCount(maxHints - m_iMegaHintCount, maxHints);
 
                 // Show the hint
@@ -475,7 +475,7 @@ namespace Happiness
 
                 a.Revert(m_Puzzle);
 
-                m_ButtonPanel.SetUndoCount(m_History.Count, NetworkManager.Net.VipData.UndoSize);
+                m_ButtonPanel.SetUndoCount(m_History.Count, Game.m_GameInfo.VipData.UndoSize);
             }
         }
 
@@ -492,7 +492,7 @@ namespace Happiness
             if( Game.CurrentScene != this )
                 return;
 
-            m_ButtonPanel.SetCoins(NetworkManager.Net.HardCurrency);
+            m_ButtonPanel.SetCoins(Game.m_GameInfo.HardCurrency);
             if (m_Hint != null)
             {
                 if( m_Hint.ShouldHide(m_Puzzle) )
@@ -512,11 +512,7 @@ namespace Happiness
             if (m_ReconnectScreen != null)
             {
                 m_ReconnectScreen.Update(gameTime);
-            }
-            else if (!NetworkManager.Net.Connected && !NetworkManager.Net.Disabled)
-            {
-                m_ReconnectScreen = new ReconnectScreen();
-            }
+            }           
             else
             {
                 if (m_EndScreen == null)
@@ -597,7 +593,7 @@ namespace Happiness
             Action a = new Action(type, iRow, iCol, iIcon, m_Puzzle);
             a.Perform(m_Puzzle);            
 
-            int undoSize = NetworkManager.Net.VipData.UndoSize;
+            int undoSize = Game.m_GameInfo.VipData.UndoSize;
             while (m_History.Count >= undoSize)
             {
                 m_History.RemoveAt(0);

@@ -43,6 +43,10 @@ namespace Happiness
             //m_MainMenu = new MainMenu(this);
             //m_Options = new Options(this); 
 
+#if DEBUG
+            System.Threading.Thread.Sleep(1000);
+#endif
+
             m_SoundManager = SoundManager.Inst;
 
             graphics = new GraphicsDeviceManager(this);
@@ -149,11 +153,12 @@ namespace Happiness
             m_GameInfo.GameData.Tutorial = tutorialData;
 
             // Send to the server
-            ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
+            m_ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
         }
 
-        public void SavePuzzleData()
+        public void SavePuzzleData(int tower, int floor, double elapsedTime)
         {
+            m_ServerWriter.SavePuzzleData(m_GameInfo.AuthString, tower, floor, elapsedTime);
         }
 
         #region Drawing

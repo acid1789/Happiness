@@ -16,10 +16,6 @@ namespace Happiness
 
         public ServerWriter()
         {
-            if( _instance != null )
-                throw new Exception("Only one ServerWriter allowed");
-            _instance = this;
-
             _pendingJobs = new List<SW_Job>();
             _jobLock = new Mutex();
 
@@ -81,11 +77,15 @@ namespace Happiness
             _jobLock.ReleaseMutex();
         }
 
-        #region static interface
-        static ServerWriter _instance;
-        public static void SaveTutorialData(ulong tutorialData, string authToken, DateTime timeStamp)
+        #region Public interface
+        public void SaveTutorialData(ulong tutorialData, string authToken, DateTime timeStamp)
         {
-            _instance.AddJob(new SW_SaveTutorialDataJob(tutorialData, authToken, timeStamp));
+            AddJob(new SW_SaveTutorialDataJob(tutorialData, authToken, timeStamp));
+        }
+
+        public void SavePuzzleData(string authToken, int tower, int floor, double completionTime)
+        {
+            AddJob(new SW_SavePuzzleJob(authToken, tower, floor, (float)completionTime));
         }
         #endregion
     }
@@ -137,6 +137,32 @@ namespace Happiness
             }
 
             // Return false here to be done with this job
+            return false;
+        }
+    }
+
+    class SW_SavePuzzleJob : SW_Job
+    {
+        string _authToken;
+        int _tower;
+        int _floor;
+        float _completionTime;
+
+        public SW_SavePuzzleJob(string authToken, int tower, int floor, float completionTime)
+        {
+            _authToken = authToken;
+            _tower = tower;
+            _floor = floor;
+            _completionTime = completionTime;
+        }
+
+        public override bool Update()
+        {
+            if( !_client.Connected )
+                return false;
+
+            _client.PuzzleComplete(_authToken, _tower, _floor, _completionTime);
+            _client.Close();
             return false;
         }
     }

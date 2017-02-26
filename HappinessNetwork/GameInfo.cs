@@ -14,8 +14,11 @@ namespace HappinessNetwork
 
         byte[] _hash;
         string _authString;
+        string _displayName;
+        int _hardCurrency;
         GameDataArgs _gameData;
         TowerData[] _towerData;
+        VipDataArgs _vipData;
 
 
         public GameInfo()
@@ -24,11 +27,12 @@ namespace HappinessNetwork
 
         public void Load(BinaryReader br, int version = GameInfoVersion)
         {
-            int length = br.ReadInt32();
-            byte[] ascii = br.ReadBytes(length);
-            _authString = Encoding.ASCII.GetString(ascii);
+            _authString = br.ReadString();
+            _displayName = br.ReadString();
+            _hardCurrency = br.ReadInt32();
             LoadGameData(br, version);
             LoadTowerData(br, version);
+            LoadVipData(br, version);
         }
 
         void LoadGameData(BinaryReader br, int version)
@@ -49,11 +53,12 @@ namespace HappinessNetwork
 
         public void Save(BinaryWriter bw)
         {
-            byte[] authString = Encoding.ASCII.GetBytes(_authString);
-            bw.Write(authString.Length);
-            bw.Write(authString);
+            bw.Write(_authString);
+            bw.Write(_displayName);
+            bw.Write(_hardCurrency);
             SaveGameData(bw);
             SaveTowerData(bw);
+            SaveVipData(bw);
         }
 
         void SaveGameData(BinaryWriter bw)
@@ -108,13 +113,38 @@ namespace HappinessNetwork
             }
         }
 
+        void LoadVipData(BinaryReader br, int version)
+        {
+            _vipData = new VipDataArgs();
+            _vipData.Level = br.ReadInt32();
+            _vipData.Progress = br.ReadInt32();
+            _vipData.Hints = br.ReadInt32();
+            _vipData.MegaHints = br.ReadInt32();
+            _vipData.UndoSize = br.ReadInt32();
+        }
+
+        void SaveVipData(BinaryWriter bw)
+        {
+            if (_vipData != null)
+            {
+                bw.Write(_vipData.Level);
+                bw.Write(_vipData.Progress);
+                bw.Write(_vipData.Hints);
+                bw.Write(_vipData.MegaHints);
+                bw.Write(_vipData.UndoSize);
+            }
+        }
+
         public byte[] GenerateHash()
         {
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms);
 
+            bw.Write(_displayName == null ? "" : _displayName);
+            bw.Write(_hardCurrency);
             SaveGameData(bw);
             SaveTowerData(bw);
+            SaveVipData(bw);
 
             MD5 md5 = MD5.Create();
             _hash = md5.ComputeHash(ms.GetBuffer());
@@ -137,7 +167,15 @@ namespace HappinessNetwork
             set { _towerData = value; }
         }
 
+        public VipDataArgs VipData
+        {
+            get { return _vipData; }
+            set { _vipData = value; }
+        }
+
         public string AuthString { get { return _authString; } set { _authString = value; } }
+        public string DisplayName { get { return _displayName; } set { _displayName = value; } }
+        public int HardCurrency { get { return _hardCurrency; } set { _hardCurrency = value; } }
         public byte[] Hash { get { return _hash; } }
     }
 }

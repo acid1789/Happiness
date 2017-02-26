@@ -182,18 +182,6 @@ namespace Happiness
             m_szWaitText = "Signing In...";
 
             m_GIV.RequestFromServer(email, password, createMode);
-            //M_SignInDialog_OnSkip(null, null);
-        }
-
-        private void M_SignInDialog_OnSkip(object sender, EventArgs e)
-        {
-            // Disable networking
-            NetworkManager.Net.Disabled = true;
-
-            // Load static gamedata
-            //NetworkManager.Net.LoadStaticData();
-
-            GotoHubScene();
         }
         #endregion
     }

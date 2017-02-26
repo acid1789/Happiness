@@ -16,7 +16,7 @@ namespace ServerCore
             _accounts = new Dictionary<string, AuthAccountInfo>();
         }
 
-        public void RegisterAuthString(string authString, int accountId, int hardCurrency, int vip)
+        public void RegisterAuthString(string authString, int accountId, int hardCurrency, int vip, string displayName)
         {
             if (_accounts.Count > MAX_CACHED_ACCOUNTS)
             {
@@ -32,13 +32,18 @@ namespace ServerCore
             aai.HardCurrency = hardCurrency;
             aai.Vip = vip;
             aai.Timestamp = DateTime.Now.Ticks;
+            aai.DisplayName = displayName;
             _accounts[authString] = aai;    
         }
 
         public AuthAccountInfo FindAccount(string authString)
         {
-            if( _accounts.ContainsKey(authString) )
-                return _accounts[authString];
+            if (_accounts.ContainsKey(authString))
+            {
+                AuthAccountInfo aai = _accounts[authString];
+                aai.Timestamp = DateTime.Now.Ticks;
+                return aai;
+            }
             return null;
         }
 
@@ -63,6 +68,7 @@ namespace ServerCore
             public int HardCurrency;
             public int Vip;
             public long Timestamp;
+            public string DisplayName;
         }
     }
 }

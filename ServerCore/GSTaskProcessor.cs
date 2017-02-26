@@ -77,7 +77,7 @@ namespace ServerCore
             else if (client.PendingAuthTask != null)
             {
                 // Cache this auth string for later
-                _server.AuthManager.RegisterAuthString(args.AuthString, args.AccountId, args.HardCurrency, args.Vip);
+                _server.AuthManager.RegisterAuthString(args.AuthString, args.AccountId, args.HardCurrency, args.Vip, args.DisplayName);
 
                 // Add the task to process this
                 GSTask authTask = (GSTask)client.PendingAuthTask;

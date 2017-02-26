@@ -42,7 +42,7 @@ namespace ServerCore
             // Get the chat info
             //FetchChatInfo(client);
 
-            _authManager.RegisterAuthString(client.AuthString, client.AccountId, client.HardCurrency, client.Vip);
+            _authManager.RegisterAuthString(client.AuthString, client.AccountId, client.HardCurrency, client.Vip, client.DisplayName);
         }
 
         #region Server Tasks

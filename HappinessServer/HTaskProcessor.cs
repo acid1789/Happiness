@@ -96,7 +96,19 @@ namespace HappinessServer
         void PuzzleComplete_FetchData_Handler(Task t)
         {
             HTask task = (HTask)t;
-            string sql = string.Format("SELECT * FROM game_data WHERE account_id={0};", task.Client.AccountId);
+            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)t.Args;
+
+            // Validate auth string
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(pca.AuthToken);
+            if (aai == null)
+            {
+                // This account isnt in the cache, need to go fetch from global server   
+                task.Client.PendingAuthTask = task;
+                _server.GlobalServer.FetchAuthString(pca.AuthToken, task.Client.SessionKey);
+                return;
+            }
+
+            string sql = string.Format("SELECT * FROM game_data WHERE account_id={0};", aai.AccountID);
             task.Type = (int)HTask.HTaskType.PuzzleComplete_Validate;
             AddDBQuery(sql, t);
         }
@@ -166,7 +178,8 @@ namespace HappinessServer
         void SpendCoins_Handler(Task t)
         {
             HTask task = (HTask)t;
-            SpendCoinsArgs args = (SpendCoinsArgs)t.Args;
+            object[] argsA = (object[])t.Args;
+            SpendCoinsArgs args = (SpendCoinsArgs)argsA[0];
 
             // Record this spend in the database
             string sql = string.Format("INSERT INTO spends SET account_id={0}, amount={1}, reason={2}, timestamp={3}; SELECT LAST_INSERT_ID();", task.Client.AccountId, args.Coins, args.SpendOn, DateTime.Now.Ticks);
@@ -234,7 +247,7 @@ namespace HappinessServer
                 return;
             }
 
-            string sql = string.Format("UPDATE game_data SET tutorial_data={0} WHERE account_id={1};", tutorialData, task.Client.AccountId);
+            string sql = string.Format("UPDATE game_data SET tutorial={0} WHERE account_id={1};", tutorialData, aai.AccountID);
             AddDBQuery(sql, null, false);
         }
 
@@ -287,6 +300,14 @@ namespace HappinessServer
                 string sql = string.Format("INSERT INTO game_data SET account_id={0},tower0=1;", task.Client.AccountId);                
                 t.Type = -1;
                 AddDBQuery(sql, t);
+
+                // Also give this user 100 coins
+                SpendCoinsArgs scargs = new SpendCoinsArgs();
+                scargs.Coins = -100;
+                scargs.SpendOn = 0;
+                AddTask(new HTask(HTask.HTaskType.SpendCoins, task.Client, scargs));
+                AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(gia.AuthString);
+                aai.HardCurrency += 100;
 
                 // Setup the default info
                 gia.GameInfo.GameData = new GameDataArgs();
@@ -349,6 +370,9 @@ namespace HappinessServer
 
             AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(gia.AuthString);
             gia.GameInfo.AuthString = gia.AuthString;
+            gia.GameInfo.DisplayName = aai.DisplayName;
+            gia.GameInfo.HardCurrency = aai.HardCurrency;
+            gia.GameInfo.VipData = VipData.Create(aai.Vip);            
             client.SendValidateGameInfoResponse(aai.HardCurrency, aai.Vip, serverHash == clientHash, gia.GameInfo);
         }
 

@@ -89,6 +89,7 @@ namespace Happiness
 
         public void PuzzleComplete(int tower, int floor, double completionTime)
         {
+            /*
             // Tell the server
             m_Client.PuzzleComplete(tower, floor, (float)completionTime);
 
@@ -107,8 +108,10 @@ namespace Happiness
                     m_TowerData.Floors = records.ToArray();
                 }
             }
+            */
         }
 
+        /*
         public void SpendCoins(int coinCount, int spentOn)
         {
             if (m_bDisabled)
@@ -118,6 +121,7 @@ namespace Happiness
             else
                 m_Client.SpendCoins(coinCount, spentOn);
         }
+        */
 
         #region Response Handlers
         private void M_Client_OnAccountResponse(object sender, EventArgs e)
@@ -175,45 +179,7 @@ namespace Happiness
             m_TowerData = e;
         }
         #endregion
-
-        #region Accessors
-        public SignInStatus SignInState
-        {
-            get { return m_SignInStatus; }
-        }
         
-        public VipDataArgs VipData
-        {
-            get { return m_VipData; }
-        }
-
-        public TowerData TowerData
-        {
-            get { return m_TowerData; }
-        }
-
-        public int HardCurrency
-        {
-            get { return m_Client.HardCurrency; }
-        }
-
-        public bool Connected
-        {
-            get { return m_Client.Connected; }
-        }
-
-        public bool Disabled
-        {
-            get { return m_bDisabled; }
-            set { m_bDisabled = value; }
-        }
-
-        public string DisplayName
-        {
-            get { return m_bDisabled ? "Static" : m_Client.DisplayName; }
-        }
-        #endregion
-
         #region Static Access
         static NetworkManager s_NetworkManager;
         public static NetworkManager Net

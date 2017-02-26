@@ -89,10 +89,11 @@ namespace HappinessNetwork
             SendPacket();
         }
 
-        public void PuzzleComplete(int tower, int floor, float completionTime)
+        public void PuzzleComplete(string authToken, int tower, int floor, float completionTime)
         {
             BeginPacket(HPacketType.Puzzle_Complete);
 
+            _outgoingBW.Write(authToken);
             _outgoingBW.Write(tower);
             _outgoingBW.Write(floor);
             _outgoingBW.Write(completionTime);
@@ -194,6 +195,7 @@ namespace HappinessNetwork
         void Puzzle_Complete_Handler(BinaryReader br)
         {
             PuzzleCompleteArgs args = new PuzzleCompleteArgs();
+            args.AuthToken = br.ReadString();
             args.TowerIndex = br.ReadInt32();
             args.FloorNumber = br.ReadInt32();
             args.CompletionTime = br.ReadSingle();
@@ -283,6 +285,7 @@ namespace HappinessNetwork
 
     public class PuzzleCompleteArgs : EventArgs
     {
+        public string AuthToken;
         public int TowerIndex;
         public int FloorNumber;
         public float CompletionTime;

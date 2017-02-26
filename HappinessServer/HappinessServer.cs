@@ -35,6 +35,7 @@ namespace HappinessServer
         public override void NewAuthorizedClient(GameClient client)
         {
             base.NewAuthorizedClient(client);
+            
 
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, (HClient)client, client.AuthString, null));
         }
