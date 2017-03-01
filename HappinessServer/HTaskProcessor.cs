@@ -20,6 +20,7 @@ namespace HappinessServer
             TowerData_Process,
             FloorRecord_Process,
             TutorialData_Store,
+            CoinBalance_Process,
 
             ValidateGameInfo,
             ValidateGameInfo_GameDataProcess,
@@ -55,6 +56,7 @@ namespace HappinessServer
             _taskHandlers[(int)HTask.HTaskType.TowerData_Process] = TowerData_Process_Handler;
             _taskHandlers[(int)HTask.HTaskType.FloorRecord_Process] = FloorRecord_Process_Handler;
             _taskHandlers[(int)HTask.HTaskType.TutorialData_Store] = TutorialData_Store_Handler;
+            _taskHandlers[(int)HTask.HTaskType.CoinBalance_Process] = CoinBalance_Process_Handler;
 
             _taskHandlers[(int)HTask.HTaskType.ValidateGameInfo] = ValidateGameInfo_Handler;
             _taskHandlers[(int)HTask.HTaskType.ValidateGameInfo_GameDataProcess] = ValidateGameInfo_GameDataProcess_Handler;
@@ -96,7 +98,8 @@ namespace HappinessServer
         void PuzzleComplete_FetchData_Handler(Task t)
         {
             HTask task = (HTask)t;
-            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)t.Args;
+            object[] args = (object[])t.Args;
+            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)args[0];
 
             // Validate auth string
             AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(pca.AuthToken);
@@ -109,6 +112,7 @@ namespace HappinessServer
             }
 
             string sql = string.Format("SELECT * FROM game_data WHERE account_id={0};", aai.AccountID);
+            task.Client.AccountId = aai.AccountID;
             task.Type = (int)HTask.HTaskType.PuzzleComplete_Validate;
             AddDBQuery(sql, t);
         }
@@ -118,7 +122,8 @@ namespace HappinessServer
             HTask task = (HTask)t;
             GameDataArgs gameData = ReadGameData(t.Query);
 
-            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)t.Args;
+            object[] args = (object[])t.Args;
+            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)args[0];
             if (pca.TowerIndex < 0 || pca.TowerIndex >= gameData.TowerFloors.Length)
             {
                 // Invalid tower number
@@ -162,7 +167,7 @@ namespace HappinessServer
                     }
 
                     // Save changes
-                    string sql = string.Format("UPDATE game_data SET tower_floor_0={0}, tower_floor_1={1}, tower_floor_2={2}, tower_floor_3={3}, tower_floor_4={4}, tower_floor_5={5}, level={6}, exp={7} WHERE account_id={8};",
+                    string sql = string.Format("UPDATE game_data SET tower0={0}, tower1={1}, tower2={2}, tower3={3}, tower4={4}, tower5={5}, level={6}, exp={7} WHERE account_id={8};",
                                                                      gameData.TowerFloors[0], gameData.TowerFloors[1], gameData.TowerFloors[2], gameData.TowerFloors[3], gameData.TowerFloors[4], gameData.TowerFloors[5], gameData.Level, gameData.Exp, task.Client.AccountId);
                     AddDBQuery(sql, null, false);
                     task.Client.SendGameData(gameData);
@@ -181,8 +186,19 @@ namespace HappinessServer
             object[] argsA = (object[])t.Args;
             SpendCoinsArgs args = (SpendCoinsArgs)argsA[0];
 
+            // Validate auth string
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(args.AuthToken);
+            if (aai == null)
+            {
+                // This account isnt in the cache, need to go fetch from global server   
+                task.Client.PendingAuthTask = task;
+                _server.GlobalServer.FetchAuthString(args.AuthToken, task.Client.SessionKey);
+                return;
+            }
+
             // Record this spend in the database
-            string sql = string.Format("INSERT INTO spends SET account_id={0}, amount={1}, reason={2}, timestamp={3}; SELECT LAST_INSERT_ID();", task.Client.AccountId, args.Coins, args.SpendOn, DateTime.Now.Ticks);
+            string sql = string.Format("INSERT INTO spends SET account_id={0}, amount={1}, reason={2}, timestamp={3}; SELECT LAST_INSERT_ID();", aai.AccountID, args.Coins, args.SpendOn, DateTime.Now.Ticks);
+            task.Client.AccountId = aai.AccountID;
             t.Type = (int)GSTask.GSTType.SpendCoins_Global;
             t.Args = args.Coins;
             AddDBQuery(sql, t);
@@ -209,7 +225,8 @@ namespace HappinessServer
         void FloorRecord_Process_Handler(Task t)
         {
             HTask task = (HTask)t;
-            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)t.Args;
+            object[] args = (object[])t.Args;
+            PuzzleCompleteArgs pca = (PuzzleCompleteArgs)args[0];
             if (task.Query.Rows.Count > 0)
             {
                 // record exists, see if this time is better
@@ -249,6 +266,25 @@ namespace HappinessServer
 
             string sql = string.Format("UPDATE game_data SET tutorial={0} WHERE account_id={1};", tutorialData, aai.AccountID);
             AddDBQuery(sql, null, false);
+        }
+
+        void CoinBalance_Process_Handler(Task t)
+        {
+            HTask task = (HTask)t;
+
+            object[] args = (object[])t.Args;
+            string authToken = (string)args[0];
+
+            AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(authToken);
+            if (aai == null)
+            {
+                // This account isnt in the cache, need to go fetch from global server   
+                task.Client.PendingAuthTask = task;
+                _server.GlobalServer.FetchAuthString(authToken, task.Client.SessionKey);
+                return;
+            }
+
+            task.Client.CurrencyUpdate(aai.HardCurrency);
         }
 
         void ValidateGameInfo_Handler(Task t)
@@ -303,6 +339,7 @@ namespace HappinessServer
 
                 // Also give this user 100 coins
                 SpendCoinsArgs scargs = new SpendCoinsArgs();
+                scargs.AuthToken = gia.AuthString;
                 scargs.Coins = -100;
                 scargs.SpendOn = 0;
                 AddTask(new HTask(HTask.HTaskType.SpendCoins, task.Client, scargs));

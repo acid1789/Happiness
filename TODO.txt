@@ -19,7 +19,7 @@ Pause Screen
 	Audio Settings
 	
 Overall
-	Tutorial
+	Resume Tutorial
 	Social Sharing
 	Leaderboards
 	Quest system

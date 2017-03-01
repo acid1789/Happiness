@@ -156,10 +156,16 @@ namespace Happiness
             m_ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
         }
 
-        public void SavePuzzleData(int tower, int floor, double elapsedTime)
+        public void SavePuzzleData(int tower, int floor, double elapsedTime, ServerWriter.JobCompleteDelegate jobCompleteCB)
         {
-            m_ServerWriter.SavePuzzleData(m_GameInfo.AuthString, tower, floor, elapsedTime);
+            m_ServerWriter.SavePuzzleData(m_GameInfo, tower, floor, elapsedTime, jobCompleteCB);
         }
+
+        public void SpendCoins(int coinCount, int spentOn)
+        {
+            m_ServerWriter.SpendCoins(m_GameInfo.AuthString, coinCount, spentOn, m_GameInfo);
+        }
+
 
         #region Drawing
         /// <summary>

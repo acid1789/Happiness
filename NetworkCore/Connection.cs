@@ -9,7 +9,7 @@ namespace NetworkCore
 {
     public class Connection
     {
-        public const int PACKET_MARKER = 'U' | 'G' << 8 | 'G' << 16 | '$' << 24;
+        public const int PACKET_MARKER = '$' | 'R' << 8 | 'G' << 16 | '$' << 24;
         public enum ConnStatus
         {
             New,
@@ -51,7 +51,7 @@ namespace NetworkCore
             RegisterPacketHandlers();
         }
 
-        public void Close()
+        public virtual void Close()
         {
             if( _socket != null )
                 _socket.Close();
@@ -125,7 +125,7 @@ namespace NetworkCore
             int packetStart = 0;
             while (packetStart < data.Length - 4)
             {
-                if (data[packetStart] == 'U' && data[packetStart + 1] == 'G' && data[packetStart + 2] == 'G' && data[packetStart + 3] == '$')
+                if (data[packetStart] == '$' && data[packetStart + 1] == 'R' && data[packetStart + 2] == 'G' && data[packetStart + 3] == '$')
                 {
                     break;
                 }
@@ -196,7 +196,7 @@ namespace NetworkCore
             _outgoingPacket = null;
         }
 
-        public void Connect(string address, int port)
+        public virtual void Connect(string address, int port)
         {
             if (_socket != null)
                 throw new InvalidOperationException("Cant connect when a socket already exists");
@@ -246,8 +246,11 @@ namespace NetworkCore
         #region Packet Construction
         void Ping()
         {
-            BeginPacket(PacketType.Ping);
-            SendPacket();
+            if (Connected)
+            {
+                BeginPacket(PacketType.Ping);
+                SendPacket();
+            }
         }
         #endregion
 

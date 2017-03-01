@@ -12,6 +12,7 @@ namespace Happiness
     {
         enum AnimStep
         {
+            WaitForServerData,
             Start,
             YourTime,
             BaseExp,
@@ -163,7 +164,7 @@ namespace Happiness
             m_Unlock = new UILabel(string.Format("Tower {0} Unlocked!", m_iTower + 2), m_iCenterX, iUnlockY, Color.Yellow, Assets.MenuFont, UILabel.XMode.Center);
             m_Unlock.Hidden = true;
 
-            m_AnimStep = AnimStep.Start;
+            m_AnimStep = AnimStep.WaitForServerData;
             m_AnimTimeRemaining = 1.0f;
 
             if (!game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
@@ -184,6 +185,12 @@ namespace Happiness
                     "Tap the Next Puzzle button to move on to the next puzzle.", TutorialSystem.TutorialPiece.Horizontal_NextTo, m_Buttons[0].Rect);
             }
             game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Puzzle2);
+        }
+
+        public void OnServerDataComplete(string info)
+        {
+            m_AnimStep = AnimStep.Start;
+            m_AnimTimeRemaining = 1.0f;
         }
         
         public bool HandleClick(int iX, int iY)
@@ -217,7 +224,7 @@ namespace Happiness
 
         public void Update(GameTime gt)
         {
-            if (m_AnimStep != AnimStep.Finish)
+            if (m_AnimStep != AnimStep.Finish && m_AnimStep != AnimStep.WaitForServerData )
             {
                 m_AnimTimeRemaining -= gt.ElapsedGameTime.TotalSeconds;
                 if (m_AnimTimeRemaining <= 0)

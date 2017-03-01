@@ -20,9 +20,13 @@ namespace HappinessNetwork
             TowerData_Request,
             TowerData_Response,
             TutorialData,
+            CoinBalance_Request,
+            Close,
 
             ValidateGameInfo_Request,
             ValidateGameInfo_Response,
+
+            //DebugInfo,
         }
 
         public event EventHandler OnGameDataRequest;
@@ -33,19 +37,40 @@ namespace HappinessNetwork
         public event EventHandler<TowerData> OnTowerDataResponse;
         public event Action<HClient, ulong, string> OnTutorialData;
         public event Action<HClient, string, string> OnValidateGameInfo;
-        public event Action<HClient, GameInfo> OnGameInfoResponse;
+        public event Action<HClient, GameInfo> OnGameInfoResponse;        
+        public event Action<HClient, string> OnCoinBalanceRequest;
 
         public static string ServerAddress = "127.0.0.1";
         public static int ServerPort = 1255;
 
-        public HClient()
+        //public string RemoteDebugInfo;
+
+        public HClient(string name)
             : base(null)
         {
+            //RemoteDebugInfo = name;
         }
 
         public HClient(Socket s)
             : base(s)
         {
+        }
+
+        public override void Close()
+        {
+            BeginPacket(HPacketType.Close);
+            SendPacket();
+
+            base.Close();
+        }
+
+        public override void Connect(string address, int port)
+        {
+            base.Connect(address, port);
+
+            //BeginPacket(HPacketType.DebugInfo);
+            //_outgoingBW.Write(RemoteDebugInfo);
+            //SendPacket();
         }
 
         protected override void RegisterPacketHandlers()
@@ -58,9 +83,13 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.TowerData_Request] = TowerData_Request_Handler;
             _packetHandlers[(ushort)HPacketType.TowerData_Response] = TowerData_Response_Handler;
             _packetHandlers[(ushort)HPacketType.TutorialData] = TutorialData_Handler;
-            
+            _packetHandlers[(ushort)HPacketType.CoinBalance_Request] = CoinBalance_Request_Handler;
+            _packetHandlers[(ushort)HPacketType.Close] = Close_Handler;
+
             _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Request] = ValidateGameInfo_Request_Handler;
             _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Response] = ValidateGameInfo_Response_Handler;
+            
+            //_packetHandlers[(ushort)HPacketType.DebugInfo] = DebugInfo_Handler;
         }
 
         void BeginPacket(HPacketType type)
@@ -101,15 +130,24 @@ namespace HappinessNetwork
             SendPacket();
         }
 
-        public void SpendCoins(int coins, int spendOn)
+        public void SpendCoins(string authToken, int coins, int spendOn)
         {
             HardCurrency -= coins;
 
             BeginPacket(HPacketType.SpendCoins);
 
+            _outgoingBW.Write(authToken);
             _outgoingBW.Write(coins);
             _outgoingBW.Write(spendOn);
 
+            SendPacket();
+        }
+
+        public void RequestCoinBalance(string authToken)
+        {
+            BeginPacket(HPacketType.CoinBalance_Request);
+
+            _outgoingBW.Write(authToken);
             SendPacket();
         }
 
@@ -205,6 +243,7 @@ namespace HappinessNetwork
         void SpendCoins_Handler(BinaryReader br)
         {
             SpendCoinsArgs args = new SpendCoinsArgs();
+            args.AuthToken = br.ReadString();
             args.Coins = br.ReadInt32();
             args.SpendOn = br.ReadInt32();
 
@@ -245,6 +284,22 @@ namespace HappinessNetwork
             ulong tutorialData = br.ReadUInt64();
             string authToken = br.ReadString();
             OnTutorialData(this, tutorialData, authToken);
+        }
+
+        void CoinBalance_Request_Handler(BinaryReader br)
+        {
+            string authToken = br.ReadString();
+            OnCoinBalanceRequest(this, authToken);
+        }
+
+        void Close_Handler(BinaryReader br)
+        {
+            base.Close();
+        }
+
+        void DebugInfo_Handler(BinaryReader br)
+        {
+            //RemoteDebugInfo = br.ReadString();
         }
 
         void ValidateGameInfo_Request_Handler(BinaryReader br)
@@ -302,6 +357,7 @@ namespace HappinessNetwork
 
     public class SpendCoinsArgs : EventArgs
     {
+        public string AuthToken;
         public int Coins;
         public int SpendOn;
     }

@@ -31,8 +31,16 @@ namespace Happiness
         string _passWord;
         bool _accountCreate;
 
+        static GameInfoValidator s_instance;
+
+        public static GameInfoValidator Instance { get { return s_instance; } }
+
         public GameInfoValidator()
         {
+            if( s_instance != null )
+                throw new Exception("Only one GameInfoValidator is allowed");
+            s_instance = this;
+
             _loadThread = null;
             _loadStatus = LoadStatus.Idle;
         }
@@ -59,6 +67,12 @@ namespace Happiness
         public void BeginLoadFromDisk()
         {            
             StartThread(new ThreadStart(LoadThreadFunc));            
+        }
+
+        public void Save(GameInfo gi)
+        {
+            m_GameInfo = gi;
+            SaveToDisk();
         }
 
         void SaveToDisk()
@@ -118,7 +132,7 @@ namespace Happiness
             _loadStatus = LoadStatus.FetchingFromServer;
 
             // Connect to server
-            HClient client = new HClient();
+            HClient client = new HClient("ServerRequestFunc");
             client.Connect(HClient.ServerAddress, HClient.ServerPort);
             client.OnGameInfoResponse += Client_OnGameInfoResponse;
             client.OnAccountResponse += Client_OnAccountResponse;
@@ -141,7 +155,7 @@ namespace Happiness
             _loadStatus = LoadStatus.FetchingFromServer;
 
             // Connect to server
-            HClient client = new HClient();
+            HClient client = new HClient("ValidateWithServer");
             client.Connect(HClient.ServerAddress, HClient.ServerPort);
             client.OnGameInfoResponse += Client_OnGameInfoResponse;
             client.OnAccountResponse += Client_OnAccountResponse;

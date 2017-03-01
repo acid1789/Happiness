@@ -405,7 +405,7 @@ namespace Happiness
                 else
                 {
                     // Subtract the coins
-                    NetworkManager.Net.SpendCoins(2, 1);
+                    Game.SpendCoins(2, 1);
 
                     // Show the hint
                     List<Clue> visibleClues = new List<Clue>();
@@ -439,7 +439,7 @@ namespace Happiness
             else
             {
                 // Subtract the coins
-                NetworkManager.Net.SpendCoins(50, 2);
+                Game.SpendCoins(50, 2);
 
                 // Modify the count
                 m_iMegaHintCount++;
@@ -525,7 +525,7 @@ namespace Happiness
                     if (m_Puzzle.IsSolved())
                     {
                         //m_SoundManager.PlayPuzzleComplete();
-                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime);
+                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime, m_EndScreen.OnServerDataComplete);
                     }
                     else
                     {

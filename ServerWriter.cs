@@ -14,6 +14,8 @@ namespace Happiness
         List<SW_Job> _pendingJobs;
         bool _wantExit;
 
+        public delegate void JobCompleteDelegate(string info);
+
         public ServerWriter()
         {
             _pendingJobs = new List<SW_Job>();
@@ -83,9 +85,14 @@ namespace Happiness
             AddJob(new SW_SaveTutorialDataJob(tutorialData, authToken, timeStamp));
         }
 
-        public void SavePuzzleData(string authToken, int tower, int floor, double completionTime)
+        public void SavePuzzleData(GameInfo gi, int tower, int floor, double completionTime, JobCompleteDelegate jobCompleteCB)
         {
-            AddJob(new SW_SavePuzzleJob(authToken, tower, floor, (float)completionTime));
+            AddJob(new SW_SavePuzzleJob(gi, tower, floor, (float)completionTime, jobCompleteCB));
+        }
+
+        public void SpendCoins(string authToken, int coinCount, int spentOn, GameInfo gi)
+        {
+            AddJob(new SW_SpendCoinsJob(authToken, coinCount, spentOn, gi));
         }
         #endregion
     }
@@ -93,15 +100,26 @@ namespace Happiness
     abstract class SW_Job
     {
         protected HClient _client;
+        string _jobName;
+
+        protected SW_Job(string jobName)
+        {
+            _jobName = jobName;
+        }
 
         public virtual void Start()
         {
             // Connect to the server
-            _client = new HClient();
-            _client.Connect(HClient.ServerAddress, HClient.ServerPort);
+            _client = new HClient(_jobName);
+            DoConnect();
         }
 
         public abstract bool Update();
+        
+        protected void DoConnect()
+        {
+            _client.Connect(HClient.ServerAddress, HClient.ServerPort);
+        }
     }
 
     class SW_SaveTutorialDataJob : SW_Job
@@ -111,7 +129,7 @@ namespace Happiness
         ulong _tutorialData;
         string _authToken;
         DateTime _timeStamp;
-        public SW_SaveTutorialDataJob(ulong tutorialData, string authToken, DateTime timeStamp)
+        public SW_SaveTutorialDataJob(ulong tutorialData, string authToken, DateTime timeStamp) : base("SW_SaveTutorialDataJob_" + tutorialData)
         {
             _tutorialData = tutorialData;
             _authToken = authToken;
@@ -126,44 +144,155 @@ namespace Happiness
 
         public override bool Update()
         {
-            if ((_timeStamp - _lastSentTime).TotalSeconds > 0)
+            if (_client.Connected)
             {
-                if (_client.Connected)
+                if ((_timeStamp - _lastSentTime).TotalSeconds > 0)
                 {
                     _client.SendTutorialData(_tutorialData, _authToken);
-                    _lastSentTime = _timeStamp;
-                    _client.Close();
+                    _lastSentTime = _timeStamp;                    
                 }
+                _client.Close();
             }
 
-            // Return false here to be done with this job
+            // Return false here to be done with this job            
             return false;
         }
     }
 
     class SW_SavePuzzleJob : SW_Job
     {
-        string _authToken;
+        GameInfo _gi;
         int _tower;
         int _floor;
         float _completionTime;
 
-        public SW_SavePuzzleJob(string authToken, int tower, int floor, float completionTime)
+        bool _waitingForResponse;
+        ServerWriter.JobCompleteDelegate _jobsDone;
+
+        public SW_SavePuzzleJob(GameInfo gi, int tower, int floor, float completionTime, ServerWriter.JobCompleteDelegate jobFinishedCB) : base("SW_SavePuzzleJob")
         {
-            _authToken = authToken;
+            _gi = gi;
             _tower = tower;
             _floor = floor;
             _completionTime = completionTime;
+            _jobsDone = jobFinishedCB;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            _client.OnGameDataResponse += _client_OnGameDataResponse;
+        }
+
+        private void _client_OnGameDataResponse(object sender, GameDataArgs e)
+        {
+            _gi.GameData = e;
+            GameInfoValidator.Instance.Save(_gi);            
+            _waitingForResponse = false;
         }
 
         public override bool Update()
         {
-            if( !_client.Connected )
-                return false;
+            if (!_client.Connected)
+            {
+                // Attempt to connect again
+                DoConnect();
+                if (_client.Connected && _waitingForResponse)
+                {
+                    // Resubmit
+                    _waitingForResponse = false;
+                }
+            }
+            else
+            {
+                if (!_waitingForResponse)
+                {
+                    _client.PuzzleComplete(_gi.AuthString, _tower, _floor, _completionTime);
+                    _waitingForResponse = true;
+                }
+                else
+                {
+                    _client.Update();
+                    if (!_waitingForResponse)
+                    {
+                        // Trigger job complete
+                        _jobsDone(null);
 
-            _client.PuzzleComplete(_authToken, _tower, _floor, _completionTime);
-            _client.Close();
-            return false;
+                        // Close the connection
+                        _client.Close();
+
+                        // Finish the job
+                        return false;
+                    }
+                }
+            }
+
+            // Keep working til we get a response
+            return true;
+        }
+    }
+
+    class SW_SpendCoinsJob : SW_Job
+    {
+        string _authToken;
+        int _coinCount;
+        int _spentOn;
+        GameInfo _gi;
+
+        bool _waitingForResponse;
+
+        public SW_SpendCoinsJob(string authToken, int coinCount, int spentOn, GameInfo gi) : base("SW_SpendCoinsJob")
+        {
+            _authToken = authToken;
+            _coinCount = coinCount;
+            _spentOn = spentOn;
+            _gi = gi;
+            _waitingForResponse = false;
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            _client.OnHardCurrencyUpdate += _client_OnHardCurrencyUpdate;
+        }
+
+        private void _client_OnHardCurrencyUpdate(object sender, EventArgs e)
+        {
+            _waitingForResponse = false;
+            _gi.HardCurrency = _client.HardCurrency;
+        }
+
+        public override bool Update()
+        {
+            if (!_client.Connected)
+            {
+                _client.Connect(HClient.ServerAddress, HClient.ServerPort);
+                if (_client.Connected && _waitingForResponse)
+                {
+                    // Already sent the spend, but had to reconnect
+                    // Request the balance here
+                    _client.RequestCoinBalance(_authToken);
+                }
+            }
+            else
+            {
+                if (!_waitingForResponse)
+                {
+                    _client.SpendCoins(_authToken, _coinCount, _spentOn);
+                    _waitingForResponse = true;
+                }
+                else
+                {
+                    _client.Update();
+                    if (!_waitingForResponse)
+                    {
+                        _client.Close();
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

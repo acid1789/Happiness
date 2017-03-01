@@ -28,6 +28,7 @@ namespace HappinessServer
             client.OnTowerDataRequest += Client_OnTowerDataRequest;
             client.OnTutorialData += Client_OnTutorialData;
             client.OnValidateGameInfo += Client_OnValidateGameInfo;
+            client.OnCoinBalanceRequest += Client_OnCoinBalanceRequest;
 
             return client;
         }
@@ -69,6 +70,11 @@ namespace HappinessServer
         private void Client_OnValidateGameInfo(HClient arg1, string authString, string hash)
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, arg1, authString, hash));
+        }
+
+        private void Client_OnCoinBalanceRequest(HClient arg1, string obj)
+        {
+            TaskProcessor.AddTask(new HTask(HTask.HTaskType.CoinBalance_Process, arg1, obj));
         }
         #endregion
 

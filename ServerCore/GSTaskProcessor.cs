@@ -187,9 +187,11 @@ namespace ServerCore
 
             // Find the client
             GameClient client = _server.InputThread.FindClientByID(args.AccountId);
-
-            // Tell the client
-            client.CurrencyUpdate(args.NewCurrency);
+            if (client != null)
+            {
+                // Tell the client
+                client.CurrencyUpdate(args.NewCurrency);
+            }
         }
         #endregion
 
