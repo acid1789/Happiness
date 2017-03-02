@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Happiness
 {
-    class FloorDisplay
+    public class FloorDisplay
     {
         int m_iLeft;
         int m_iWidth;

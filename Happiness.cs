@@ -158,6 +158,28 @@ namespace Happiness
 
         public void SavePuzzleData(int tower, int floor, double elapsedTime, ServerWriter.JobCompleteDelegate jobCompleteCB)
         {
+            bool updateExistingFloor = false;
+            foreach (TowerFloorRecord tfr in m_GameInfo.TowerData[tower].Floors)
+            {
+                if (tfr.Floor == floor)
+                {
+                    if( tfr.BestTime > elapsedTime )
+                        tfr.BestTime = (int)elapsedTime;
+                    updateExistingFloor = true;
+                    break;
+                }
+            }
+            if (!updateExistingFloor)
+            {
+                // Floor isnt in the local list, add it now
+                List<TowerFloorRecord> records = new List<TowerFloorRecord>(m_GameInfo.TowerData[tower].Floors);
+                TowerFloorRecord tfr = new TowerFloorRecord();
+                tfr.Floor = floor;
+                tfr.BestTime = (int)elapsedTime;
+                records.Add(tfr);
+                m_GameInfo.TowerData[tower].Floors = records.ToArray();
+            }
+
             m_ServerWriter.SavePuzzleData(m_GameInfo, tower, floor, elapsedTime, jobCompleteCB);
         }
 

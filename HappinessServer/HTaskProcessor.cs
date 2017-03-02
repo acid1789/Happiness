@@ -361,23 +361,24 @@ namespace HappinessServer
             Dictionary<int, List<TowerFloorRecord> > towerData = new Dictionary<int, List<TowerFloorRecord>>();
             foreach (object[] row in t.Query.Rows)
             {
-                // 0: account_id
-                // 1: tower
-                // 2: floor
-                // 3: best_time
-                // 4: friend_rank
-                // 5: global_rank
+                // 0: record_id
+                // 1: account_id
+                // 2: tower
+                // 3: floor
+                // 4: best_time
+                // 5: friend_rank
+                // 6: global_rank
 
                 TowerFloorRecord record = new TowerFloorRecord();
-                int tower = (int)row[1];
+                int tower = (int)row[2];
 
                 if (!towerData.ContainsKey(tower))
                     towerData[tower] = new List<TowerFloorRecord>();
 
-                record.Floor = (int)row[2];
-                record.BestTime = (int)row[3];
-                record.RankFriends = (int)row[4];
-                record.RankGlobal = (int)row[5];
+                record.Floor = (int)row[3];
+                record.BestTime = (int)row[4];
+                record.RankFriends = (int)row[5];
+                record.RankGlobal = (int)row[6];
                 towerData[tower].Add(record);
             }
 

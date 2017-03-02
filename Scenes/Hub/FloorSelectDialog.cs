@@ -47,7 +47,7 @@ namespace Happiness
             int width = (int)(Constants.FloorSelectDialog_Width * screenWidth);
             int height = (int)(Constants.FloorSelectDialog_Height * screenHeight);
             m_Rect = new Rectangle(iCenterX - (width >> 1), iCenterY - (height >> 1), width, height);
-            
+
             // Title
             int iTopMargin = (int)(Constants.FloorSelectDialog_MarginTopBottom * screenHeight);
             string title = string.Format("{0} x {0}", tower + 3);
@@ -81,7 +81,7 @@ namespace Happiness
             m_FloorDataFetchText = new UILabel("Fetching Data...", iCenterX, m_FloorWaitRectangle.Bottom, Color.White, Assets.DialogFont, UILabel.XMode.Center);
 
             m_ScrollFrame = new UIFrame(5, m_FloorScrollRect);
-            
+
             m_iFloorSelectTutorialWidth = (int)(Constants.FloorSelectDialog_FloorSelectTutorialWidth * screenWidth);
             int floorPlayTutorialWidth = (int)(Constants.FloorSelectDialog_PlayTutorialWidth * screenWidth);
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,
@@ -91,17 +91,24 @@ namespace Happiness
             m_bFloorDataRetrieved = true;
         }
 
+        public int FloorDataComparer(FloorDisplay a, FloorDisplay b)
+        {
+            return b.Floor - a.Floor;
+        }
+
         void SetupFloorData(TowerData td)
         {
             double parTime = Balance.ParTime(td.Tower);
             m_Floors = new List<FloorDisplay>();
+            int highestFloor = 0;
             foreach (TowerFloorRecord floor in td.Floors)
             {
                 m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, floor.Floor, floor.RankFriends, floor.RankGlobal, floor.BestTime, parTime));
+                if( floor.Floor > highestFloor )
+                    highestFloor = floor.Floor;
             }
-
-            if( m_Floors.Count <= 0 )
-                m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, 1, 0, 0, 0, parTime));
+            m_Floors.Add(new FloorDisplay(m_FloorScrollRect.Left, m_FloorScrollRect.Width, highestFloor + 1, 0, 0, 0, parTime));
+            m_Floors.Sort(FloorDataComparer);
 
             float floorHeight = m_Floors[0].Height;
             int visibleFloors = (int)(m_FloorScrollRect.Height / floorHeight);
