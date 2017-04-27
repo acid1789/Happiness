@@ -14,8 +14,7 @@ namespace GlobalServer
         static void Main(string[] args)
         {
             ServerArgs sargs = new ServerArgs(args);
-
-            //_server = new ServerBase(1789, "server=127.0.0.1;uid=Global;pwd=^!)b$!;database=global;");
+            
             _server = new ServerBase(sargs.ListenPort, sargs.DBString);
             _server.TaskProcessor = new GlobalTaskProcessor();
             LogThread.AlwaysPrintToConsole = true;

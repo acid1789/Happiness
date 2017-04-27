@@ -17,7 +17,6 @@ namespace HappinessServer
             ServerArgs sargs = new ServerArgs(args);
 
             LogThread.AlwaysPrintToConsole = true;
-            //_server = new HappinessServer(1255, "server=127.0.0.1;uid=Happiness;pwd=hgame;database=happiness;", "127.0.0.1", 1789);
             _server = new HappinessServer(sargs.ListenPort, sargs.DBString, sargs.HostAddress, sargs.HostPort);
 
             _server.Run();
