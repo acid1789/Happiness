@@ -40,7 +40,7 @@ namespace HappinessNetwork
         public event Action<HClient, GameInfo> OnGameInfoResponse;        
         public event Action<HClient, string> OnCoinBalanceRequest;
 
-        public static string ServerAddress = "127.0.0.1";
+        public static string ServerAddress = "ec2-54-187-139-124.us-west-2.compute.amazonaws.com";
         public static int ServerPort = 1255;
 
         //public string RemoteDebugInfo;
@@ -66,6 +66,10 @@ namespace HappinessNetwork
 
         public override void Connect(string address, int port)
         {
+            base.Connect("127.0.0.1", port);
+            if( _socket != null && _socket.Connected )
+                return;
+
             base.Connect(address, port);
 
             //BeginPacket(HPacketType.DebugInfo);

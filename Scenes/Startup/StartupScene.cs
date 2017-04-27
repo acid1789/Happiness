@@ -102,7 +102,7 @@ namespace Happiness
                     break;
                 case GameInfoValidator.LoadStatus.FetchingFromServer:
                     m_szWaitText = "Fetching From Server";
-                    break;
+                    break;                    
                 case GameInfoValidator.LoadStatus.ServerDeniedAccess:
                     m_szWaitText = "Server said fuck off";
                     break;
@@ -111,6 +111,7 @@ namespace Happiness
                     Game.m_GameInfo = m_GIV.m_GameInfo;
                     GotoHubScene();
                     break;
+                case GameInfoValidator.LoadStatus.ServerUnreachable:
                 case GameInfoValidator.LoadStatus.NoFile:
                     m_szWaitText = null;
                     ShowSignInDialog();

@@ -203,7 +203,7 @@ namespace NetworkCore
 
             try
             {
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);                
                 _socket.Connect(address, port);
             }
             catch (Exception ex)

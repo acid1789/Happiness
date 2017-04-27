@@ -19,8 +19,9 @@ namespace ServerCore
 
             // Start the global server manager
             _gs = new GlobalServerManager(globalAddress, globalPort);
-            _gs.OnAccountInfoResponse += new EventHandler<AccountInfoResponseArgs>(_gs_OnAccountInfoResponse);
+            _gs.OnAccountInfoResponse += _gs_OnAccountInfoResponse;
             _gs.OnCurrencyUpdate += _gs_OnCurrencyUpdate;
+            _gs.Start();
 
             ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);            
         }
@@ -78,7 +79,7 @@ namespace ServerCore
         #endregion
 
         #region Global Server Event Handlers
-        void _gs_OnAccountInfoResponse(object sender, AccountInfoResponseArgs e)
+        void _gs_OnAccountInfoResponse(AccountInfoResponseArgs e)
         {
             GSTask t = new GSTask();
             t.Type = (int)GSTask.GSTType.AccountInfoResponse;

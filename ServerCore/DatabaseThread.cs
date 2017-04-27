@@ -127,6 +127,8 @@ namespace ServerCore
 
                     while (_sql.State == ConnectionState.Connecting)
                         Thread.Sleep(100);
+
+                    LogThread.Log("Connected to database: " + _dbConnectString);
                 }
                 catch (Exception ex)
                 {

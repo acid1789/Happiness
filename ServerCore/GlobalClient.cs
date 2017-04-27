@@ -20,7 +20,7 @@ namespace ServerCore
         }
 
         public event EventHandler<AccountInfoRequestArgs> OnAccountInfoRequest;
-        public event EventHandler<AccountInfoResponseArgs> OnAccountInfoResponse;
+        public event Action<AccountInfoResponseArgs> OnAccountInfoResponse;
         public event EventHandler<GlobalSpendCoinArgs> OnSpendCoins;
         public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
         public event Action<GlobalClient, string, uint> OnAuthStringRequest;
@@ -130,7 +130,7 @@ namespace ServerCore
             args.Vip = br.ReadInt32();
             args.DisplayName = ReadUTF8String(br);
             args.AuthString = ReadUTF8String(br);
-            OnAccountInfoResponse(this, args);
+            OnAccountInfoResponse(args);
         }
 
         void SpendCoinsHandler(BinaryReader br)

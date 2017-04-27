@@ -15,6 +15,7 @@ namespace Happiness
             Idle,
             Loading,
             FetchingFromServer,
+            ServerUnreachable,
             ServerDeniedAccess,
             ServerFetchComplete,
             LoadedNoValidation,
@@ -137,17 +138,22 @@ namespace Happiness
             client.OnGameInfoResponse += Client_OnGameInfoResponse;
             client.OnAccountResponse += Client_OnAccountResponse;
 
-            // Send request
-            client.SendAccountRequest(_userName, _passWord, _accountCreate ? null : _userName);
-
-            // Wait for response
-            while (client.Connected && _loadStatus == LoadStatus.FetchingFromServer)
+            if (!client.Connected)
+                _loadStatus = LoadStatus.ServerUnreachable;
+            else
             {
-                client.Update();
-                Thread.Sleep(10);
-            }
+                // Send request
+                client.SendAccountRequest(_userName, _passWord, _accountCreate ? null : _userName);
 
-            client.Close();
+                // Wait for response
+                while (client.Connected && _loadStatus == LoadStatus.FetchingFromServer)
+                {
+                    client.Update();
+                    Thread.Sleep(10);
+                }
+
+                client.Close();
+            }
         }
 
         void ValidateWithServer()
