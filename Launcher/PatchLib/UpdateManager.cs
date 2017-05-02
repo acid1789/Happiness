@@ -24,7 +24,10 @@ namespace PatchLib
             _patchServer = patchServer;
             _remoteDataPath = remoteDataPath;
             _gameDataFolder = gameDataFolder;
+        }
 
+        public void Start()
+        {
             _thread = new Thread(new ThreadStart(DoUpdate));
             _thread.Name = "Update Manager";
             _thread.Start();

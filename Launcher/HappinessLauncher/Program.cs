@@ -12,7 +12,8 @@ namespace HappinessLauncher
     static class Program
     {
         const string UPDATE_FOLDER = "UpdateFolder";
-        const string PATCH_SERVER = "http://ec2-54-187-139-124.us-west-2.compute.amazonaws.com";
+        const string PATCH_SERVER = "http://ec2-54-187-139-124.us-west-2.compute.amazonaws.com/";
+        static bool _patchingGame;
 
         /// <summary>
         /// The main entry point for the application.
@@ -73,11 +74,36 @@ namespace HappinessLauncher
             PatchLog.Print("gameDataFolder = " + gameDataFolder);
 
             // Do Launcher Update
-            if (DoLauncherUpdate())
+            try
             {
-                // Update the game
+                if (DoLauncherUpdate())
+                {
+                    // Update the game
+                    _patchingGame = true;
+                    UpdateManager updateManager = new UpdateManager(PATCH_SERVER, "/game/", "Happiness");
+                    updateManager.OnStatusChange += UpdateStatusChanged;
+                    updateManager.OnUpdateFinished += UpdateFinished;
+                    updateManager.Start();
+
+                    while (_patchingGame)
+                        System.Threading.Thread.Sleep(50);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                PatchLog.Print(ex.ToString());
             }
             PatchLog.Shutdown();
+        }
+
+        static void UpdateStatusChanged(string message, float minor, float major)
+        {
+        }
+
+        static void UpdateFinished(bool success)
+        {
+            _patchingGame = false;
         }
 
         static bool DoLauncherUpdate()
