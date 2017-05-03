@@ -181,5 +181,7 @@ $RECYCLE.BIN/
 # Visual Studio 2014 CTP
 **/*.sln.ide
 
-Dist/
-Happiness_Dist.zip
+Dist_S/
+Dist_C/
+Happiness_Server_Dist.zip
+Happiness_Client_Dist.zip

@@ -13,7 +13,6 @@ namespace HappinessLauncher
     {
         const string UPDATE_FOLDER = "UpdateFolder";
         const string PATCH_SERVER = "http://ec2-54-187-139-124.us-west-2.compute.amazonaws.com/";
-        static bool _patchingGame;
 
         /// <summary>
         /// The main entry point for the application.
@@ -78,16 +77,15 @@ namespace HappinessLauncher
             {
                 if (DoLauncherUpdate())
                 {
-                    // Update the game
-                    _patchingGame = true;
-                    UpdateManager updateManager = new UpdateManager(PATCH_SERVER, "client/", "Happiness/");
-                    updateManager.OnStatusChange += UpdateStatusChanged;
-                    updateManager.OnUpdateFinished += UpdateFinished;
-                    updateManager.Start();
+                    GameUpdate gu = new GameUpdate();
+                    gu.Show();
+                    gu.Start(PATCH_SERVER);                    
 
-                    while (_patchingGame)
+                    while (!gu.Finished)
+                    {
+                        Application.DoEvents();
                         System.Threading.Thread.Sleep(50);
-
+                    }
                 }
             }
             catch (Exception ex)
@@ -95,16 +93,6 @@ namespace HappinessLauncher
                 PatchLog.Print(ex.ToString());
             }
             PatchLog.Shutdown();
-        }
-
-        static void UpdateStatusChanged(string message, float minor, float major)
-        {
-            PatchLog.Print("PatchStatus: {0} - {1}/{2}", message, minor, major);
-        }
-
-        static void UpdateFinished(bool success)
-        {
-            _patchingGame = false;
         }
 
         static bool DoLauncherUpdate()
@@ -117,7 +105,7 @@ namespace HappinessLauncher
             string response = wr.WaitForResponseString();
             Manifest remoteManifest = new Manifest(response.Replace("\r", "").Split('\n'));
             bool updateNeeded = false;
-//#if !DEBUG
+#if !DEBUG
             string[] files = remoteManifest.GetFileList();
             foreach (string file in files)
             {
@@ -130,7 +118,7 @@ namespace HappinessLauncher
                     break;
                 }
             }
-//#endif
+#endif
 
             if (updateNeeded)
             {
