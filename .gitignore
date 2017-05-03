@@ -45,6 +45,7 @@ build/
 *.pidb
 *.log
 *.scc
+*.exe
 
 # OS generated files #
 .DS_Store*
