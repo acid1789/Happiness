@@ -76,9 +76,17 @@ namespace Happiness
             SaveToDisk();
         }
 
+        string GetUserLocalFile()
+        {
+            string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string localHappinessDir = localData + "/Happiness/";
+            Directory.CreateDirectory(localHappinessDir);
+            return localHappinessDir + LocalFileName;
+        }
+
         void SaveToDisk()
         {
-            FileStream fs = File.Open(LocalFileName, FileMode.OpenOrCreate);
+            FileStream fs = File.Open(GetUserLocalFile(), FileMode.OpenOrCreate);
             BinaryWriter bw = new BinaryWriter(fs);
 
             bw.Write(GameInfo.GameInfoVersion);
@@ -102,10 +110,10 @@ namespace Happiness
             _loadStatus = LoadStatus.Loading;
 
             // Check for the local file
-            if (File.Exists(LocalFileName))
+            if (File.Exists(GetUserLocalFile()))
             {
                 // Read the file
-                FileStream fs = File.OpenRead(LocalFileName);
+                FileStream fs = File.OpenRead(GetUserLocalFile());
                 BinaryReader br = new BinaryReader(fs);
 
                 int version = br.ReadInt32();
