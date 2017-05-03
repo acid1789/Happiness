@@ -80,7 +80,7 @@ namespace HappinessLauncher
                 {
                     // Update the game
                     _patchingGame = true;
-                    UpdateManager updateManager = new UpdateManager(PATCH_SERVER, "/game/", "Happiness");
+                    UpdateManager updateManager = new UpdateManager(PATCH_SERVER, "client/", "Happiness/");
                     updateManager.OnStatusChange += UpdateStatusChanged;
                     updateManager.OnUpdateFinished += UpdateFinished;
                     updateManager.Start();
@@ -99,6 +99,7 @@ namespace HappinessLauncher
 
         static void UpdateStatusChanged(string message, float minor, float major)
         {
+            PatchLog.Print("PatchStatus: {0} - {1}/{2}", message, minor, major);
         }
 
         static void UpdateFinished(bool success)
@@ -116,7 +117,7 @@ namespace HappinessLauncher
             string response = wr.WaitForResponseString();
             Manifest remoteManifest = new Manifest(response.Replace("\r", "").Split('\n'));
             bool updateNeeded = false;
-#if !DEBUG
+//#if !DEBUG
             string[] files = remoteManifest.GetFileList();
             foreach (string file in files)
             {
@@ -129,7 +130,7 @@ namespace HappinessLauncher
                     break;
                 }
             }
-#endif
+//#endif
 
             if (updateNeeded)
             {
