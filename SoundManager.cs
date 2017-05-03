@@ -45,7 +45,8 @@ namespace Happiness
 
         private SoundManager()
         {
-            m_fSoundVolume = 1.0f;
+            m_fMusicVolume = 0.4f;
+            m_fSoundVolume = 0.8f;
             m_CurrentMusic = PlayingMusic.None;
             MediaPlayer.MediaStateChanged += MediaPlayer_MediaStateChanged;
         }
@@ -67,6 +68,7 @@ namespace Happiness
         {
             if (m_CurrentMusic != PlayingMusic.Menu)
             {
+                MediaPlayer.Volume = m_fMusicVolume;
                 MediaPlayer.Play(Assets.MenuSong);
                 MediaPlayer.IsRepeating = true;
                 m_CurrentMusic = PlayingMusic.Menu;
@@ -104,6 +106,7 @@ namespace Happiness
 
             Song s = m_PlayList[m_CurrentSong];
             MediaPlayer.Play(s);
+            MediaPlayer.Volume = m_fMusicVolume;
         }
 
         public void PlaySound(SEInst se)
