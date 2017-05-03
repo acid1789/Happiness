@@ -82,9 +82,14 @@ namespace Happiness
 
         public void ExitGame()
         {
+            Exit();
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
             m_ServerWriter.Shutdown();
             NetworkManager.Net.Shutdown();
-            Exit();
+            base.OnExiting(sender, args);
         }
 
         /// <summary>
