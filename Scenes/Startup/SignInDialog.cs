@@ -14,7 +14,14 @@ namespace Happiness
         {
             SignInButtons,
             SigningIn,
-            EmailInput,
+            EmailInput
+        }
+
+        public enum SignInType
+        {
+            Email,
+            Google,
+            Facebook
         }
 
         Rectangle m_Rect;
@@ -46,6 +53,7 @@ namespace Happiness
         string m_szStatusText;
         Color m_StatusColor;
 
+        SignInType m_SignInType;
         Mode m_Mode;
         UIButton[] m_SignInButtons;
         bool m_bEmailCreate = true;
@@ -192,7 +200,14 @@ namespace Happiness
             {
                 default:
                 case 0: // Facebook
+                    m_SignInType = SignInType.Facebook;
+                    if (OnSignIn != null)
+                        OnSignIn(this, null);
+                    break;
                 case 1: // Google
+                    m_SignInType = SignInType.Google;
+                    if ( OnSignIn != null )
+                        OnSignIn(this, null);
                     break;
                 case 2: // Email
                     m_Mode = Mode.EmailInput;
@@ -210,6 +225,7 @@ namespace Happiness
             switch (buttonID)
             {
                 case 0: // Sign In
+                    m_SignInType = SignInType.Email;
                     if (OnSignIn != null)
                         OnSignIn(this, null);
                     break;
@@ -334,28 +350,6 @@ namespace Happiness
                     DrawEmailInput(sb);
                     break;
             }
-
-            /*
-            // Draw auth buttons
-            foreach( UIButton b in m_AuthButtons )
-                b.Draw(sb);
-
-            // Draw status text
-            if (m_szStatusText != null)
-            {
-                Vector2 size = Assets.DialogFont.MeasureString(m_szStatusText);
-                Vector2 pos = new Vector2(m_iCenterDialogX - (size.X * 0.5f), m_fStatusTextY);
-                Happiness.ShadowString(sb, Assets.DialogFont, m_szStatusText, pos, m_StatusColor);
-            }
-
-            // Draw dialog buttons
-            foreach( UIButton b in m_DialogButtons )
-                b.Draw(sb);
-
-            // Draw wait icon
-            if( !m_bInputEnabled )
-                Assets.WaitIcon.Draw(sb, m_WaitRect, Color.White);
-                */
         }
 
         void DrawEmailInput(SpriteBatch sb)
@@ -381,7 +375,7 @@ namespace Happiness
 
             foreach( UIButton b in m_DialogButtons )
                 b.Draw(sb);
-        }
+        }        
 
         #region Accessors
 
@@ -425,6 +419,11 @@ namespace Happiness
         public bool EmailCreate
         {
             get { return m_bEmailCreate; }
+        }
+
+        public SignInType AuthType
+        {
+            get { return m_SignInType; }
         }
         #endregion
     }

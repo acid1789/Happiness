@@ -144,15 +144,7 @@ namespace Happiness
             // Show sign in dialog
             if (m_SignInDialog != null)
                 m_SignInDialog.Draw(spriteBatch);
-
-            /*
-                            if(m_DisplayNameDialog != null )
-                                m_DisplayNameDialog.Draw(spriteBatch);
-
-                            if (m_MessageBox != null )
-                                m_MessageBox.Draw(spriteBatch);
-                            */
-
+            
             if (m_szWaitText != null)
             {
                 Assets.WaitIcon.Draw(spriteBatch, m_WaitRect, Color.White);
@@ -175,14 +167,33 @@ namespace Happiness
 
         private void M_SignInDialog_OnSignIn(object sender, EventArgs e)
         {
+            m_szWaitText = "Signing In...";
+
+            switch (m_SignInDialog.AuthType)
+            {
+                case SignInDialog.SignInType.Email: DoEmailSignIn(); break;
+                case SignInDialog.SignInType.Google: DoGoogleSignIn(); break;
+                case SignInDialog.SignInType.Facebook: DoFacebookSignIn(); break;
+            }
+            m_SignInDialog = null;
+        }
+
+        void DoEmailSignIn()
+        {
             bool createMode = m_SignInDialog.EmailCreate;
             string email = m_SignInDialog.Email;
             string password = m_SignInDialog.Password;
-
-            m_SignInDialog = null;
-            m_szWaitText = "Signing In...";
-
+            
             m_GIV.RequestFromServer(email, password, createMode);
+        }
+
+        void DoGoogleSignIn()
+        {
+            m_GIV.StartOAuth();
+        }
+
+        void DoFacebookSignIn()
+        {
         }
         #endregion
     }

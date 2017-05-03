@@ -20,6 +20,7 @@ namespace Happiness
             ServerFetchComplete,
             LoadedNoValidation,
             NoFile,
+            OAuth
         }
 
         const string LocalFileName = "hgi.dat";
@@ -55,6 +56,11 @@ namespace Happiness
             }
             m_GameInfo = null;
             _loadStatus = LoadStatus.Idle;
+        }
+
+        public void StartOAuth()
+        {
+            _loadStatus = LoadStatus.OAuth;
         }
 
         public void RequestFromServer(string username, string password, bool createMode)
