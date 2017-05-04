@@ -97,6 +97,9 @@ namespace Happiness
                 case GameInfoValidator.LoadStatus.Idle:
                     m_szWaitText = null;
                     break;
+                case GameInfoValidator.LoadStatus.OAuthFailed:
+                    m_szWaitText = "Failed to authenticate";
+                    break;
                 case GameInfoValidator.LoadStatus.Loading:
                     m_szWaitText = "Loading";
                     break;
@@ -190,6 +193,8 @@ namespace Happiness
         void DoGoogleSignIn()
         {
             m_GIV.StartOAuth();
+            string[] credentials = GoogleAuth.DoAuth();
+            m_GIV.FinishOAuth(credentials[0], credentials[1], true);
         }
 
         void DoFacebookSignIn()

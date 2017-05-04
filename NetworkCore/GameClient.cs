@@ -84,13 +84,14 @@ namespace NetworkCore
         #endregion
 
         #region Packet Construction        
-        public void SendAccountRequest(string email, string pass, string displayName = null)
+        public void SendAccountRequest(string email, string pass, string displayName = null, int oauthMode = 0)
         {
             BeginPacket(GCPacketType.AccountRequest);
 
             WriteUTF8String(email);
             WriteUTF8String(pass);
             WriteUTF8String(displayName);
+            _outgoingBW.Write(oauthMode);
 
             SendPacket();
         }
@@ -144,11 +145,13 @@ namespace NetworkCore
             string email = ReadUTF8String(br);
             string pass = ReadUTF8String(br);
             string displayName = ReadUTF8String(br);
+            int oauthMode = br.ReadInt32();
 
             AccountRequestArgs args = new AccountRequestArgs();
             args.Email = email;
             args.Password = pass;
             args.DisplayName = displayName;
+            args.OAuthMode = oauthMode;
             OnAccountRequest(this, args);
         }
 
@@ -157,6 +160,7 @@ namespace NetworkCore
             _sessionKey = br.ReadUInt32();
             _accountId = br.ReadInt32();
             _displayName = ReadUTF8String(br);
+            string authString = ReadUTF8String(br);
 
             OnAccountResponse(this, null);
         }
@@ -241,6 +245,7 @@ namespace NetworkCore
         public string Email;
         public string Password;
         public string DisplayName;
+        public int OAuthMode;
     }
 
     public class ChatMessageArgs : EventArgs

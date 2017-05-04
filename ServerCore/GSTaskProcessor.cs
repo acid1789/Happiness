@@ -56,7 +56,7 @@ namespace ServerCore
             GSTask task = (GSTask)t;
             // Forward credentials request onto the global server
             AccountRequestArgs args = (AccountRequestArgs)task.Args;
-            _server.GlobalServer.RequestAccountInfo(task.Client.SessionKey, args.Email, args.Password, args.DisplayName);
+            _server.GlobalServer.RequestAccountInfo(task.Client.SessionKey, args.Email, args.Password, args.DisplayName, args.OAuthMode);
         }
 
         void AccountInfoResponseHandler(Task t)

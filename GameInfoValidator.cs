@@ -20,7 +20,8 @@ namespace Happiness
             ServerFetchComplete,
             LoadedNoValidation,
             NoFile,
-            OAuth
+            OAuth,
+            OAuthFailed
         }
 
         const string LocalFileName = "hgi.dat";
@@ -32,6 +33,7 @@ namespace Happiness
         string _userName;
         string _passWord;
         bool _accountCreate;
+        int _oauthMode;
 
         static GameInfoValidator s_instance;
 
@@ -63,11 +65,23 @@ namespace Happiness
             _loadStatus = LoadStatus.OAuth;
         }
 
-        public void RequestFromServer(string username, string password, bool createMode)
+        public void FinishOAuth(string email, string uniqueId, bool google)
+        {
+            if (email == null)
+                _loadStatus = LoadStatus.OAuthFailed;
+            else
+            {
+                // Sign in with the provided oauth credentials
+                RequestFromServer(email, uniqueId, true, google ? 1 : 2);
+            }
+        }
+
+        public void RequestFromServer(string username, string password, bool createMode, int oauthMode = 0)
         {
             _userName = username;
             _passWord = password;
             _accountCreate = createMode;
+            _oauthMode = oauthMode;
             StartThread(new ThreadStart(ServerRequestFunc));
         }
 
@@ -157,7 +171,7 @@ namespace Happiness
             else
             {
                 // Send request
-                client.SendAccountRequest(_userName, _passWord, _accountCreate ? null : _userName);
+                client.SendAccountRequest(_userName, _passWord, _accountCreate ? _userName : null, _oauthMode);
 
                 // Wait for response
                 while (client.Connected && _loadStatus == LoadStatus.FetchingFromServer)
