@@ -141,6 +141,23 @@ namespace GlobalServer
                 }
                 else
                 {
+                    if (args.OAuthMode == 1 && google_id == null)
+                    {
+                        // Trying to sign in with google but this account isn't associated with google.
+                        // Add the google id to the database for this user and try again
+                        task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
+                        AddDBQuery(string.Format("UPDATE accounts SET google_id=\"{0}\" WHERE account_id={1};", args.Password, accountId), task);
+                        sendAccountInfo = false;
+                    }
+                    else if (args.OAuthMode == 2 && facebook_id == null)
+                    {
+                        // Trying to sign in with facebook but this account isn't associated with facebook.
+                        // Add the facebook id to the database for this user and try again
+                        task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
+                        AddDBQuery(string.Format("UPDATE accounts SET facebook_id=\"{0}\" WHERE account_id={1};", args.Password, accountId), task);
+                        sendAccountInfo = false;
+                    }
+
                     // password mismatch - displayName stays empty but accountId is filled in
                 }
             }

@@ -199,6 +199,9 @@ namespace Happiness
 
         void DoFacebookSignIn()
         {
+            m_GIV.StartOAuth();
+            string[] credentials = FacebookAuth.DoAuth();
+            m_GIV.FinishOAuth(credentials[0], credentials[1], false);
         }
         #endregion
     }

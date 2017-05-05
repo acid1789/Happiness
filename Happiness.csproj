@@ -44,6 +44,7 @@
     <ApplicationIcon>Happiness.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FacebookAuth.cs" />
     <Compile Include="FormattedLine.cs" />
     <Compile Include="GameInfoValidator.cs" />
     <Compile Include="GoogleAuth.cs" />
@@ -228,6 +229,10 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>copy $(SolutionDir)FacebookAuthenticator\bin\$(ConfigurationName)\FacebookAuthenticator.exe $(SolutionDir)$(OutDir)FacebookAuthenticator.exe
+copy $(SolutionDir)FacebookAuthenticator\bin\$(ConfigurationName)\Facebook.dll $(SolutionDir)$(OutDir)Facebook.dll</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
