@@ -68,6 +68,18 @@ namespace GlobalServer
             _taskHandlers[(int)GlobalTask.GlobalType.AuthStringProcess] = AuthStringProcessHandler;
         }
 
+        bool ValidPassword(string pwIn, int oAuthMode, string pwDB, string googleId, string facebookId)
+        {
+            switch (oAuthMode)
+            {
+                case 1: // Google
+                    return pwIn == googleId;
+                case 2: // Facebook
+                    return pwIn == facebookId;
+            }
+            return pwIn == pwDB;
+        }
+
         #region Task Handlers
         void AccountInfoRequestHandler(Task t)
         {
@@ -100,12 +112,16 @@ namespace GlobalServer
                 // 4: hard_currency
                 // 5: auth_string
                 // 6: vip
+                // 7: google_id
+                // 8: facebook_id
 
                 // Found the account, check the password
                 object[] row = task.Query.Rows[0];
                 accountId = (int)row[0];
                 string pw = row[2].ToString();
-                if (pw == args.Password)
+                string google_id = (row[7] is DBNull) ? null : row[7].ToString();
+                string facebook_id = (row[8] is DBNull) ? null : row[8].ToString();
+                if( ValidPassword(args.Password, args.OAuthMode, pw, google_id, facebook_id) )
                 {
                     // password match
                     displayName = row[3].ToString();
@@ -125,6 +141,23 @@ namespace GlobalServer
                 }
                 else
                 {
+                    if (args.OAuthMode == 1 && google_id == null)
+                    {
+                        // Trying to sign in with google but this account isn't associated with google.
+                        // Add the google id to the database for this user and try again
+                        task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
+                        AddDBQuery(string.Format("UPDATE accounts SET google_id=\"{0}\" WHERE account_id={1};", args.Password, accountId), task);
+                        sendAccountInfo = false;
+                    }
+                    else if (args.OAuthMode == 2 && facebook_id == null)
+                    {
+                        // Trying to sign in with facebook but this account isn't associated with facebook.
+                        // Add the facebook id to the database for this user and try again
+                        task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
+                        AddDBQuery(string.Format("UPDATE accounts SET facebook_id=\"{0}\" WHERE account_id={1};", args.Password, accountId), task);
+                        sendAccountInfo = false;
+                    }
+
                     // password mismatch - displayName stays empty but accountId is filled in
                 }
             }
@@ -137,7 +170,18 @@ namespace GlobalServer
                     sendAccountInfo = false;
 
                     task.Type = (int)GlobalTask.GlobalType.AccountInfoRequest;
-                    DBQuery q = AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",password=\"{1}\",display_name=\"{2}\",hard_currency={3},vip={4};", args.Email, args.Password, args.DisplayName, 0, 0), task);
+                    switch (args.OAuthMode)
+                    {
+                        default:
+                            AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",password=\"{1}\",display_name=\"{2}\",hard_currency={3},vip={4};", args.Email, args.Password, args.DisplayName, 0, 0), task);
+                            break;
+                        case 1: // Google
+                            AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",display_name=\"{1}\",hard_currency={2},vip={3},google_id={4};", args.Email, args.DisplayName, 0, 0,args.Password), task);
+                            break;
+                        case 2: // Facebook
+                            AddDBQuery(string.Format("INSERT INTO accounts SET email=\"{0}\",display_name=\"{1}\",hard_currency={2},vip={3},facebook_id={4};", args.Email, args.DisplayName, 0, 0, args.Password), task);
+                            break;
+                    }
                 }
             }
             if(sendAccountInfo )

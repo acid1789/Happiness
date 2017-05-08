@@ -62,9 +62,9 @@ namespace ServerCore
             }
         }
 
-        public void RequestAccountInfo(uint clientKey, string email, string password, string displayName)
+        public void RequestAccountInfo(uint clientKey, string email, string password, string displayName, int oauthMode)
         {
-            _gc.RequestAccountInfo(clientKey, email, password, displayName);
+            _gc.RequestAccountInfo(clientKey, email, password, displayName, oauthMode);
         }
 
         public void FetchAuthString(string authString, uint clientKey)

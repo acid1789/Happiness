@@ -107,9 +107,13 @@ namespace ServerCore
 
         public void AddTask(Task t)
         {
+#if DEBUG
+            ProcessTask(t);
+#else
             _tasksLock.WaitOne();
             _tasks.Add(t);
             _tasksLock.ReleaseMutex();
+#endif
         }
 
         public void Process()

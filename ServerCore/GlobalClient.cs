@@ -52,7 +52,7 @@ namespace ServerCore
         }
 
         #region Packet Construction
-        public void RequestAccountInfo(uint clientKey, string email, string password, string displayName)
+        public void RequestAccountInfo(uint clientKey, string email, string password, string displayName, int oauthMode)
         {
             BeginPacket(GPacketType.AccountInfoRequest);
 
@@ -60,6 +60,7 @@ namespace ServerCore
             WriteUTF8String(email);
             WriteUTF8String(password);
             WriteUTF8String(displayName);
+            _outgoingBW.Write(oauthMode);
 
             SendPacket();
         }
@@ -118,6 +119,7 @@ namespace ServerCore
             args.Email = ReadUTF8String(br);
             args.Password = ReadUTF8String(br);
             args.DisplayName = ReadUTF8String(br);
+            args.OAuthMode = br.ReadInt32();
             OnAccountInfoRequest(this, args);
         }
 
@@ -167,6 +169,7 @@ namespace ServerCore
         public string Email;
         public string Password;
         public string DisplayName;
+        public int OAuthMode;
     }
 
     public class AccountInfoResponseArgs : EventArgs

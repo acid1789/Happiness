@@ -1,0 +1,3 @@
+[submodule "FacebookAuthenticator"]
+	path = FacebookAuthenticator
+	url = https://github.com/acid1789/FacebookAuthenticator.git
