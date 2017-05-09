@@ -38,12 +38,17 @@ namespace ServerCore
 
         public AuthAccountInfo FindAccount(string authString)
         {
+            string ascii = AuthStringToAscii(authString);
+            LogThread.Log("Checking auth cache for: " + ascii, NetworkCore.LogInterface.LogMessageType.Normal);
             if (_accounts.ContainsKey(authString))
             {
                 AuthAccountInfo aai = _accounts[authString];
                 aai.Timestamp = DateTime.Now.Ticks;
+                LogThread.Log("Authstring found for account: " + aai.AccountID, NetworkCore.LogInterface.LogMessageType.Normal);
                 return aai;
             }
+
+            LogThread.Log(string.Format("Authstring {0} not found in the local cache", ascii), NetworkCore.LogInterface.LogMessageType.System);
             return null;
         }
 
@@ -61,6 +66,15 @@ namespace ServerCore
                 _accounts.Remove(key);
         }
 
+
+        public static string AuthStringToAscii(string authString)
+        {
+            byte[] bytes = Encoding.ASCII.GetBytes(authString);
+            string str = "";
+            foreach( byte b in bytes )
+                str += b.ToString("X2");
+            return str;
+        }
 
         public class AuthAccountInfo
         {

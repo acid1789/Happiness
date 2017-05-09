@@ -71,8 +71,8 @@ namespace ServerCore
                     Connection[] connections = _connections.ToArray();
                     _connectionsLock.ReleaseMutex();
 
-                    if( connections.Length > 1 )
-                        Console.WriteLine("{0} clients on the server", connections.Length - 1);
+                    //if( connections.Length > 1 )
+                    //    Console.WriteLine("{0} clients on the server", connections.Length - 1);
 
                     List<Connection> removeList = new List<Connection>();
                     foreach (Connection c in connections)

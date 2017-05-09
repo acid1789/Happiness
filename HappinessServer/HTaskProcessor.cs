@@ -296,11 +296,11 @@ namespace HappinessServer
             string hash = (string)args[1];
 
 
-            // Validate auth string
+            // Validate auth string            
             AuthStringManager.AuthAccountInfo aai = _server.AuthManager.FindAccount(authString);
             if (aai == null)
             {
-                // This account isnt in the cache, need to go fetch from global server   
+                // This account isnt in the cache, need to go fetch from global server                   
                 task.Client.PendingAuthTask = task;
                 _server.GlobalServer.FetchAuthString(authString, task.Client.SessionKey);
                 return;

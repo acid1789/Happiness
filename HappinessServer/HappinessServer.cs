@@ -13,7 +13,9 @@ namespace HappinessServer
     {
         public HappinessServer(int listenPort, string dbConnectionString, string globalAddress, int globalPort) : base(listenPort, dbConnectionString, globalAddress, globalPort)
         {
+#if DEBUG
             LogThread.AlwaysPrintToConsole = true;
+#endif
             TaskProcessor = new HTaskProcessor(this);
         }
 
@@ -41,7 +43,7 @@ namespace HappinessServer
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, (HClient)client, client.AuthString, null));
         }
 
-        #region Client Event Handlers
+#region Client Event Handlers
         private void Client_OnGameDataRequest(object sender, EventArgs e)
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.GameData_Fetch, (HClient)sender, null));
@@ -49,11 +51,15 @@ namespace HappinessServer
 
         private void Client_OnPuzzleComplete(object sender, PuzzleCompleteArgs e)
         {
+            string str = string.Format("OnPuzzleComplete: Tower({0}), Floor({1}), Time({2}), AuthToken({3})", e.TowerIndex, e.FloorNumber, e.CompletionTime, AuthStringManager.AuthStringToAscii(e.AuthToken));
+            LogThread.Log(str, LogInterface.LogMessageType.Normal, true);
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.PuzzleComplete_FetchData, (HClient)sender, e));
         }
 
         private void Client_OnSpendCoins(object sender, SpendCoinsArgs e)
         {
+            string str = string.Format("OnSpendCoins: SpendOn({0}), Coins({1}), AuthToken({2})", e.SpendOn, e.Coins, AuthStringManager.AuthStringToAscii(e.AuthToken));
+            LogThread.Log(str, LogInterface.LogMessageType.Normal, true);
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.SpendCoins, (HClient)sender, e));
         }
 
@@ -69,6 +75,8 @@ namespace HappinessServer
 
         private void Client_OnValidateGameInfo(HClient arg1, string authString, string hash)
         {
+            string str = string.Format("OnValidateGameInfo: AuthToken({0}), Hash({1})", AuthStringManager.AuthStringToAscii(authString), AuthStringManager.AuthStringToAscii(hash));
+            LogThread.Log(str, LogInterface.LogMessageType.Normal, true);
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, arg1, authString, hash));
         }
 
@@ -76,9 +84,9 @@ namespace HappinessServer
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.CoinBalance_Process, arg1, obj));
         }
-        #endregion
+#endregion
 
-        #region Accessors
-        #endregion
+#region Accessors
+#endregion
     }
 }

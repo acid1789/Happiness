@@ -64,7 +64,7 @@ namespace ServerCore
             DBQuery q = (DBQuery)sender;
 
             _pqLock.WaitOne();
-            LogInterface.Log("Finishing Query with key: " + q.Key, LogInterface.LogMessageType.Debug, true);
+            LogInterface.Log("Finishing Query with key: " + q.Key, LogInterface.LogMessageType.Debug);
             Task task = _pendingQueries[q.Key];
             _pendingQueries.Remove(q.Key);
             _pqLock.ReleaseMutex();
@@ -97,7 +97,7 @@ namespace ServerCore
             task.Query = q;
 
             _pqLock.WaitOne();
-            LogInterface.Log("Adding Query with key: " + key, LogInterface.LogMessageType.Debug, true);
+            LogInterface.Log("Adding Query with key: " + key, LogInterface.LogMessageType.Debug);
             _pendingQueries[key] = task;
             _pqLock.ReleaseMutex();
 

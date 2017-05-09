@@ -16,7 +16,9 @@ namespace HappinessServer
         {
             ServerArgs sargs = new ServerArgs(args);
 
+#if DEBUG
             LogThread.AlwaysPrintToConsole = true;
+#endif
             _server = new HappinessServer(sargs.ListenPort, sargs.DBString, sargs.HostAddress, sargs.HostPort);
 
             _server.Run();

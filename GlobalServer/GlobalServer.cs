@@ -17,7 +17,9 @@ namespace GlobalServer
             
             _server = new ServerBase(sargs.ListenPort, sargs.DBString);
             _server.TaskProcessor = new GlobalTaskProcessor();
+#if DEBUG
             LogThread.AlwaysPrintToConsole = true;
+#endif
 
             _server.ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);
 
@@ -64,11 +66,11 @@ namespace GlobalServer
             _server.TaskProcessor.AddTask(gt);
         }
 
-        #region Accessors
+#region Accessors
         public static DatabaseThread Database
         {
             get { return _server.Database; }
         }
-        #endregion
+#endregion
     }
 }

@@ -157,7 +157,7 @@ namespace NetworkCore
             }
             else
             {
-                LogInterface.Log(string.Format("Unhandled packet type {0}", packetType), LogInterface.LogMessageType.Error, true);
+                LogInterface.Log(string.Format("Unhandled packet type {0}", packetType), LogInterface.LogMessageType.Error);
             }
         }
 
