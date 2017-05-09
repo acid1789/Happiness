@@ -99,7 +99,8 @@ namespace Happiness
                     m_szWaitText = null;
                     break;
                 case GameInfoValidator.LoadStatus.OAuthFailed:
-                    m_szWaitText = "Failed to authenticate";
+                    ShowSignInDialog();
+                    m_SignInDialog.Status = "Failed to authenticate!";
                     break;
                 case GameInfoValidator.LoadStatus.Loading:
                     m_szWaitText = "Loading";
@@ -108,7 +109,8 @@ namespace Happiness
                     m_szWaitText = "Fetching From Server";
                     break;                    
                 case GameInfoValidator.LoadStatus.ServerDeniedAccess:
-                    m_szWaitText = "Server said fuck off";
+                    ShowSignInDialog();
+                    m_SignInDialog.Status = "Incorrect email or password.";
                     break;
                 case GameInfoValidator.LoadStatus.ServerFetchComplete:
                     m_szWaitText = "Fetched from server";
@@ -117,9 +119,7 @@ namespace Happiness
                     break;
                 case GameInfoValidator.LoadStatus.ServerUnreachable:
                 case GameInfoValidator.LoadStatus.NoFile:
-                    m_szWaitText = null;
                     ShowSignInDialog();
-                    m_GIV.Reset();
                     break;
             }
 
@@ -158,6 +158,8 @@ namespace Happiness
 
         void ShowSignInDialog()
         {
+            m_szWaitText = null;
+            m_GIV.Reset();
             m_SignInDialog = new SignInDialog(Game.ScreenWidth, Game.ScreenHeight);
             m_SignInDialog.OnSignIn += M_SignInDialog_OnSignIn;
             m_SignInDialog.OnExit += M_SignInDialog_OnExit;

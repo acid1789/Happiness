@@ -49,9 +49,10 @@ namespace Happiness
         Vector2 m_vPassword2LabelPosition;
         
         UIButton[] m_DialogButtons;
-
+        
         string m_szStatusText;
         Color m_StatusColor;
+        Vector2 m_vStatusPosition;
 
         SignInType m_SignInType;
         Mode m_Mode;
@@ -338,6 +339,9 @@ namespace Happiness
             // Draw the title
             Happiness.ShadowString(sb, Assets.MenuFont, m_szTitleText, m_vTitlePosition, Color.Goldenrod);
 
+            if( m_szStatusText != null )
+                Happiness.ShadowString(sb, Assets.HelpFont, m_szStatusText, m_vStatusPosition, Color.Red);
+
             switch (m_Mode)
             {
                 case Mode.SignInButtons:
@@ -382,7 +386,12 @@ namespace Happiness
         public string Status
         {
             get { return m_szStatusText; }
-            set { m_szStatusText = value; }
+            set
+            {
+                m_szStatusText = value;
+                Vector2 size = Assets.HelpFont.MeasureString(m_szStatusText);
+                m_vStatusPosition = new Vector2(m_iCenterDialogX - (size.X * 0.5f), m_Rect.Top + m_iMargin + 50);
+            }
         }
 
         public Color StatusColor
