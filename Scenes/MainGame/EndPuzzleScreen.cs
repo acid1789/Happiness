@@ -164,7 +164,7 @@ namespace Happiness
             m_Unlock = new UILabel(string.Format("Tower {0} Unlocked!", m_iTower + 2), m_iCenterX, iUnlockY, Color.Yellow, Assets.MenuFont, UILabel.XMode.Center);
             m_Unlock.Hidden = true;
 
-            m_AnimStep = AnimStep.WaitForServerData;
+            m_AnimStep = success ? AnimStep.WaitForServerData : AnimStep.Start;
             m_AnimTimeRemaining = 1.0f;
 
             if (!game.Tutorial.IsPieceSetup(TutorialSystem.TutorialPiece.EndScreen1))
