@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +13,7 @@ namespace Happiness
 {
     class GoogleAuth
     {
+        static string s_szSecrets;
         static string s_szEmail;
         static string s_szId;
 
@@ -36,8 +37,10 @@ namespace Happiness
         
         async Task Run()
         {
-            string s_Secrets = Environment.GetEnvironmentVariable("HAPPINESS_GOOGLE_SECRET");
-            GoogleClientSecrets secrets = GoogleClientSecrets.Load(s_Secrets.ToStream());            
+#if DEBUG
+            s_szSecrets = Environment.GetEnvironmentVariable("HAPPINESS_GOOGLE_SECRET");
+#endif
+            GoogleClientSecrets secrets = GoogleClientSecrets.Load(s_szSecrets.ToStream());            
             UserCredential credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(secrets.Secrets, new[] { PlusService.Scope.UserinfoEmail }, "user", CancellationToken.None);
 
             PlusService service = new PlusService(new BaseClientService.Initializer() { HttpClientInitializer = credential, ApplicationName = "Happiness" });

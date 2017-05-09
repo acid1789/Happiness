@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +10,7 @@ namespace Happiness
 {
     class FacebookAuth
     {
+        static string s_szSecrets;
         static string s_szEmail;
         static string s_szId;
 
@@ -18,9 +19,13 @@ namespace Happiness
             s_szEmail = null;
             s_szId = null;
 
+#if DEBUG
+            s_szSecrets = Environment.GetEnvironmentVariable("HAPPINESS_FACEBOOK_APPID");
+#endif
+
             Process process = new Process();
             process.StartInfo.FileName = "FacebookAuthenticator.exe";
-            process.StartInfo.Arguments = Environment.GetEnvironmentVariable("HAPPINESS_FACEBOOK_APPID");
+            process.StartInfo.Arguments = s_szSecrets;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
