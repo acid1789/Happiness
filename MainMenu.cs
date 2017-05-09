@@ -65,7 +65,7 @@ namespace Happiness
                     m_iSelection = 0;
             }
 
-            m_Game.m_SoundManager.PlayMenuNavigate();
+            m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
         }
 
         public void NavigateUp()
@@ -83,7 +83,7 @@ namespace Happiness
                     m_iSelection = 3;
             }
 
-            m_Game.m_SoundManager.PlayMenuNavigate();
+            m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
         }
 
         public void NavigateLeft()
@@ -104,7 +104,7 @@ namespace Happiness
                         m_iNewGameSelection = 3;
                         break;
                 }
-                m_Game.m_SoundManager.PlayMenuNavigate();
+                m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
             }
         }
 
@@ -126,7 +126,7 @@ namespace Happiness
                         m_iNewGameSelection = 3;
                         break;
                 }
-                m_Game.m_SoundManager.PlayMenuNavigate();
+                m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
             }
         }
 
@@ -141,17 +141,17 @@ namespace Happiness
                     case 1:
                     case 2:
                         ClickNewGameBox((m_iNewGameSelection * 2) + 1);
-                        m_Game.m_SoundManager.PlayMenuNavigate();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                         break;
                     case 3:
                         // Exit the dialog and the main menu
                         m_bNewGameDialog = false;
-                        m_Game.m_SoundManager.PlayMenuAccept();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
                         return false;
                     case 4:
                         // Just cancel the dialog
                         m_bNewGameDialog = false;
-                        m_Game.m_SoundManager.PlayMenuCancel();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuCancel);
                         break;
                 }
             }
@@ -164,21 +164,21 @@ namespace Happiness
                         {
                             m_bNewGameDialog = true;
                             m_iNewGameSelection = 3;
-                            m_Game.m_SoundManager.PlayMenuAccept();
+                            m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
                             return true;
                         }
                         break;
                     case 1:         // Load Game
                         if (!m_bNewGameDialog && m_SaveGame != null && m_SaveGame.m_bIsValid)
                         {
-                            m_Game.m_SoundManager.PlayMenuAccept();
+                            m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
                             return false;
                         }
                         break;
                     case 2:         // Options
                         //m_Game.m_Options.Init();
                         //m_Game.m_bOptionsDialog = true;
-                        //m_Game.m_SoundManager.PlayMenuAccept();
+                        //m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
                         break;
                     case 3:         // Exit
                         return false;
@@ -192,7 +192,7 @@ namespace Happiness
             if (m_bNewGameDialog)
             {
                 m_bNewGameDialog = false;
-                m_Game.m_SoundManager.PlayMenuCancel();
+                m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuCancel);
             }
             return true;
         }
@@ -208,7 +208,7 @@ namespace Happiness
                     if (m_iNewGameSelection != 3)
                     {
                         m_iNewGameSelection = 3;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                     }
                 }
                 else if (m_rNewGameCancel.Contains(iX, iY))
@@ -216,7 +216,7 @@ namespace Happiness
                     if (m_iNewGameSelection != 4)
                     {
                         m_iNewGameSelection = 4;
-                        m_Game.m_SoundManager.PlayMenuNavigate();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                     }
                 }
                 else
@@ -234,7 +234,7 @@ namespace Happiness
                                 if (m_iPuzzleNumber < 0)
                                     m_iPuzzleNumber = 67108864 - m_iPuzzleNumber;
                                 m_dfScrollSpeed += dfSpeed;
-                                m_Game.m_SoundManager.PlayMenuNavigate();
+                                m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                             }
                             else if (m_aNewGameBoxes[1].Contains(iX, iY) || (m_iNewGameSelection == 0))
                             {
@@ -242,7 +242,7 @@ namespace Happiness
                                 if (m_iPuzzleNumber > 67108863)
                                     m_iPuzzleNumber = m_iPuzzleNumber - 67108864;
                                 m_dfScrollSpeed += dfSpeed;
-                                m_Game.m_SoundManager.PlayMenuNavigate();
+                                m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                             }
                         }
                     }
@@ -263,7 +263,7 @@ namespace Happiness
                         if (m_iSelection != i)
                         {
                             m_iSelection = i;
-                            m_Game.m_SoundManager.PlayMenuNavigate();
+                            m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                         }
                         break;
                     }
@@ -281,7 +281,7 @@ namespace Happiness
                     if (m_aNewGameBoxes[i].Contains(iX, iY))
                     {
                         ClickNewGameBox(i);
-                        m_Game.m_SoundManager.PlayMenuNavigate();
+                        m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                         return true;
                     }
                 }
@@ -290,13 +290,13 @@ namespace Happiness
                 {
                     // Exit the dialog and the main menu
                     m_bNewGameDialog = false;
-                    m_Game.m_SoundManager.PlayMenuAccept();
+                    m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
                     return false;
                 }
                 else if (m_rNewGameCancel.Contains(iX, iY))
                 {
                     m_bNewGameDialog = false;
-                    m_Game.m_SoundManager.PlayMenuCancel();
+                    m_Game.m_SoundManager.PlaySound(SoundManager.SEInst.MenuCancel);
                 }
             }
             else

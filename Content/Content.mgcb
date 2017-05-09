@@ -1376,17 +1376,6 @@
 /processorParam:TextureFormat=Color
 /build:GoldCoin.png
 
-#begin apple_id.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:TextureFormat=Color
-/build:apple_id.jpg
-
 #begin facebook.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -1639,4 +1628,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:TextureFormat=Color
 /build:email.png
+
+#begin Audio/Happiness.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Happiness.wav
 

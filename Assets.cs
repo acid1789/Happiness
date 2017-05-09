@@ -86,6 +86,7 @@ namespace Happiness
         public static SoundEffect GameAction6;
         public static SoundEffect PuzzleFailed;
         public static SoundEffect PuzzleComplete;
+        public static SoundEffect HappinessWav;
 
 
         public static void LoadAll(ContentManager Content)
@@ -366,6 +367,7 @@ namespace Happiness
             GameAction6 = content.Load<SoundEffect>("Audio/game_action6");
             PuzzleFailed = content.Load<SoundEffect>("Audio/puzzle_failed");
             PuzzleComplete = content.Load<SoundEffect>("Audio/puzzle_complete");
+            HappinessWav = content.Load<SoundEffect>("Audio/Happiness");
         }
     }
 }

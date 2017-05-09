@@ -32,7 +32,8 @@ namespace Happiness
             GameAction6,
             GamePuzzleFailed,
             GamePuzzleComplete,
-            GameSliderMove
+            GameSliderMove,
+            Happiness
         }
 
         public float m_fSoundVolume;
@@ -45,7 +46,7 @@ namespace Happiness
 
         private SoundManager()
         {
-            m_fMusicVolume = 0.4f;
+            m_fMusicVolume = 0.2f;
             m_fSoundVolume = 0.8f;
             m_CurrentMusic = PlayingMusic.None;
             MediaPlayer.MediaStateChanged += MediaPlayer_MediaStateChanged;
@@ -161,6 +162,9 @@ namespace Happiness
                 case SEInst.GameSliderMove:
                     inst = Assets.SliderMove.CreateInstance();
                     break;
+                case SEInst.Happiness:
+                    inst = Assets.HappinessWav.CreateInstance();
+                    break;
             }
 
             if (inst != null)
@@ -170,107 +174,8 @@ namespace Happiness
             }
         }
 
-        public void PlayMenuNavigate()
-        {
-            //m_SoundBank.PlayCue("menu_navigate");
-        }
-
-        public void PlayMenuAccept()
-        {
-            //m_SoundBank.PlayCue("menu_accept");
-        }
-
-        public void PlayMenuCancel()
-        {
-            //m_SoundBank.PlayCue("menu_cancel");
-        }
-
-        public void PlaySliderMove()
-        {
-            //m_SoundBank.PlayCue("slider_move");
-        }
-
-
-        public void PlayGameLoad()
-        {
-            //m_SoundBank.PlayCue("game_load");
-        }
-
-        public void PlayGameSave()
-        {
-            //m_SoundBank.PlayCue("game_save");
-        }
-
-        public void PlayGameNavigate()
-        {
-            //if( !m_bSupressGameNavigation )
-            //    m_SoundBank.PlayCue("menu_navigate");
-        }
-
-        public void PlayGameJump()
-        {
-            //m_SoundBank.PlayCue("menu_navigate");
-        }
-
-        public void PlayGameEliminateIcon()
-        {
-            //m_SoundBank.PlayCue("game_action6");
-        }
-
-        public void PlayGameSetFinalIcon()
-        {
-            //m_SoundBank.PlayCue("game_action4");
-        }
-
-        public void PlayGameRestoreIcon()
-        {
-            //m_SoundBank.PlayCue("game_action2");
-        }
-
-        public void PlayGameHint()
-        {
-            //m_SoundBank.PlayCue("game_action5");
-        }
-
-        public void PlayGameUndo()
-        {
-            //m_SoundBank.PlayCue("game_action3");
-        }
-
-        public void PlayGameRedo()
-        {
-            //m_SoundBank.PlayCue("game_action1");
-        }
-
-        public void PlayGameHideClue()
-        {
-            //m_SoundBank.PlayCue("game_action6");
-        }
-
-        public void PlayGameUnhideClues()
-        {
-            //m_SoundBank.PlayCue("unhide_clues");
-        }
-
-        public void PlayPuzzleFailed()
-        {
-            //m_SoundBank.PlayCue("puzzle_failed");
-        }
-
-        public void PlayPuzzleComplete()
-        {
-            //m_SoundBank.PlayCue("puzzle_complete");
-        }
-
         public void Update()
         {
-            //AudioCategory catMusic = m_AudioEngine.GetCategory("Music");
-            //catMusic.SetVolume(m_fMusicVolume);
-
-            //AudioCategory catSound = m_AudioEngine.GetCategory("Default");
-            //catSound.SetVolume(m_fSoundVolume);
-
-            //m_AudioEngine.Update();
         }
 
         static SoundManager s_SM;

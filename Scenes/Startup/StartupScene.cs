@@ -41,6 +41,7 @@ namespace Happiness
             m_GIV.BeginLoadFromDisk();
 
             game.SoundManager.PlayMainMenuMusic();
+            game.SoundManager.PlaySound(SoundManager.SEInst.Happiness);
 
             InputController.IC.OnClick += IC_OnClick;
             InputController.IC.OnKeyUp += IC_OnKeyUp;
