@@ -7,7 +7,7 @@ namespace HappinessNetwork
 {
     public static class Balance
     {
-        static double[] s_ParTimes = new double[] { 1f * 60, 5f * 60, 10f * 60, 30 * 60, 45 * 60, 60 * 60 };
+        static double[] s_ParTimes = new double[] { 2f * 60, 5f * 60, 10f * 60, 30 * 60, 45 * 60, 60 * 60 };
         static double[] s_BaseExpValues = new double[] { 200, 600, 1000, 1600, 2800, 4400  };
         static double[] s_TimeBonusExpValues = new double[] { 400, 1200, 2000, 3200, 5600, 8800 };
         static int[] s_TowerUnlockThresholds = new int[] { 3, 25, 60, 150, 500 };
