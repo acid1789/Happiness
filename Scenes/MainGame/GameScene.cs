@@ -524,12 +524,12 @@ namespace Happiness
                     m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;
                     if (m_Puzzle.IsSolved())
                     {
-                        //m_SoundManager.PlayPuzzleComplete();
+                        Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleComplete);
                         Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime, m_EndScreen.OnServerDataComplete);
                     }
                     else
                     {
-                        //m_SoundManager.PlayPuzzleFailed();
+                        Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleFailed);
                     }
                 }
                 else

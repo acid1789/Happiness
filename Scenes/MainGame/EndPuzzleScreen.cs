@@ -59,6 +59,9 @@ namespace Happiness
 
         Happiness m_Game;
 
+        int m_iOriginalLevel;
+        int m_iOriginalExp;
+
         public event EventHandler OnNextPuzzle;
         public event EventHandler OnMainMenu;
         public event EventHandler OnRestartPuzzle;
@@ -157,6 +160,8 @@ namespace Happiness
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;            
             
+            m_iOriginalLevel = m_Game.m_GameInfo.GameData.Level;
+            m_iOriginalExp = m_Game.m_GameInfo.GameData.Exp;
             SetupExpDisplay();
 
             // Unlock
@@ -275,7 +280,7 @@ namespace Happiness
             if (m_iTotalExp > 0)
             {
                 int expAdj = Math.Min(m_iTotalExp, m_iExpStep);
-                m_Game.m_GameInfo.GameData.Exp += expAdj;
+                m_iOriginalExp += expAdj;
                 m_iTotalExp -= expAdj;
 
                 SetupExpDisplay();
@@ -288,23 +293,23 @@ namespace Happiness
 
         void SetupExpDisplay()
         {
-            int expForNextLevel = Balance.ExpForNextLevel(m_Game.m_GameInfo.GameData.Level);
-            while (m_Game.m_GameInfo.GameData.Exp >= expForNextLevel)
+            int expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);
+            while (m_iOriginalExp >= expForNextLevel)
             {
-                m_Game.m_GameInfo.GameData.Exp -= expForNextLevel;
-                m_Game.m_GameInfo.GameData.Level++;
-                expForNextLevel = Balance.ExpForNextLevel(m_Game.m_GameInfo.GameData.Level);
-                m_Level.Text = m_Game.m_GameInfo.GameData.Level.ToString();
+                m_iOriginalExp -= expForNextLevel;
+                m_iOriginalLevel++;
+                expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);
+                m_Level.Text = m_iOriginalLevel.ToString();
                 m_Level.Color = Color.Yellow;
                 m_Level.Font = Assets.DialogFont;
                 m_Level.PositionY -= 4;
 
-                m_bLevelUnlocked = m_iTower < (m_Game.m_GameInfo.GameData.TowerFloors.Length - 1) && m_Game.m_GameInfo.GameData.Level >= Balance.UnlockThreshold(m_iTower) && m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
+                m_bLevelUnlocked = m_iTower < (m_Game.m_GameInfo.GameData.TowerFloors.Length - 1) && m_iOriginalLevel >= Balance.UnlockThreshold(m_iTower) && m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
                 if( m_bLevelUnlocked )
                     m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] = 1;
             }
-            m_ExpBar.Progress = (float)m_Game.m_GameInfo.GameData.Exp / (float)expForNextLevel;
-            string expString = string.Format("{0:N0} / {1:N0}", m_Game.m_GameInfo.GameData.Exp, expForNextLevel);
+            m_ExpBar.Progress = (float)m_iOriginalExp / (float)expForNextLevel;
+            string expString = string.Format("{0:N0} / {1:N0}", m_iOriginalExp, expForNextLevel);
             m_ExpPoints = new UILabel(expString, m_iCenterX, m_ExpBar.Rect.Bottom, Color.LightGray, Assets.HelpFont, UILabel.XMode.Center);
         }
 
