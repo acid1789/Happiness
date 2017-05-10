@@ -45,7 +45,7 @@ namespace Happiness
 
         public bool Click(int x, int y)
         {
-            return ( m_Rect.Contains(x, y) );
+            return ( !m_bLocked && m_Rect.Contains(x, y) );
         }
 
         public void Draw(SpriteBatch sb)
