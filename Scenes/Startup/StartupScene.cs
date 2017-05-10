@@ -61,7 +61,7 @@ namespace Happiness
             m_vMusicCreditPosition.X = creditX + 20;
 
 
-            int waitIconSize = 200;
+            int waitIconSize = (int)(Constants.Startup_WaitIconSize * game.ScreenWidth);
             m_WaitRect = new Rectangle((Game.ScreenWidth / 2) - (waitIconSize / 2), (Game.ScreenHeight / 2) - (waitIconSize / 2), waitIconSize, waitIconSize);
             m_WaitTextCenter = new Point(Game.ScreenWidth / 2, m_WaitRect.Bottom + 10);
             m_szWaitText = "Initializing";

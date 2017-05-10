@@ -56,6 +56,7 @@ namespace Happiness
         UILabel m_ExpPoints;
 
         UILabel m_Unlock;
+        Rectangle m_WaitRect;
 
         Happiness m_Game;
 
@@ -168,6 +169,9 @@ namespace Happiness
             int iUnlockY = m_ExpBar.Rect.Bottom + (int)(Constants.EndScreen_LevelUnlockGap * screenHeight);
             m_Unlock = new UILabel(string.Format("Tower {0} Unlocked!", m_iTower + 2), m_iCenterX, iUnlockY, Color.Yellow, Assets.MenuFont, UILabel.XMode.Center);
             m_Unlock.Hidden = true;
+
+            int waitIconSize = (int)(Constants.EndScreen_WaitIconSize * game.ScreenWidth);
+            m_WaitRect = new Rectangle((game.ScreenWidth / 2) - (waitIconSize / 2), (game.ScreenHeight / 2) - (waitIconSize / 2), waitIconSize, waitIconSize);
 
             m_AnimStep = success ? AnimStep.WaitForServerData : AnimStep.Start;
             m_AnimTimeRemaining = 1.0f;
@@ -360,7 +364,10 @@ namespace Happiness
 
             // Draw Buttons
             foreach ( UIButton b in m_Buttons )
-                b.Draw(spriteBatch);           
+                b.Draw(spriteBatch);          
+            
+            if( m_AnimStep == AnimStep.WaitForServerData )
+                Assets.WaitIcon.Draw(spriteBatch, m_WaitRect, Color.White);
         }     
     }
 }

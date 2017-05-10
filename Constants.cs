@@ -92,6 +92,7 @@ namespace Happiness
         public static float Startup_CreditX = 40f / 1280f;
         public static float Startup_CreditY = 120f / 720f;
         public static float Startup_MusicCreditY = 60f / 720f;
+        public static float Startup_WaitIconSize = 200f / 1280f;
 
         public static float EndScreen_Width = 600f / 1280f;
         public static float EndScreen_Height = 500f / 720f;
@@ -111,6 +112,7 @@ namespace Happiness
         public static float EndScreen_ExpBarWidth = 300f / 1280f;
         public static float EndScreen_ExpBarHeight = 20f / 720f;
         public static float EndScreen_LevelUnlockGap = 30f / 720f;
+        public static float EndScreen_WaitIconSize = 150f / 1280f;
 
         public static float HubScene_TowerSize = 180f / 720f;
         public static float HubScene_TowerAreaTop = 100f / 720f;
