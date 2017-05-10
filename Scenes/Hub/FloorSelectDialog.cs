@@ -157,6 +157,7 @@ namespace Happiness
         void FloorScrollClick(int x, int y)
         {
             // Clear any currently selected
+            int lastSelected = m_iSelectedFloor;
             if (m_iSelectedFloor >= 0)
             {
                 m_Floors[m_iSelectedFloor].Selected = false;
@@ -180,6 +181,9 @@ namespace Happiness
             bool enableButtons = m_iSelectedFloor >= 0;
             m_Buttons[1].Enabled = enableButtons;
             m_Buttons[2].Enabled = enableButtons;
+
+            if( m_iSelectedFloor == lastSelected && enableButtons )
+                LaunchGame();
         }
 
         public void DragBegin(DragArgs args)
