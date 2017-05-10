@@ -251,15 +251,19 @@ namespace Happiness
             {
                 case AnimStep.YourTime:
                     m_Time.Hidden = false;
+                    m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
                 case AnimStep.BaseExp:
                     m_ExpBase.Hidden = false;
+                    m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
                 case AnimStep.BonusExp:
                     m_ExpBonus.Hidden = false;
+                    m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
                 case AnimStep.TotalExp:
                     m_ExpTotal.Hidden = false;
+                    m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
                 case AnimStep.LevelUp:
                     break;
@@ -279,6 +283,7 @@ namespace Happiness
             m_AnimTimeRemaining = 10000;
             if (m_iTotalExp > 0)
             {
+                m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameAction5);
                 int expAdj = Math.Min(m_iTotalExp, m_iExpStep);
                 m_iOriginalExp += expAdj;
                 m_iTotalExp -= expAdj;
@@ -296,6 +301,7 @@ namespace Happiness
             int expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);
             while (m_iOriginalExp >= expForNextLevel)
             {
+                m_Game.SoundManager.PlaySound(SoundManager.SEInst.Happiness);
                 m_iOriginalExp -= expForNextLevel;
                 m_iOriginalLevel++;
                 expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);

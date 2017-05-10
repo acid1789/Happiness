@@ -29,6 +29,7 @@ namespace Happiness
             NetworkManager nm = NetworkManager.Net;
 
             //m_SoundDialog = new SoundDialog(game.ScreenWidth, game.ScreenHeight, game);
+            //game.SoundManager.StopMusic();
 
             // Setup Towers
             int centerX = Game.ScreenWidth >> 1;

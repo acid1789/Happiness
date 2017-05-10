@@ -46,7 +46,7 @@ namespace Happiness
 
         private SoundManager()
         {
-            m_fMusicVolume = 0.2f;
+            m_fMusicVolume = 0.1f;
             m_fSoundVolume = 0.8f;
             m_CurrentMusic = PlayingMusic.None;
             MediaPlayer.MediaStateChanged += MediaPlayer_MediaStateChanged;
@@ -63,6 +63,11 @@ namespace Happiness
                 // Game song done, go on to another
                 PlayGameSong();
             }
+        }
+
+        public void StopMusic()
+        {
+            MediaPlayer.Stop();
         }
 
         public void PlayMainMenuMusic()

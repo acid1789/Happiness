@@ -32,7 +32,7 @@ namespace Happiness
             int buttonSpace = 25;
             int buttonLeft = m_Rect.Left + 10;
             int buttonTop = m_Rect.Top + 10;
-            m_Buttons = new UIButton[15];
+            m_Buttons = new UIButton[16];
             m_Buttons[0] = new UIButton(0, "MenuNavigate", Assets.HelpFont, new Rectangle(buttonLeft, buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[0].ClickSound = SoundManager.SEInst.MenuNavigate;
             m_Buttons[1] = new UIButton(1, "MenuAccept", Assets.HelpFont, new Rectangle(buttonLeft + (buttonWidth + buttonSpace), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[1].ClickSound = SoundManager.SEInst.MenuAccept;
             m_Buttons[2] = new UIButton(2, "MenuCancel", Assets.HelpFont, new Rectangle(buttonLeft + ((buttonWidth + buttonSpace) * 2), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[2].ClickSound = SoundManager.SEInst.MenuCancel;
@@ -50,6 +50,7 @@ namespace Happiness
             m_Buttons[12]= new UIButton(12,"GamePuzzleFailed", Assets.HelpFont, new Rectangle(buttonLeft + ((buttonWidth + buttonSpace) * 4), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[12].ClickSound = SoundManager.SEInst.GamePuzzleFailed;
             m_Buttons[13]= new UIButton(13,"GamePuzzleComplete", Assets.HelpFont, new Rectangle(buttonLeft + ((buttonWidth + buttonSpace) * 5), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[13].ClickSound = SoundManager.SEInst.GamePuzzleComplete;
             m_Buttons[14]= new UIButton(14,"GameSliderMove", Assets.HelpFont, new Rectangle(buttonLeft + ((buttonWidth + buttonSpace) * 6), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[14].ClickSound = SoundManager.SEInst.GameSliderMove;
+            m_Buttons[15]= new UIButton(15,"Happiness", Assets.HelpFont, new Rectangle(buttonLeft + ((buttonWidth + buttonSpace) * 7), buttonTop, buttonWidth, buttonHeight), Assets.ScrollBar); m_Buttons[15].ClickSound = SoundManager.SEInst.Happiness;
 
         }
 
