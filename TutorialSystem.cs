@@ -165,6 +165,7 @@ namespace Happiness
         {
             for (int i = 0; i < (int)TutorialPiece.None; i++)
             {
+                m_Pieces[(TutorialPiece)i].Triggered = false;
                 m_Pieces[(TutorialPiece)i].Finished = ((data & (1UL << i)) != 0);
             }
         }
@@ -234,6 +235,15 @@ namespace Happiness
             if (m_Pieces.ContainsKey(piece))
             {
                 return m_Pieces[piece].Instructions != null;
+            }
+            return false;
+        }
+
+        public bool IsPieceFinished(TutorialPiece piece)
+        {
+            if (m_Pieces.ContainsKey(piece))
+            {
+                return m_Pieces[piece].Finished;
             }
             return false;
         }

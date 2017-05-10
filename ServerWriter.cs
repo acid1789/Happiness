@@ -144,7 +144,7 @@ namespace Happiness
 
         public override bool Update()
         {
-            if (_client.Connected)
+            if (_client != null && _client.Connected)
             {
                 if ((_timeStamp - _lastSentTime).TotalSeconds > 0)
                 {

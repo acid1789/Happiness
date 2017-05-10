@@ -111,7 +111,7 @@ namespace Happiness
             m_Floors.Sort(FloorDataComparer);
 
             float floorHeight = m_Floors[0].Height;
-            int visibleFloors = (int)(m_FloorScrollRect.Height / floorHeight);
+            int visibleFloors = 1;//(int)(m_FloorScrollRect.Height / floorHeight);
             m_ScrollMin = -((m_Floors.Count - visibleFloors) * m_Floors[0].Height);
 
             // Set tutorial stuff
@@ -120,6 +120,11 @@ namespace Happiness
                                          new Rectangle(m_FloorScrollRect.Left - (m_iFloorSelectTutorialWidth + m_iLeftRightMargin), m_FloorScrollRect.Top + m_Game.Tutorial.ArrowHeight, m_iFloorSelectTutorialWidth, 0), 
                                          "Here you can select the next incomplete tower floor or any floor you have previously completed.\n\nTap the first floor now to select it.", TutorialSystem.TutorialPiece.None, 
                                          new Rectangle(m_FloorScrollRect.Left, m_FloorScrollRect.Top, m_FloorScrollRect.Width, (int)m_Floors[0].Height));
+            if (!m_Game.Tutorial.IsPieceFinished(TutorialSystem.TutorialPiece.FloorSelect))
+            {
+                // Need to focus on the first floor
+                m_FloorScrollPosition = m_ScrollMin;
+            }
             m_Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.FloorSelect);
         }
         #endregion

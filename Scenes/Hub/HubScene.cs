@@ -16,6 +16,8 @@ namespace Happiness
         UILabel m_Level;
         UIProgressBar m_ExpBar;
 
+        UIButton m_ResetTutorial;
+
         FloorSelectDialog m_FloorSelect;
 
         SoundDialog m_SoundDialog;
@@ -51,17 +53,18 @@ namespace Happiness
             int expBarWidth = (int)(Constants.HubScene_ExpBarWidth * Game.ScreenWidth);
             int expBarHeight = (int)(Constants.HubScene_ExpBarHeight * Game.ScreenHeight);
             int expBarLeft = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
-            int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);            
-            game.Tutorial.Load(game.m_GameInfo.GameData.Tutorial);
+            int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);                        
             m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
             m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;
             m_ExpBar.Progress = (float)game.m_GameInfo.GameData.Exp / Balance.ExpForNextLevel(game.m_GameInfo.GameData.Level);
 
-            int tutorialWidth = (int)(Constants.HubScene_TutorialWidth * Game.ScreenWidth);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None, m_Towers[0].Rect);
-            Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.ClickTower);
+            SetupTutorial();
+
+            int buttonWidth = (int)(Constants.HubScene_ButtonWidth * Game.ScreenWidth);
+            int buttonHeight = (int)(Constants.HubScene_ButtonHeight * Game.ScreenHeight);
+            m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(expBarLeft, Game.ScreenHeight - levelY - buttonHeight, buttonWidth, buttonHeight), Assets.ScrollBar);
         }
 
         public override void Shutdown()
@@ -72,6 +75,18 @@ namespace Happiness
             InputController.IC.OnClick -= IC_OnClick;
             InputController.IC.OnDrag -= IC_OnDrag;
             InputController.IC.OnDragBegin -= IC_OnDragBegin;
+        }
+
+        void SetupTutorial()
+        {
+            Game.Tutorial.Load(Game.m_GameInfo.GameData.Tutorial);
+            int centerX = Game.ScreenWidth >> 1;
+            int towerSize = (int)(Constants.HubScene_TowerSize * Game.ScreenHeight);
+            int towerTop = (int)(Constants.HubScene_TowerAreaTop * Game.ScreenHeight);
+            int leftX = centerX - towerSize - towerSize;
+            int tutorialWidth = (int)(Constants.HubScene_TutorialWidth * Game.ScreenWidth);
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None, m_Towers[0].Rect);
+            Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.ClickTower);
         }
 
         #region InputHandlers
@@ -102,6 +117,17 @@ namespace Happiness
                         m_FloorSelect = new FloorSelectDialog(t.Size - 3, Game.ScreenWidth, Game.ScreenHeight, Game);
                         break;
                     }
+                }
+
+                if (m_ResetTutorial.Click(e.CurrentX, e.CurrentY))
+                {
+                    // Nuke any existing save for stage 3_1
+                    string saveName = string.Format("{0}/3_1.save", Game.m_GameInfo.DisplayName);
+                    if (System.IO.File.Exists(saveName))
+                        System.IO.File.Delete(saveName);
+
+                    Game.m_GameInfo.GameData.Tutorial = 0;
+                    SetupTutorial();
                 }
             }
         }
@@ -135,7 +161,9 @@ namespace Happiness
             m_LevelLabel.Draw(spriteBatch);
             m_Level.Draw(spriteBatch);
             m_ExpBar.Draw(spriteBatch);
-            
+            m_ResetTutorial.Draw(spriteBatch);
+
+
             if ( m_FloorSelect != null )
                 m_FloorSelect.Draw(spriteBatch);
 
