@@ -103,6 +103,9 @@ namespace Happiness
 
         void UpdateMouse()
         {
+            if( !Program.ApplicationIsActivated() )
+                return;
+
             MouseState state = Mouse.GetState();
 
             if (state.LeftButton == ButtonState.Pressed && m_LastMouseState.LeftButton == ButtonState.Released)
