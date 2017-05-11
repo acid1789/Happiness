@@ -138,7 +138,7 @@ namespace Happiness
                 if (m_ResetTutorial.Click(e.CurrentX, e.CurrentY))
                 {
                     // Nuke any existing save for stage 3_1
-                    string saveName = string.Format("{0}/3_1.save", Game.m_GameInfo.DisplayName);
+                    string saveName = Happiness.PuzzleSaveName(3, 1);
                     if (System.IO.File.Exists(saveName))
                         System.IO.File.Delete(saveName);
 

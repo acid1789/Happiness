@@ -245,7 +245,18 @@ namespace Happiness
         }
         #endregion
 
+        public static string PuzzleSaveName(int puzzleSize, int puzzleIndex)
+        {
+            string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string localHappinessDir = localData + "/Happiness/";
+            System.IO.Directory.CreateDirectory(localHappinessDir);
 
+            string saveDir = localHappinessDir + "saves/";
+            System.IO.Directory.CreateDirectory(saveDir);
+
+            string saveName = string.Format("{0}{1}_{2}.save", saveDir, puzzleSize, puzzleIndex);            
+            return saveName;
+        }
 
 
         public static void ShadowString(SpriteBatch sb, SpriteFont font, string text, Vector2 position, Color color)

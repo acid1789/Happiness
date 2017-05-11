@@ -308,17 +308,11 @@ namespace Happiness
         #endregion
 
         #region Puzzle File
-        string PuzzleSaveName(int puzzleSize, int puzzleIndex)
-        {
-            string saveName = string.Format("{0}/{1}_{2}.save", Game.m_GameInfo.DisplayName, puzzleSize, puzzleIndex);
-            if( !Directory.Exists(Game.m_GameInfo.DisplayName) )
-                Directory.CreateDirectory(Game.m_GameInfo.DisplayName);
-            return saveName;
-        }
+        
 
         public void SavePuzzle()
         {
-            string saveName = PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
+            string saveName = Happiness.PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
             FileStream fs = File.Open(saveName, FileMode.Create);
             BinaryWriter bw = new BinaryWriter(fs);
                         
@@ -340,13 +334,12 @@ namespace Happiness
                     }
                 }
             }
-            bw.Close();
-            //m_SoundManager.PlayGameSave();            
+            bw.Close();          
         }
 
         public void LoadPuzzle()
         {
-            string saveName = PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
+            string saveName = Happiness.PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
             if (File.Exists(saveName))
             {
                 FileStream fs = File.OpenRead(saveName);
@@ -379,7 +372,7 @@ namespace Happiness
 
         void DeleteSavedPuzzle()
         {
-            string saveName = PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
+            string saveName = Happiness.PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
             if (File.Exists(saveName))
             {
                 File.Delete(saveName);
