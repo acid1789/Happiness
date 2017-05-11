@@ -118,8 +118,9 @@ namespace Happiness
                 m_Buttons[(int)ButtonID.Reset]     = new UIButton((int)ButtonID.Reset,    "Reset All",  Assets.MenuFont, new Rectangle(innerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
                 m_Buttons[(int)ButtonID.Confirm]   = new UIButton((int)ButtonID.Confirm,  "Confirm",    Assets.MenuFont, new Rectangle(m_Rect.Left + outerButtonX, m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
                 m_Buttons[(int)ButtonID.Eliminate] = new UIButton((int)ButtonID.Eliminate,"Eliminate",  Assets.MenuFont, new Rectangle(m_Rect.Right - (outerButtonX + buttonWidth), m_Rect.Bottom - buttonRowY, buttonWidth, buttonHeight), buttonTex);
+                m_Buttons[0].ClickSound = SoundManager.SEInst.MenuCancel;
 
-                foreach( UIButton b in m_Buttons )
+                foreach ( UIButton b in m_Buttons )
                     b.MainColor = Color.GreenYellow;
 
                 m_Buttons[(int)ButtonID.Confirm].Enabled = false;
@@ -199,6 +200,12 @@ namespace Happiness
                         break;
                     }
                 }
+            }
+
+            if (!m_Rect.Contains(x, y))
+            {
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuCancel);
+                return false;
             }
 
             return true;
