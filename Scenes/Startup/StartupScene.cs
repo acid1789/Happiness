@@ -37,7 +37,7 @@ namespace Happiness
             m_Step = SignInStep.CachedDataCheck;
             
             //LoadStartupDetails();
-            m_GIV = new GameInfoValidator();
+            m_GIV = GameInfoValidator.Instance;
             m_GIV.BeginLoadFromDisk();
 
             game.SoundManager.PlayMainMenuMusic();

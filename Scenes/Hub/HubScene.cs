@@ -18,6 +18,8 @@ namespace Happiness
 
         UIButton m_ResetTutorial;
         UIButton m_Options;
+        UIButton m_SignOut;
+        UIButton m_Exit;
 
         FloorSelectDialog m_FloorSelect;
 
@@ -56,11 +58,11 @@ namespace Happiness
             // Level/Exp display
             int expBarWidth = (int)(Constants.HubScene_ExpBarWidth * Game.ScreenWidth);
             int expBarHeight = (int)(Constants.HubScene_ExpBarHeight * Game.ScreenHeight);
-            int expBarLeft = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
+            int marginLeftRight = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
             int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);                        
-            m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
-            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
-            m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
+            m_LevelLabel = new UILabel("Level: ", marginLeftRight, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
+            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), marginLeftRight + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            m_ExpBar = new UIProgressBar(new Rectangle(marginLeftRight, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;
             m_ExpBar.Progress = (float)game.m_GameInfo.GameData.Exp / Balance.ExpForNextLevel(game.m_GameInfo.GameData.Level);
 
@@ -69,8 +71,12 @@ namespace Happiness
             int buttonWidth = (int)(Constants.HubScene_ButtonWidth * Game.ScreenWidth);
             int buttonHeight = (int)(Constants.HubScene_ButtonHeight * Game.ScreenHeight);
             int buttonY = Game.ScreenHeight - levelY - buttonHeight;
-            m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(expBarLeft, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
-            m_Options = new UIButton(0, "Options", Assets.HelpFont, new Rectangle((expBarLeft * 2) + buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+            m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(marginLeftRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+            m_Options = new UIButton(0, "Options", Assets.HelpFont, new Rectangle((marginLeftRight * 2) + buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+
+            int buttonRight = Game.ScreenWidth - marginLeftRight - buttonWidth;
+            m_Exit = new UIButton(0, "Exit", Assets.HelpFont, new Rectangle(buttonRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+            m_SignOut = new UIButton(0, "Sign Out", Assets.HelpFont, new Rectangle(buttonRight - marginLeftRight - buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
         }
 
         public override void Shutdown()
@@ -149,6 +155,16 @@ namespace Happiness
                 {
                     m_OptionsDialog = new Options(Game);
                 }
+                if( m_Exit.Click(e.CurrentX, e.CurrentY) )
+                    Happiness.Game.Exit();
+                if (m_SignOut.Click(e.CurrentX, e.CurrentY))
+                {
+                    // Nuke local game data
+                    GameInfoValidator.Instance.DeleteLocalFile();
+
+                    // Goto startup scene
+                    Game.GotoScene(new StartupScene(Game));
+                }
             }
         }
 
@@ -188,6 +204,8 @@ namespace Happiness
             m_ExpBar.Draw(spriteBatch);
             m_ResetTutorial.Draw(spriteBatch);
             m_Options.Draw(spriteBatch);
+            m_Exit.Draw(spriteBatch);
+            m_SignOut.Draw(spriteBatch);
 
 
             if ( m_FloorSelect != null )

@@ -37,9 +37,9 @@ namespace Happiness
 
         static GameInfoValidator s_instance;
 
-        public static GameInfoValidator Instance { get { return s_instance; } }
+        public static GameInfoValidator Instance { get { if( s_instance == null ) s_instance = new GameInfoValidator(); return s_instance; } }
 
-        public GameInfoValidator()
+        GameInfoValidator()
         {
             if( s_instance != null )
                 throw new Exception("Only one GameInfoValidator is allowed");
@@ -94,6 +94,13 @@ namespace Happiness
         {
             m_GameInfo = gi;
             SaveToDisk();
+        }
+
+        public void DeleteLocalFile()
+        {
+            string localFile = GetUserLocalFile();
+            if( File.Exists(localFile) )
+                File.Delete(localFile);
         }
 
         string GetUserLocalFile()
