@@ -63,7 +63,7 @@ namespace Happiness
             InputController.IC.OnDrag += M_Input_OnDrag;
             InputController.IC.OnDragEnd += M_Input_OnDragEnd;
             InputController.IC.OnClick += M_Input_OnClick;
-            
+            InputController.IC.OnKeyUp += M_Input_OnKeyUp;
         }
 
         #region Initialization
@@ -283,6 +283,7 @@ namespace Happiness
             InputController.IC.OnDrag -= M_Input_OnDrag;
             InputController.IC.OnDragEnd -= M_Input_OnDragEnd;
             InputController.IC.OnClick -= M_Input_OnClick;
+            InputController.IC.OnKeyUp -= M_Input_OnKeyUp;
         }
         #endregion
 
@@ -700,7 +701,9 @@ namespace Happiness
                             break;
                         case 3: // Buy Coins
                             break;
-                        case 4: // Save & Exit
+                        case 4: // Options
+                            break;
+                        case 5: // Save & Exit
                             SavePuzzle();
                             Game.GotoScene(new HubScene(Game));
                             break;
@@ -777,6 +780,12 @@ namespace Happiness
                     }
                 }
             }
+        }
+
+        void M_Input_OnKeyUp(object sender, KeyArgs e)
+        {
+            if( e.Key == Microsoft.Xna.Framework.Input.Keys.Escape )
+                Pause();
         }
 
         void DoMessageBoxResult(MessageBoxResult res)
