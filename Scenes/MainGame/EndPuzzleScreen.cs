@@ -114,7 +114,7 @@ namespace Happiness
             int timeGap = (int)(Constants.EndScreen_TimeGap * screenHeight);
             int timeLabelY = iSuccessY + (int)(Constants.EndScreen_TimeLabelGap * screenHeight);
             m_TimeLabel = new UILabel("Your Time", leftTimeX, timeLabelY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Center);
-            m_Time = new UILabel(Happiness.TimeString(seconds), leftTimeX, timeLabelY + timeGap, (success && (seconds <= parSeconds)) ? Color.Green : Color.Red, Assets.HelpFont, UILabel.XMode.Center);
+            m_Time = new UILabel(Happiness.TimeString(seconds), leftTimeX, timeLabelY + timeGap, (success && ((int)seconds <= parSeconds)) ? Color.Green : Color.Red, Assets.HelpFont, UILabel.XMode.Center);
 
             m_ParLabel = new UILabel("Par Time", rightTimeX, timeLabelY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Center);
             m_Par = new UILabel(Happiness.TimeString(parSeconds), rightTimeX, timeLabelY + timeGap, Color.LightGray, Assets.HelpFont, UILabel.XMode.Center);
