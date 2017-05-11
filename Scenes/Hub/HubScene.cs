@@ -32,6 +32,8 @@ namespace Happiness
 
             NetworkManager nm = NetworkManager.Net;
 
+            SoundManager.Inst.PlayMainMenuMusic();
+
             //m_SoundDialog = new SoundDialog(game.ScreenWidth, game.ScreenHeight, game);
             //game.SoundManager.StopMusic();
 
