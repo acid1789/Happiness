@@ -46,7 +46,7 @@ namespace Happiness
         public static float PauseMenu_ButtonAreaBGX = 30f / 1280f;
         public static float PauseMenu_ButtonAreaBGY = 25f / 720f;
         public static float PauseMenu_ButtonAreaBGW = 240f / 1280f;
-        public static float PauseMenu_ButtonAreaBGH = 490f / 720f;
+        public static float PauseMenu_ButtonAreaBGH = 570f / 720f;
 
         public static float PauseMenu_HelpLeft = 300f / 1280f;
         public static float PauseMenu_HelpTextLeft = 327f / 1280f;
@@ -78,6 +78,16 @@ namespace Happiness
         public static float SignInDialog_ButtonHeight = 50f / 720f;
         public static float SignInDialog_WaitIconSize = 40f / 720f;
         public static float SignInDialog_WaitIconSpace = 10f / 720f;
+
+        public static float OptionsDialog_Width = 700f / 1280f;
+        public static float OptionsDialog_Height = 500f / 720f;
+        public static float OptionsDialog_ButtonWidth = 180f / 1280f;
+        public static float OptionsDialog_ButtonHeight = 30f / 720f;
+        public static float OptionsDialog_TopBottomMargin = 30f / 720f;      
+        public static float OptionsDialog_SliderWidth = 400f / 1280f;
+        public static float OptionsDialog_SliderHeight = 16f / 720f;
+        public static float OptionsDialog_SliderCursorWidth = 24f / 1280f;
+        public static float OptionsDialog_SliderCursorHeight = 28f / 720f;
 
         public static float DisplayNameDialog_Width = 600f / 1280f;
         public static float DisplayNameDialog_Height = 175f / 720f;

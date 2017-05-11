@@ -36,9 +36,8 @@ namespace Happiness
             Happiness
         }
 
-        public float m_fSoundVolume;
-        public float m_fMusicVolume;
-        public bool m_bSupressGameNavigation = false;        
+        float m_fSoundVolume;
+        float m_fMusicVolume;      
 
         PlayingMusic m_CurrentMusic;
         List<Song> m_PlayList;
@@ -68,6 +67,7 @@ namespace Happiness
         public void StopMusic()
         {
             MediaPlayer.Stop();
+            m_CurrentMusic = PlayingMusic.None;
         }
 
         public void PlayMainMenuMusic()
@@ -187,6 +187,22 @@ namespace Happiness
         public static SoundManager Inst
         {
             get { if (s_SM == null) s_SM = new SoundManager(); return s_SM; }
+        }
+
+        public float SoundVolume
+        {
+            get { return m_fSoundVolume; }
+            set { m_fSoundVolume = Math.Max(0, Math.Min(value, 1.0f)); }
+        }
+
+        public float MusicVolume
+        {
+            get { return m_fMusicVolume; }
+            set
+            {
+                m_fMusicVolume = Math.Max(0, Math.Min(value, 1.0f));
+                MediaPlayer.Volume = m_fMusicVolume;
+            }
         }
     }
 }

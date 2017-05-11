@@ -33,6 +33,8 @@ namespace Happiness
         int m_iIconSize;
         int m_iIconSizeSmall;
 
+        Options m_OptionsDialog;
+
         public PauseMenu(int screenWidth, int screenHeight)
         {
             m_iSelection = 0;
@@ -49,17 +51,20 @@ namespace Happiness
             int buttonHeight = (int)(Constants.PauseMenu_ButtonHeight * screenWidth);
             int buttonSpace = (int)(Constants.PauseMenu_ButtonSpace * screenHeight);
 
-            m_Buttons = new UIButton[5];
+            m_Buttons = new UIButton[6];
             Rectangle brect = new Rectangle(buttonX, buttonY, buttonWidth, buttonHeight);
             m_Buttons[0] = new UIButton(0, "Resume Game", Assets.DialogFont, brect, Assets.ScrollBar);
             brect.Y += buttonHeight + buttonSpace;
             m_Buttons[1] = new UIButton(1, "Reset Puzzle", Assets.DialogFont, brect, Assets.ScrollBar);
             brect.Y += buttonHeight + buttonSpace;
             m_Buttons[2] = new UIButton(2, "Unhide Clues", Assets.DialogFont, brect, Assets.ScrollBar);
+            m_Buttons[2].ClickSound = SoundManager.SEInst.GameUnhideClues;
             brect.Y += buttonHeight + buttonSpace;
             m_Buttons[3] = new UIButton(3, "Buy Coins", Assets.DialogFont, brect, Assets.ScrollBar);
             brect.Y += buttonHeight + buttonSpace;
-            m_Buttons[4] = new UIButton(4, "Save & Exit", Assets.DialogFont, brect, Assets.ScrollBar);
+            m_Buttons[4] = new UIButton(4, "Options", Assets.DialogFont, brect, Assets.ScrollBar);
+            brect.Y += buttonHeight + buttonSpace;
+            m_Buttons[5] = new UIButton(5, "Save & Exit", Assets.DialogFont, brect, Assets.ScrollBar);
 
             m_ButtonBackground = new Rectangle((int)(Constants.PauseMenu_ButtonAreaBGX * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGY * screenHeight), (int)(Constants.PauseMenu_ButtonAreaBGW * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGH * screenHeight));
 
@@ -77,6 +82,13 @@ namespace Happiness
         #region Input
         public bool HandleClick(int x, int y)
         {
+            if (m_OptionsDialog != null)
+            {
+                if( !m_OptionsDialog.HandleClick(x, y) )
+                    m_OptionsDialog = null;
+                return true;
+            }
+
             if (m_ConfirmDialog != null)
             {
                 MessageBoxResult res = m_ConfirmDialog.HandleClick(x, y);
@@ -127,7 +139,10 @@ namespace Happiness
                     return false;
                 case 3: // Buy Coins
                     break;
-                case 4: // Save & Exit
+                case 4: // Options
+                    m_OptionsDialog = new Options(Happiness.Game);
+                    break;
+                case 5: // Save & Exit
                     return false;
             }
             return true;
@@ -140,6 +155,12 @@ namespace Happiness
 
         public void OnDrag(DragArgs e)
         {
+            if (m_OptionsDialog != null)
+            {
+                m_OptionsDialog.Drag(e);
+                return;
+            }
+
             int deltaY = e.CurrentY - m_iDragY;
             m_iDragY = e.CurrentY;
             m_iScrollOffset -= deltaY;
@@ -167,6 +188,8 @@ namespace Happiness
             
             if( m_ConfirmDialog != null )
                 m_ConfirmDialog.Draw(spriteBatch);
+            if( m_OptionsDialog != null )
+                m_OptionsDialog.Draw(spriteBatch);
         }
 
         private int DrawString(SpriteBatch spriteBatch, string text, int iX, int iY, Color cColor)

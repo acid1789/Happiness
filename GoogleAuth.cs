@@ -13,7 +13,7 @@ namespace Happiness
 {
     class GoogleAuth
     {
-        static string s_szSecrets;
+        static string s_szSecrets = "{\"installed\":{\"client_id\":\"225487862431-2g3tf3l9dnt3s0nmmqhnmvns3lpmifhu.apps.googleusercontent.com\",\"project_id\":\"happiness-166504\",\"auth_uri\":\"https://accounts.google.com/o/oauth2/auth\",\"token_uri\":\"https://accounts.google.com/o/oauth2/token\",\"auth_provider_x509_cert_url\":\"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\":\"LtbcxBkVjBBKm1zgTJliAnV4\",\"redirect_uris\":[\"urn:ietf:wg:oauth:2.0:oob\",\"http://localhost\"]}}";
         static string s_szEmail;
         static string s_szId;
 

@@ -17,10 +17,12 @@ namespace Happiness
         UIProgressBar m_ExpBar;
 
         UIButton m_ResetTutorial;
+        UIButton m_Options;
 
         FloorSelectDialog m_FloorSelect;
 
         SoundDialog m_SoundDialog;
+        Options m_OptionsDialog;
 
         public HubScene(Happiness game) : base(game)
         {
@@ -64,7 +66,9 @@ namespace Happiness
 
             int buttonWidth = (int)(Constants.HubScene_ButtonWidth * Game.ScreenWidth);
             int buttonHeight = (int)(Constants.HubScene_ButtonHeight * Game.ScreenHeight);
-            m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(expBarLeft, Game.ScreenHeight - levelY - buttonHeight, buttonWidth, buttonHeight), Assets.ScrollBar);
+            int buttonY = Game.ScreenHeight - levelY - buttonHeight;
+            m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(expBarLeft, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+            m_Options = new UIButton(0, "Options", Assets.HelpFont, new Rectangle((expBarLeft * 2) + buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
         }
 
         public override void Shutdown()
@@ -98,6 +102,16 @@ namespace Happiness
             if (m_SoundDialog != null)
             {
                 m_SoundDialog.HandleClick(e.CurrentX, e.CurrentY);
+                return;
+            }
+
+            if (m_OptionsDialog != null)
+            {
+                if( m_OptionsDialog.HandleClick(e.CurrentX, e.CurrentY) )
+                    return;
+
+                // Options exited
+                m_OptionsDialog = null;
             }
 
             if (m_FloorSelect != null)
@@ -127,7 +141,11 @@ namespace Happiness
                         System.IO.File.Delete(saveName);
 
                     Game.m_GameInfo.GameData.Tutorial = 0;
-                    SetupTutorial();
+                    SetupTutorial();                    
+                }
+                if (m_Options.Click(e.CurrentX, e.CurrentY))
+                {
+                    m_OptionsDialog = new Options(Game);
                 }
             }
         }
@@ -136,6 +154,9 @@ namespace Happiness
         {
             if( m_FloorSelect != null )
                 m_FloorSelect.Drag(e);
+
+            if( m_OptionsDialog != null )
+                m_OptionsDialog.Drag(e);
         }
 
         private void IC_OnDragBegin(object sender, DragArgs e)
@@ -151,6 +172,8 @@ namespace Happiness
 
             if( m_FloorSelect != null )
                 m_FloorSelect.Update(gameTime);
+            if(m_OptionsDialog != null )
+                m_OptionsDialog.Update(gameTime);
         }
                 
         public override void Draw(SpriteBatch spriteBatch)
@@ -162,6 +185,7 @@ namespace Happiness
             m_Level.Draw(spriteBatch);
             m_ExpBar.Draw(spriteBatch);
             m_ResetTutorial.Draw(spriteBatch);
+            m_Options.Draw(spriteBatch);
 
 
             if ( m_FloorSelect != null )
@@ -169,6 +193,8 @@ namespace Happiness
 
             if(m_SoundDialog != null )
                 m_SoundDialog.Draw(spriteBatch);
+            if( m_OptionsDialog != null )
+                m_OptionsDialog.Draw(spriteBatch);
         }
 
         void ActivateTower(Tower t)

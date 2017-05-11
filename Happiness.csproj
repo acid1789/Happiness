@@ -53,6 +53,7 @@
     <Compile Include="Scenes\Hub\SoundDialog.cs" />
     <Compile Include="Scenes\MainGame\Action.cs" />
     <Compile Include="ServerWriter.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="TutorialSystem.cs" />
     <Compile Include="UI\IconButton.cs" />
     <Compile Include="UI\UIFrame.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="UI\UIInputField.cs" />
     <Compile Include="UI\UIPanel.cs" />
     <Compile Include="Scenes\MainGame\VerticalCluePanel.cs" />
+    <Compile Include="UI\UISlider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">

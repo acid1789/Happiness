@@ -48,6 +48,8 @@ namespace Happiness
         public static Texture2D ScrollArrow;
         public static Texture2D ScrollBar;
         public static Texture2D ScrollCursor;
+        public static Texture2D SliderBar;
+        public static Texture2D SliderCursor;
         public static Texture2D GoldBarHorizontal;
         public static Texture2D GoldBarVertical;
         public static Texture2D GoldArrowLeft;
@@ -300,6 +302,8 @@ namespace Happiness
             ScrollArrow = Content.Load<Texture2D>("ScrollArrow");
             ScrollBar = Content.Load<Texture2D>("ScrollBar");
             ScrollCursor = Content.Load<Texture2D>("ScrollCursor");
+            SliderBar = Content.Load<Texture2D>("SliderBar");
+            SliderCursor = Content.Load<Texture2D>("SliderCursor");
             GoldArrowLeft = Content.Load<Texture2D>("GoldArrowLeft");
             GoldArrowRight = Content.Load<Texture2D>("GoldArrowRight");
             HelpBackground = Content.Load<Texture2D>("HelpBackground");

@@ -40,14 +40,14 @@ namespace Happiness
 
         public Happiness()
         {
-            //m_MainMenu = new MainMenu(this);
-            //m_Options = new Options(this); 
-
 #if DEBUG
             System.Threading.Thread.Sleep(1000);
 #endif
 
             m_SoundManager = SoundManager.Inst;
+            Settings s = Settings.LoadSettings();
+            m_SoundManager.SoundVolume = s.SoundVolume;
+            m_SoundManager.MusicVolume = s.MusicVolume;
 
             graphics = new GraphicsDeviceManager(this);
 
