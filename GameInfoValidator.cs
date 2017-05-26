@@ -220,10 +220,11 @@ namespace Happiness
             _loadStatus = LoadStatus.ServerDeniedAccess;
         }
 
-        private void Client_OnGameInfoResponse(HClient arg1, GameInfo arg2)
+        private void Client_OnGameInfoResponse(HClient arg1, GameInfo arg2, int accountId)
         {
+            Happiness.Game.AccountId = accountId;
             if (arg2 != null)
-            {
+            {   
                 m_GameInfo = arg2;
                 m_GameInfo.GenerateHash();
                 SaveToDisk();

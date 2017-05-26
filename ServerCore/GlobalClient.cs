@@ -17,6 +17,7 @@ namespace ServerCore
             SpendCoins,
             CurrencyUpdate,
             AuthStringRequest,
+            GlobalProductInfo,
         }
 
         public event EventHandler<AccountInfoRequestArgs> OnAccountInfoRequest;
@@ -24,6 +25,7 @@ namespace ServerCore
         public event EventHandler<GlobalSpendCoinArgs> OnSpendCoins;
         public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
         public event Action<GlobalClient, string, uint> OnAuthStringRequest;
+        public event Action<GlobalProduct[]> OnGlobalProductInfo;
 
         public GlobalClient() : base (null)
         {
@@ -43,6 +45,7 @@ namespace ServerCore
             _packetHandlers[(ushort)GPacketType.SpendCoins] = SpendCoinsHandler;
             _packetHandlers[(ushort)GPacketType.CurrencyUpdate] = CurrencyUpdteHandler;
             _packetHandlers[(ushort)GPacketType.AuthStringRequest] = AuthStringRequestHandler;
+            _packetHandlers[(ushort)GPacketType.GlobalProductInfo] = GlobalProductInfoHandler;
         }
 
         void BeginPacket(GPacketType gt)
@@ -109,6 +112,21 @@ namespace ServerCore
 
             SendPacket();
         }
+
+        public void SendProducts(GlobalProduct[] products)
+        {
+            BeginPacket(GPacketType.GlobalProductInfo);
+
+            _outgoingBW.Write(products.Length);
+            foreach (GlobalProduct prod in products)
+            {
+                _outgoingBW.Write(prod.ProductId);
+                _outgoingBW.Write(prod.Coins);
+                _outgoingBW.Write(prod.USD);
+                _outgoingBW.Write(prod.VIP);
+            }
+            SendPacket();
+        }
         #endregion
 
         #region Packet Handlers
@@ -158,6 +176,20 @@ namespace ServerCore
             string authString = br.ReadString();
             uint clientKey = br.ReadUInt32();
             OnAuthStringRequest(this, authString, clientKey);
+        }
+
+        void GlobalProductInfoHandler(BinaryReader br)
+        {
+            int count = br.ReadInt32();
+            if (count > 0)
+            {
+                List<GlobalProduct> products = new List<GlobalProduct>();
+                for (int i = 0; i < count; i++)
+                {
+                    products.Add(new GlobalProduct { ProductId = br.ReadInt32(), Coins = br.ReadInt32(), USD = br.ReadSingle(), VIP = br.ReadInt32() });
+                }
+                OnGlobalProductInfo(products.ToArray());
+            }
         }
         #endregion
     }

@@ -10,7 +10,7 @@ namespace Happiness
 {
     class FacebookAuth
     {
-        static string s_szSecrets = "286939585084672";
+        static string s_szSecrets;
         static string s_szEmail;
         static string s_szId;
 

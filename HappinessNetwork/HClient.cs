@@ -22,6 +22,9 @@ namespace HappinessNetwork
             TutorialData,
             CoinBalance_Request,
             Close,
+            Products_Request,
+            Products_Response,
+            Account_Id,
 
             ValidateGameInfo_Request,
             ValidateGameInfo_Response,
@@ -37,10 +40,12 @@ namespace HappinessNetwork
         public event EventHandler<TowerData> OnTowerDataResponse;
         public event Action<HClient, ulong, string> OnTutorialData;
         public event Action<HClient, string, string> OnValidateGameInfo;
-        public event Action<HClient, GameInfo> OnGameInfoResponse;        
+        public event Action<HClient, GameInfo, int> OnGameInfoResponse;        
         public event Action<HClient, string> OnCoinBalanceRequest;
+        public event Action<HClient> OnProductsRequest;
+        public event Action<GlobalProduct[]> OnProductsResponse;
 
-        public static string ServerAddress = "ec2-54-187-139-124.us-west-2.compute.amazonaws.com";
+        public static string ServerAddress = "www.ronzgames.com";
         public static int ServerPort = 1255;
 
         //public string RemoteDebugInfo;
@@ -89,6 +94,9 @@ namespace HappinessNetwork
             _packetHandlers[(ushort)HPacketType.TutorialData] = TutorialData_Handler;
             _packetHandlers[(ushort)HPacketType.CoinBalance_Request] = CoinBalance_Request_Handler;
             _packetHandlers[(ushort)HPacketType.Close] = Close_Handler;
+            _packetHandlers[(ushort)HPacketType.Products_Request] = Products_Request_Handler;
+            _packetHandlers[(ushort)HPacketType.Products_Response] = Products_Response_Handler;
+            _packetHandlers[(ushort)HPacketType.Account_Id] = Account_Id_Handler;
 
             _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Request] = ValidateGameInfo_Request_Handler;
             _packetHandlers[(ushort)HPacketType.ValidateGameInfo_Response] = ValidateGameInfo_Response_Handler;
@@ -165,6 +173,13 @@ namespace HappinessNetwork
             SendPacket();
         }
 
+        public void RequestProducts()
+        {
+            BeginPacket(HPacketType.Products_Request);
+
+            SendPacket();
+        }
+
         public void SendTowerData(int tower, TowerFloorRecord[] floors)
         {
             BeginPacket(HPacketType.TowerData_Response);
@@ -200,16 +215,41 @@ namespace HappinessNetwork
             SendPacket();
         }
 
-        public void SendValidateGameInfoResponse(int hardCurrency, int vip, bool hashMatches, GameInfo serverData)
+        public void SendValidateGameInfoResponse(int accountId, int hardCurrency, int vip, bool hashMatches, GameInfo serverData)
         {
             BeginPacket(HPacketType.ValidateGameInfo_Response);
 
+            _outgoingBW.Write(accountId);
             _outgoingBW.Write(hardCurrency);
             _outgoingBW.Write(vip);
             _outgoingBW.Write(hashMatches);
             if( !hashMatches )
                 serverData.Save(_outgoingBW);
 
+            SendPacket();
+        }
+
+        public void SendProducts(GlobalProduct[] products)
+        {
+            BeginPacket(HPacketType.Products_Response);
+
+            _outgoingBW.Write(products.Length);
+            foreach (GlobalProduct p in products)
+            {
+                _outgoingBW.Write(p.ProductId);
+                _outgoingBW.Write(p.Coins);
+                _outgoingBW.Write(p.USD);
+                _outgoingBW.Write(p.VIP);
+            }
+
+            SendPacket();
+        }
+
+        public void SetAccountId(int accountId)
+        {
+            BeginPacket(HPacketType.Account_Id);
+
+            _outgoingBW.Write(accountId);
             SendPacket();
         }
         #endregion
@@ -301,6 +341,27 @@ namespace HappinessNetwork
             base.Close();
         }
 
+        void Products_Request_Handler(BinaryReader br)
+        {
+            OnProductsRequest(this);
+        }
+
+        void Products_Response_Handler(BinaryReader br)
+        {
+            List<GlobalProduct> products = new List<GlobalProduct>();
+            int count = br.ReadInt32();
+            for (int i = 0; i < count; i++)
+            {
+                products.Add(new GlobalProduct { ProductId = br.ReadInt32(), Coins = br.ReadInt32(), USD = br.ReadSingle(), VIP = br.ReadInt32() });
+            }
+            OnProductsResponse(products.ToArray());
+        }
+
+        void Account_Id_Handler(BinaryReader br)
+        {
+            AccountId = br.ReadInt32();
+        }
+
         void DebugInfo_Handler(BinaryReader br)
         {
             //RemoteDebugInfo = br.ReadString();
@@ -316,6 +377,7 @@ namespace HappinessNetwork
 
         void ValidateGameInfo_Response_Handler(BinaryReader br)
         {
+            AccountId = br.ReadInt32();
             HardCurrency = br.ReadInt32();
             Vip = br.ReadInt32();
             bool hashMatches = br.ReadBoolean();
@@ -326,7 +388,7 @@ namespace HappinessNetwork
                 serverData.Load(br);
             }
 
-            OnGameInfoResponse(this, serverData);
+            OnGameInfoResponse(this, serverData, AccountId);
         }
         #endregion
 

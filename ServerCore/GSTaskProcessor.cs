@@ -23,6 +23,11 @@ namespace ServerCore
 
             Last
         }
+
+        public GSTask() { }
+        public GSTask(GSTType type) : base((int)type)
+        {
+        }
         
         public GameClient Client
         {

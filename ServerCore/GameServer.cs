@@ -12,6 +12,9 @@ namespace ServerCore
         GlobalServerManager _gs;
         AuthStringManager _authManager;
 
+        GlobalProduct[] _products;
+        public GlobalProduct[] Products { get { return _products; } }
+
         public GameServer(int listenPort, string dbConnectionString, string globalAddress, int globalPort)
             : base(listenPort, dbConnectionString)
         {
@@ -21,6 +24,7 @@ namespace ServerCore
             _gs = new GlobalServerManager(globalAddress, globalPort);
             _gs.OnAccountInfoResponse += _gs_OnAccountInfoResponse;
             _gs.OnCurrencyUpdate += _gs_OnCurrencyUpdate;
+            _gs.OnGlobalProductInfo += _gs_OnGlobalProductInfo;
             _gs.Start();
 
             ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);            
@@ -97,6 +101,11 @@ namespace ServerCore
             t.Args = e;
 
             TaskProcessor.AddTask(t);
+        }
+
+        private void _gs_OnGlobalProductInfo(GlobalProduct[] obj)
+        {
+            _products = obj;
         }
         #endregion
 

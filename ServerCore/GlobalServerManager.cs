@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using NetworkCore;
 
 namespace ServerCore
 {
@@ -15,6 +16,7 @@ namespace ServerCore
         
         public event Action<AccountInfoResponseArgs> OnAccountInfoResponse;
         public event EventHandler<CurrencyUpdateArgs> OnCurrencyUpdate;
+        public event Action<GlobalProduct[]> OnGlobalProductInfo;
 
         public GlobalServerManager(string address, int port)
         {
@@ -43,6 +45,7 @@ namespace ServerCore
                         _gc = new GlobalClient();
                         _gc.OnAccountInfoResponse += OnAccountInfoResponse;
                         _gc.OnCurrencyUpdate += OnCurrencyUpdate;
+                        _gc.OnGlobalProductInfo += OnGlobalProductInfo;
 
                         _gc.Connect(_address, _port);
                         if (_gc.Connected)

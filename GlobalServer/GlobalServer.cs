@@ -4,28 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using ServerCore;
+using NetworkCore;
 
 namespace GlobalServer
 {
     class GlobalServer
     {
         static ServerBase _server;
-
+        static WebServer _webServer;
+        
         static void Main(string[] args)
         {
             ServerArgs sargs = new ServerArgs(args);
             
             _server = new ServerBase(sargs.ListenPort, sargs.DBString);
             _server.TaskProcessor = new GlobalTaskProcessor();
+            _server.DatabaseSetup();
 #if DEBUG
             LogThread.AlwaysPrintToConsole = true;
 #endif
+            _webServer = new WebServer(null, "http://localhost:8080/purchase/", "http://localhost:8080/checkout/");
+            _webServer.Run();
+
+            Marketplace m = new Marketplace(_server);
+            _server.TaskProcessor.AddTask(new GlobalTask(GlobalTask.GlobalType.Products_Fetch));
 
             _server.ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);
 
             _server.Run();
         }
-
+        
         static void lt_OnConnectionAccepted(object sender, SocketArg e)
         {
             GlobalClient gclient = new GlobalClient(e.Socket);
@@ -35,6 +43,10 @@ namespace GlobalServer
             gclient.OnAuthStringRequest += Gclient_OnAuthStringRequest;
 
             _server.InputThread.AddConnection(gclient);
+
+            // Send the products to the new client
+            if(Marketplace.Instance.Products != null )
+                gclient.SendProducts(Marketplace.Instance.Products);
         }
 
         static void gclient_OnAccountInfoRequest(object sender, AccountInfoRequestArgs e)
@@ -70,6 +82,11 @@ namespace GlobalServer
         public static DatabaseThread Database
         {
             get { return _server.Database; }
+        }
+
+        public static ServerBase Server
+        {
+            get { return _server; }
         }
 #endregion
     }

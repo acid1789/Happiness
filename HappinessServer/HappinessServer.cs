@@ -31,6 +31,7 @@ namespace HappinessServer
             client.OnTutorialData += Client_OnTutorialData;
             client.OnValidateGameInfo += Client_OnValidateGameInfo;
             client.OnCoinBalanceRequest += Client_OnCoinBalanceRequest;
+            client.OnProductsRequest += Client_OnProductsRequest;
 
             return client;
         }
@@ -84,9 +85,14 @@ namespace HappinessServer
         {
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.CoinBalance_Process, arg1, obj));
         }
-#endregion
 
-#region Accessors
-#endregion
+        private void Client_OnProductsRequest(HClient obj)
+        {
+            obj.SendProducts(Products);
+        }
+        #endregion
+
+        #region Accessors
+        #endregion
     }
 }

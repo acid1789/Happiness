@@ -232,6 +232,8 @@ namespace Happiness
         {
             get { return m_CurrentScene; }
         }
+
+        public ServerWriter ServerWriter { get { return m_ServerWriter; } }
         
         public static Happiness Game;
         public TutorialSystem Tutorial
@@ -243,6 +245,8 @@ namespace Happiness
         {
             get { return m_SoundManager; }
         }
+
+        public int AccountId { get; set; }
         #endregion
 
         public static string PuzzleSaveName(int puzzleSize, int puzzleIndex)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using HappinessNetwork;
+using NetworkCore;
 
 namespace Happiness
 {
@@ -94,10 +95,24 @@ namespace Happiness
         {
             AddJob(new SW_SpendCoinsJob(authToken, coinCount, spentOn, gi));
         }
+
+        public SW_RequestProductsJob RequestProducts()
+        {
+            SW_RequestProductsJob j = new SW_RequestProductsJob();
+            AddJob(j);
+            return j;
+        }
+
+        public SW_VerifyPurchaseJob WaitForPurchaseComplete()
+        {
+            SW_VerifyPurchaseJob j = new SW_VerifyPurchaseJob();
+            AddJob(j);
+            return j;
+        }
         #endregion
     }
 
-    abstract class SW_Job
+    public abstract class SW_Job
     {
         protected HClient _client;
         string _jobName;
@@ -291,6 +306,124 @@ namespace Happiness
                     }
                 }
             }
+
+            return true;
+        }
+    }
+    
+    public class SW_RequestProductsJob : SW_Job
+    {
+        bool _requested;
+        bool _finished;
+        bool _destroy;
+
+        public bool Finished { get { return _finished; } }
+        public GlobalProduct[] Products { get; set; }
+
+        public SW_RequestProductsJob() : base("SW_RequestProductsJob")
+        {
+            _destroy = false;
+        }
+
+        public void Destroy()
+        {
+            _destroy = true;
+        }
+
+        public override void Start()
+        {
+            _finished = false;
+            _requested = false;
+            base.Start();
+            _client.OnProductsResponse += _client_OnProductsResponse;  
+        }
+
+        private void _client_OnProductsResponse(GlobalProduct[] obj)
+        {
+            Products = obj;
+            _finished = true;
+        }
+
+        public override bool Update()
+        {
+            if (!_finished)
+            {
+                if (!_client.Connected)
+                {
+                    _client.Connect(HClient.ServerAddress, HClient.ServerPort);
+                    if (_client.Connected)
+                        _requested = false;
+                }
+
+                if (_client.Connected)
+                {
+                    if (!_requested)
+                    {
+                        _client.RequestProducts();
+                        _requested = true;
+                    }
+
+                    _client.Update();
+                }
+            }
+
+            if( _destroy )
+                return false;            
+
+            return true;
+        }
+    }
+
+    public class SW_VerifyPurchaseJob : SW_Job
+    {
+        bool _finished;
+        bool _destroy;
+
+        public bool Finished { get { return _finished; } }
+
+        public SW_VerifyPurchaseJob() : base("SW_RequestProductsJob")
+        {
+        }
+
+        public override void Start()
+        {
+            base.Start();
+            _client.OnHardCurrencyUpdate += _client_OnHardCurrencyUpdate;
+            _finished = false;
+
+            if (_client.Connected)
+                _client.SetAccountId(Happiness.Game.AccountId);
+        }
+
+        public void Destroy()
+        {
+            _destroy = true;
+        }
+
+        private void _client_OnHardCurrencyUpdate(object sender, EventArgs e)
+        {
+            Happiness.Game.m_GameInfo.HardCurrency = ((HClient)sender).HardCurrency;
+            _finished = true;            
+        }
+
+        public override bool Update()
+        {
+            if (!_finished)
+            {
+                if (!_client.Connected)
+                {
+                    _client.Connect(HClient.ServerAddress, HClient.ServerPort);
+                    if( _client.Connected )
+                        _client.SetAccountId(Happiness.Game.AccountId);
+                }
+
+                if(_client.Connected)
+                    _client.Update();
+            }
+
+            if( _destroy )
+                return false;
+
 
             return true;
         }

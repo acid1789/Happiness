@@ -28,17 +28,22 @@ namespace ServerCore
             _inputThread = new InputThread();
         }
 
+        public void DatabaseSetup()
+        {
+            if (_db != null && _taskProcessor.Database == null)
+            {
+                _taskProcessor.Database = _db;
+                _db.OnQueryComplete += new EventHandler(_taskProcessor.Database_OnQueryComplete);
+            }
+        }
+
         public void Run()
         {
             // Allow connections
             _lt.Start();
 
             // Setup db callback
-            if (_db != null)
-            {
-                _taskProcessor.Database = _db;
-                _db.OnQueryComplete += new EventHandler(_taskProcessor.Database_OnQueryComplete);
-            }
+            DatabaseSetup();
 
             // Process            
             _taskProcessor.Process();

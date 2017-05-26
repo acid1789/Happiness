@@ -411,7 +411,7 @@ namespace HappinessServer
             gia.GameInfo.DisplayName = aai.DisplayName;
             gia.GameInfo.HardCurrency = aai.HardCurrency;
             gia.GameInfo.VipData = VipData.Create(aai.Vip);            
-            client.SendValidateGameInfoResponse(aai.HardCurrency, aai.Vip, serverHash == clientHash, gia.GameInfo);
+            client.SendValidateGameInfoResponse(aai.AccountID, aai.HardCurrency, aai.Vip, serverHash == clientHash, gia.GameInfo);
         }
 
         #region Data Functions

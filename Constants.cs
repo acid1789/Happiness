@@ -156,6 +156,21 @@ namespace Happiness
         public static float TutorialSystem_ButtonWidth = 100f / 1280f;
         public static float TutorialSystem_ButtonHeight = 30f / 720f;
 
+        public static float BuyCreditsDialog_Width = 800f / 1280f;
+        public static float BuyCreditsDialog_Height = 600f / 720f;
+        public static float BuyCreditsDialog_WaitIconSize = 200f / 1280f;
+        public static float BuyCreditsDialog_ButtonWidth = 180f / 1280f;
+        public static float BuyCreditsDialog_ButtonHeight = 30f / 720f;
+        public static float BuyCreditsDialog_TopBottomMargin = 30f / 720f;
+        public static float BuyCreditsDialog_ProductWidth = 700 / 1280f;
+
+        public static float ProductDisplay_CoinSize = 40 / 1280f;
+        public static float ProductDisplay_CoinLeft = 50 / 1280f;
+        public static float ProductDisplay_FrameLeft = 35 / 1280f;
+        public static float ProductDisplay_FrameWidth = 600 / 1280f;   
+        public static float ProductDisplay_ButtonWidth = 100 / 1280f;
+        public static float ProductDisplay_ButtonHeight = 40 / 1280f;
+
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
 
         public static float ArrowUp = (float)-Math.PI / 2;

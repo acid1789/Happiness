@@ -20,11 +20,13 @@ namespace Happiness
         UIButton m_Options;
         UIButton m_SignOut;
         UIButton m_Exit;
+        UIButton m_BuyCoins;
 
         FloorSelectDialog m_FloorSelect;
 
         SoundDialog m_SoundDialog;
         Options m_OptionsDialog;
+        BuyCoinsModal m_CoinsDialog;
 
         public HubScene(Happiness game) : base(game)
         {
@@ -73,6 +75,7 @@ namespace Happiness
             int buttonY = Game.ScreenHeight - levelY - buttonHeight;
             m_ResetTutorial = new UIButton(0, "Reset Tutorial", Assets.HelpFont, new Rectangle(marginLeftRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
             m_Options = new UIButton(0, "Options", Assets.HelpFont, new Rectangle((marginLeftRight * 2) + buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+            m_BuyCoins = new UIButton(0, "Buy Coins", Assets.HelpFont, new Rectangle((marginLeftRight * 3) + (buttonWidth * 2), buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
 
             int buttonRight = Game.ScreenWidth - marginLeftRight - buttonWidth;
             m_Exit = new UIButton(0, "Exit", Assets.HelpFont, new Rectangle(buttonRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
@@ -122,6 +125,13 @@ namespace Happiness
                 m_OptionsDialog = null;
             }
 
+            if (m_CoinsDialog != null)
+            {
+                if (m_CoinsDialog.HandleClick(e.CurrentX, e.CurrentY))
+                    return;
+                m_CoinsDialog = null;
+            }
+
             if (m_FloorSelect != null)
             {
                 if (!m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY))
@@ -155,7 +165,11 @@ namespace Happiness
                 {
                     m_OptionsDialog = new Options(Game);
                 }
-                if( m_Exit.Click(e.CurrentX, e.CurrentY) )
+                if (m_BuyCoins.Click(e.CurrentX, e.CurrentY))
+                {
+                    m_CoinsDialog = new BuyCoinsModal();
+                }
+                if ( m_Exit.Click(e.CurrentX, e.CurrentY) )
                     Happiness.Game.Exit();
                 if (m_SignOut.Click(e.CurrentX, e.CurrentY))
                 {
@@ -175,27 +189,40 @@ namespace Happiness
 
             if( m_OptionsDialog != null )
                 m_OptionsDialog.Drag(e);
+
+            if(m_CoinsDialog != null )
+                m_CoinsDialog.Drag(e);
         }
 
         private void IC_OnDragBegin(object sender, DragArgs e)
         {
             if( m_FloorSelect != null )
                 m_FloorSelect.DragBegin(e);
+            if( m_CoinsDialog != null )
+                m_CoinsDialog.DragBegin(e);
         }
         #endregion
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            if( m_FloorSelect != null )
+            
+            if ( m_FloorSelect != null )
                 m_FloorSelect.Update(gameTime);
             if(m_OptionsDialog != null )
                 m_OptionsDialog.Update(gameTime);
+            if (m_CoinsDialog != null)
+                m_CoinsDialog.Update(gameTime);
         }
                 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if (m_CoinsDialog != null)
+            {
+                m_CoinsDialog.Draw(spriteBatch);
+                return;
+            }
+
             foreach( Tower t in m_Towers )
                 t.Draw(spriteBatch);
 
@@ -204,6 +231,7 @@ namespace Happiness
             m_ExpBar.Draw(spriteBatch);
             m_ResetTutorial.Draw(spriteBatch);
             m_Options.Draw(spriteBatch);
+            m_BuyCoins.Draw(spriteBatch);
             m_Exit.Draw(spriteBatch);
             m_SignOut.Draw(spriteBatch);
 

@@ -8,6 +8,10 @@ namespace HappinessServer
 {
     class VipData
     {
+        // $1 = 16 credits
+        // Hint = 2 credits
+        // Mega Hint = 16 credits
+
         // $1 = 10 Vip Points
         // $5 = 55 Vip Points
         // $10 = 125 Vip Points
@@ -16,7 +20,7 @@ namespace HappinessServer
         // $100 = 1500 Vip Points
         // $1000 = 20000 Vip Points
 
-        // Vip Level 1 - 10 Vip Points, $1
+        // Vip Level 1 - 50 Vip Points, $5
         // Vip Level 2 - 100 Vip Points, $10
         // Vip Level 3 - 250 Vip Points, $25
         // Vip Level 4 - 500 Vip Points, $50
@@ -27,7 +31,7 @@ namespace HappinessServer
         // Vip Level 9 - 250000 Vip Points, $25,000
         // Vip Level 10 - 1000000 Vip Points, $100,000
         
-        static int[] s_VipLevels = { 10, 100, 250, 500, 1000, 2500, 10000, 500000, 250000, 1000000 };
+        static int[] s_VipLevels = { 50, 100, 250, 500, 1000, 2500, 10000, 500000, 250000, 1000000 };
 
         public static VipDataArgs Create(int vipPoints)
         {

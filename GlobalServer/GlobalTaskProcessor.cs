@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using ServerCore;
 using System.Security.Cryptography;
+using NetworkCore;
 
 namespace GlobalServer
 {
@@ -19,6 +20,20 @@ namespace GlobalServer
             SpendCoins_Process,
             AuthStringRequest,
             AuthStringProcess,
+            Products_Fetch,
+            Products_Process,
+            Purchase_Product,
+            Purchase_Product_Finish,
+        }
+
+        public GlobalTask()
+        {
+        }
+
+        public GlobalTask(GlobalType type, GlobalClient client = null, object args = null) : base((int)type)
+        {
+            Client = client;
+            Args = args;
         }
 
         public GlobalClient Client
@@ -56,7 +71,7 @@ namespace GlobalServer
     }
 
     class GlobalTaskProcessor : TaskProcessor
-    {
+    {        
         public GlobalTaskProcessor()
             : base()
         {
@@ -66,6 +81,10 @@ namespace GlobalServer
             _taskHandlers[(int)GlobalTask.GlobalType.SpendCoins_Process] = SpendCoins_ProcessHandler;
             _taskHandlers[(int)GlobalTask.GlobalType.AuthStringRequest] = AuthStringRequestHandler;
             _taskHandlers[(int)GlobalTask.GlobalType.AuthStringProcess] = AuthStringProcessHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.Products_Fetch] = ProductsFetchHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.Products_Process] = ProductsProcessHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.Purchase_Product] = PurchaseProductHandler;
+            _taskHandlers[(int)GlobalTask.GlobalType.Purchase_Product_Finish] = PurchaseProdcutFinishHandler;
         }
 
         bool ValidPassword(string pwIn, int oAuthMode, string pwDB, string googleId, string facebookId)
@@ -218,8 +237,21 @@ namespace GlobalServer
             sql = string.Format("UPDATE accounts SET hard_currency={0} WHERE account_id={1};", currency, args.AccountId);
             AddDBQuery(sql, null, false);
 
-            // Tell the client about it
-            task.Client.HardCurrencyUpdate(args.AccountId, currency);
+            if (task.Client != null)
+            {
+                // Tell the client about it
+                task.Client.HardCurrencyUpdate(args.AccountId, currency);
+            }
+            else
+            {
+                // Tell all connected game servers about it
+                Connection[] gameServers = GlobalServer.Server.InputThread.Clients;
+                foreach (Connection c in gameServers)
+                {
+                    GlobalClient gc = (GlobalClient)c;
+                    gc.HardCurrencyUpdate(args.AccountId, currency);
+                }
+            }
         }
 
         void AuthStringRequestHandler(Task t)
@@ -268,6 +300,60 @@ namespace GlobalServer
                 accountId = -1;
             }
             task.Client.SendAccountInfo((uint)args[1], accountId, displayName, hardCurrency, vip, authString);
+        }
+
+        void ProductsFetchHandler(Task t)
+        {
+            t.Type = (int)GlobalTask.GlobalType.Products_Process;
+            AddDBQuery("SELECT * FROM products;", t);
+        }
+
+        void ProductsProcessHandler(Task t)
+        {
+            if (t.Query.Rows.Count > 0)
+            {
+                List<GlobalProduct> products = new List<GlobalProduct>();
+                foreach (object[] row in t.Query.Rows)
+                {
+                    // 0: idproducts  int(11)
+                    // 1: coins   int(10) 
+                    // 2: usd float 
+                    // 3: vip int(10) 
+
+                    products.Add(new GlobalProduct { ProductId = (int)row[0], Coins = (int)row[1], USD = (float)row[2], VIP = (int)row[3] });
+                }
+
+                Marketplace.Instance.SetProducts(products.ToArray());
+            }
+        }
+
+        void PurchaseProductHandler(Task t)
+        {
+            object[] args = (object[])t.Args;
+
+            // Store the product purchase
+            int accountId = (int)args[0];
+            int productId = (int)args[1];
+            int credits = (int)args[2];
+            int vippoints = (int)args[3];
+            float usd = (float)args[4];
+            int paymentProcessorType = (int)args[5];
+            string paymentDetails = (string)args[6];
+
+            string sql = string.Format("INSERT INTO product_purchases SET account_id={0},product_id={1},coins={2},vip={3},usd={4},payment_type={5},payment_details=\"{6}\",timestamp={7}; SELECT LAST_INSERT_ID();", accountId, productId, credits, vippoints, usd, paymentProcessorType, paymentDetails, DateTime.Now.Ticks);
+            t.Type = (int)GlobalTask.GlobalType.Purchase_Product_Finish;
+            AddDBQuery(sql, t);
+        }
+
+        void PurchaseProdcutFinishHandler(Task t)
+        {
+            object[] args = (object[])t.Args;
+            ulong serverRecord = (ulong)t.Query.Rows[0][0];
+
+            t.Type = (int)GlobalTask.GlobalType.SpendCoins;
+            t.Args = new GlobalSpendCoinArgs() { AccountId = (int)args[0], Amount = -(int)args[2], ServerRecord = serverRecord };
+            ((GlobalTask)t).Client = null;
+            AddTask(t);
         }
         #endregion
 

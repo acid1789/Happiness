@@ -12,7 +12,7 @@ namespace HappinessLauncher
     static class Program
     {
         const string UPDATE_FOLDER = "UpdateFolder";
-        const string PATCH_SERVER = "http://ec2-54-187-139-124.us-west-2.compute.amazonaws.com/";
+        const string PATCH_SERVER = "http://www.ronzgames.com/";
 
         /// <summary>
         /// The main entry point for the application.

@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Connection.cs" />
     <Compile Include="GameClient.cs" />
+    <Compile Include="GlobalProduct.cs" />
     <Compile Include="LogInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

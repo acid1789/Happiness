@@ -44,10 +44,12 @@
     <ApplicationIcon>Happiness.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BuyCoinsModal.cs" />
     <Compile Include="FacebookAuth.cs" />
     <Compile Include="FormattedLine.cs" />
     <Compile Include="GameInfoValidator.cs" />
     <Compile Include="GoogleAuth.cs" />
+    <Compile Include="ProductDisplay.cs" />
     <Compile Include="Scenes\Hub\FloorDisplay.cs" />
     <Compile Include="Scenes\Hub\FloorSelectDialog.cs" />
     <Compile Include="Scenes\Hub\SoundDialog.cs" />

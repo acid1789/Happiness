@@ -1,0 +1,42 @@
+﻿<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=10">        
+        <meta name="viewport" content="width=device-width" />
+
+        <title>Ronz Games Purchase Credits</title>
+        <link rel=stylesheet type=text/css href="http://www.ronzgames.com/css/app.css">
+        <link rel=stylesheet type=text/css href="http://www.ronzgames.com/css/overrides.css">
+        <script src="http://www.ronzgames.com/js/vendor/jquery-2.1.4.min.js"></script>
+        <script src="http://www.ronzgames.com/js/vendor/jquery.lettering-0.6.1.min.js"></script>
+        <script src="http://www.ronzgames.com/js/demo.js"></script>
+        <script src="https://js.braintreegateway.com/js/braintree-2.32.0.min.js"></script>
+    </head>
+    <body>
+        <header>
+            <h1>Product</h1>
+            <p>Coins: COIN_AMMOUNT</p>
+            <p>VIP: VIP_AMMOUNT</p>
+            <p>Cost: USD_AMMOUNT</p>
+        </header>
+
+        <form id="payment-form" method="post" action="/checkout">
+            <section>
+                <div class="bt-drop-in-wrapper">
+                    <div id="bt-dropin"></div>
+                </div>
+            </section>
+
+            <input type="hidden" value="USER_ID" name="uid" />
+            <input type="hidden" value="PRODUCT_ID" name="pid" />
+
+            <button class="button" type="submit"><span>Test Transaction</span></button>
+        </form>
+
+        <script>
+            var checkout = new Demo({ formID: "payment-form" });
+            var client_token = "CLIENT_AUTH_TOKEN";
+            braintree.setup(client_token, "dropin", { container: "bt-dropin" });
+        </script>
+    </body>
+</html>

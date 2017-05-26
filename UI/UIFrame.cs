@@ -40,6 +40,7 @@ namespace Happiness
         public Rectangle Rect
         {
             get { return m_Rect; }
+            set { m_Rect = value; }
         }
 
         public Color FrameColor

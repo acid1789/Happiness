@@ -88,6 +88,12 @@ namespace Happiness
             set { m_szText = value; }
         }
 
+        public int PositionX
+        {
+            get { return (int)m_vPosition.X; }
+            set { m_vPosition.X = value; }
+        }
+
         public int PositionY
         {
             get { return (int)m_vPosition.Y; }

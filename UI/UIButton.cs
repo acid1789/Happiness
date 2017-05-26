@@ -130,6 +130,12 @@ namespace Happiness
                 sb.DrawString(m_UnderTextFont, m_UnderText, m_UnderTextPosition, m_bDisabled ? m_UnderTextColorDisabled : m_UnderTextColor); 
         }
 
+        public void SetY(int y)
+        {
+            m_Rect.Y = y;
+            ResizeText();
+        }
+
         #region Accessors
         public Rectangle Rect
         {
