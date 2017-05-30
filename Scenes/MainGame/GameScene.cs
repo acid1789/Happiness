@@ -697,6 +697,7 @@ namespace Happiness
                         case 4: // Options
                             break;
                         case 5: // Save & Exit
+                            UnPause();
                             SavePuzzle();
                             Game.GotoScene(new HubScene(Game));
                             break;
