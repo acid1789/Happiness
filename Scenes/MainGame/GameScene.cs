@@ -827,7 +827,7 @@ namespace Happiness
 
         public bool ClockRunning
         {
-            get { return !m_Puzzle.IsSolved(); }
+            get { return m_EndScreen == null; }
         }
         #endregion
     }
