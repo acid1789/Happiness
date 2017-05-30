@@ -77,6 +77,8 @@ namespace Happiness
             Vertical_EitherOr,
             Vertical_Not,
 
+            EndScreen4b,
+
             None
         }
 
@@ -239,6 +241,15 @@ namespace Happiness
             return false;
         }
 
+        public bool IsPieceTriggered(TutorialPiece piece)
+        {
+            if (m_Pieces.ContainsKey(piece))
+            {
+                return m_Pieces[piece].Triggered;
+            }
+            return false;
+        }
+
         public bool IsPieceFinished(TutorialPiece piece)
         {
             if (m_Pieces.ContainsKey(piece))
@@ -278,7 +289,7 @@ namespace Happiness
             }
         }
 
-        public void FinishPiece(TutorialPiece piece)
+        public void FinishPiece(TutorialPiece piece, TutorialPiece onFail = TutorialPiece.None, bool condition = true)
         {
             if (m_Pieces[piece].Triggered)
             {
@@ -288,7 +299,9 @@ namespace Happiness
 
             if (m_CurrentPiece == piece)
             {
-                if (m_Pieces[piece].NextPiece != TutorialPiece.None)
+                if( onFail != TutorialPiece.None && condition == false)
+                    TriggerPiece(onFail);
+                else if (m_Pieces[piece].NextPiece != TutorialPiece.None)
                     TriggerPiece(m_Pieces[piece].NextPiece);
                 else
                 {

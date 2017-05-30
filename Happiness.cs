@@ -193,6 +193,24 @@ namespace Happiness
             m_ServerWriter.SpendCoins(m_GameInfo.AuthString, coinCount, spentOn, m_GameInfo);
         }
 
+        public void ResetTutorial()
+        {
+            // Nuke any existing save for stage 3_1
+            DeletePuzzleSave(3, 1);
+            DeletePuzzleSave(3, 2);
+            DeletePuzzleSave(3, 3);            
+
+            m_GameInfo.GameData.Tutorial = 0;
+
+        }
+
+        void DeletePuzzleSave(int size, int index)
+        {
+            string saveName = PuzzleSaveName(size, index);
+            if (System.IO.File.Exists(saveName))
+                System.IO.File.Delete(saveName);
+        }
+
 
         #region Drawing
         /// <summary>

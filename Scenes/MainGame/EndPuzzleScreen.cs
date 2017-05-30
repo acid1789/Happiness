@@ -192,8 +192,10 @@ namespace Happiness
 
                 game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen4, new Vector2(m_Buttons[0].Rect.Center.X, m_Buttons[0].Rect.Top - 5), Constants.ArrowDown, instRect,
                     "Tap the Next Puzzle button to move on to the next puzzle.", TutorialSystem.TutorialPiece.Horizontal_NextTo, m_Buttons[0].Rect);
+                game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.EndScreen4b, new Vector2(m_Buttons[1].Rect.Center.X, m_Buttons[1].Rect.Top - 5), Constants.ArrowDown, instRect,
+                    "Pay closer attention to the tutorial text. If you dont read it, you won't understand how to solve the puzzles.", TutorialSystem.TutorialPiece.None, m_Buttons[1].Rect);
             }
-            game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Puzzle2);
+            game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.Puzzle2, TutorialSystem.TutorialPiece.EndScreen4b, success);
         }
 
         public void OnServerDataComplete(string info)
@@ -217,6 +219,12 @@ namespace Happiness
                                 OnNextPuzzle(this, null);
                             break;
                         case 1:
+                            if (m_Game.Tutorial.IsPieceTriggered(TutorialSystem.TutorialPiece.EndScreen4b) && !m_Game.Tutorial.IsPieceFinished(TutorialSystem.TutorialPiece.EndScreen4b))
+                            {
+                                m_Game.Tutorial.FinishPiece(TutorialSystem.TutorialPiece.EndScreen4b);
+                                Happiness.Game.ResetTutorial();
+                            }
+
                             if( OnMainMenu != null )
                                 OnMainMenu(this, null);
                             break;
