@@ -138,7 +138,7 @@ namespace Happiness
                 case 2: // Unhide Clues
                     return false;
                 case 3: // Buy Coins
-                    break;
+                    return false;
                 case 4: // Options
                     m_OptionsDialog = new Options(Happiness.Game);
                     break;

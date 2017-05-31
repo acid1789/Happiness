@@ -55,6 +55,7 @@ namespace Happiness
         // Mega Hint
         bool m_bVerifyMegaHintPurchase;
         int m_iMegaHintCount;
+        BuyCoinsModal m_CoinsDialog;
 
         public GameScene(Happiness hgame) : base(hgame)
         {
@@ -109,7 +110,8 @@ namespace Happiness
 
             // Init Icons
             InitIcons();
-            
+
+            #region Tutorial Setup
             int gamePanelCenterX = m_GamePanel.Rect.Left + (m_GamePanel.Rect.Width / 6);
             Vector2 clueArrow = new Vector2(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight >> 1));
             Rectangle bottomTutorialRect = new Rectangle(gamePanelCenterX + Game.Tutorial.ArrowHeight, m_GamePanel.Rect.Bottom + 10, m_GamePanel.Rect.Width - ((m_GamePanel.Rect.Width / 6) + (Game.Tutorial.ArrowHeight >> 1)), 0);
@@ -242,6 +244,7 @@ namespace Happiness
                 "This clue is a Next To type clue. It tells us that the {icon:Superheros[5]} is in a column directly next to the column with the {icon:Flowers[2]}.\n\nThis doesn't help you any right now, but it will come in handy as you learn more about the puzzle.", TutorialSystem.TutorialPiece.None, Rectangle.Empty, true);
 
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.GameStart);
+            #endregion
         }
 
         public void InitIcons()
@@ -497,6 +500,9 @@ namespace Happiness
             {
                 DoEndScreenUpdate(gameTime);
             }
+
+            if (m_CoinsDialog != null)
+                m_CoinsDialog.Update(gameTime);
         }
         #endregion
 
@@ -550,6 +556,12 @@ namespace Happiness
         #region Drawing
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if (m_CoinsDialog != null)
+            {
+                m_CoinsDialog.Draw(spriteBatch);
+                return;
+            }
+
             // Draw all the UI Pannels
             for (int i = m_UIPanels.Count - 1; i >= 0; i--)
                 m_UIPanels[i].Draw(spriteBatch);
@@ -666,7 +678,13 @@ namespace Happiness
                 {
                     DoMessageBoxResult(res);
                 }
-            }         
+            }
+            else if (m_CoinsDialog != null)
+            {
+                if (m_CoinsDialog.HandleClick(e.CurrentX, e.CurrentY))
+                    return;
+                m_CoinsDialog = null;
+            }
             else if (m_EndScreen != null)
             {
                 if (!m_EndScreen.HandleClick(iX, iY))
@@ -692,7 +710,8 @@ namespace Happiness
                             UnHideAllClues();
                             UnPause();
                             break;
-                        case 3: // Buy Coins
+                        case 3: // Buy Coins                            
+                            m_CoinsDialog = new BuyCoinsModal();
                             break;
                         case 4: // Options
                             break;
@@ -703,7 +722,7 @@ namespace Happiness
                             break;
                     }
                 }
-            }            
+            }
             else
             {
                 foreach (UIPanel p in m_UIPanels)
@@ -740,7 +759,9 @@ namespace Happiness
 
         private void M_Input_OnDrag(object sender, DragArgs e)
         {
-            if (m_PauseMenu != null)
+            if (m_CoinsDialog != null)
+                m_CoinsDialog.Drag(e);
+            else if (m_PauseMenu != null)
             {
                 m_PauseMenu.OnDrag(e);
             }
@@ -759,7 +780,9 @@ namespace Happiness
 
         private void M_Input_OnDragBegin(object sender, DragArgs e)
         {
-            if (m_PauseMenu != null)
+            if (m_CoinsDialog != null)
+                m_CoinsDialog.DragBegin(e);
+            else if (m_PauseMenu != null)
             {
                 m_PauseMenu.OnDragBegin(e);
             }
@@ -812,7 +835,7 @@ namespace Happiness
                     }
                     break;
             }
-        }
+        }        
         #endregion
 
         #region Accessors
