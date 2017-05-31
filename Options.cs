@@ -57,7 +57,7 @@ namespace Happiness
             m_MusicSlider.OnChanged += OnMusicChanged;
 
             int cbY = top + (marginTopBottom * 2) + (sliderHeight * 5);
-            m_ExpSlowdown = new UICheckbox("Exp Slowdown (VIP 4)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
+            m_ExpSlowdown = new UICheckbox("Disable Exp Bonus (VIP 2)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
             m_ExpSlowdown.Checked = m_Game.ExpSlowdown;
 
             cbY += m_ExpSlowdown.Rect.Height + marginTopBottom;
@@ -70,7 +70,7 @@ namespace Happiness
 
 
 #if !DEBUG
-            m_ExpSlowdown.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
+            m_ExpSlowdown.Enabled = m_Game.m_GameInfo.VipData.Level >= 2;
             m_ErrorDetector.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
             m_ErrorDetector2.Enabled = m_Game.m_GameInfo.VipData.Level >= 8;
 #endif

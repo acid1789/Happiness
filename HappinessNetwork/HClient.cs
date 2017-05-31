@@ -130,7 +130,7 @@ namespace HappinessNetwork
             SendPacket();
         }
 
-        public void PuzzleComplete(string authToken, int tower, int floor, float completionTime)
+        public void PuzzleComplete(string authToken, int tower, int floor, float completionTime, bool noExpBonus)
         {
             BeginPacket(HPacketType.Puzzle_Complete);
 
@@ -138,6 +138,7 @@ namespace HappinessNetwork
             _outgoingBW.Write(tower);
             _outgoingBW.Write(floor);
             _outgoingBW.Write(completionTime);
+            _outgoingBW.Write(noExpBonus);
 
             SendPacket();
         }
@@ -281,6 +282,7 @@ namespace HappinessNetwork
             args.TowerIndex = br.ReadInt32();
             args.FloorNumber = br.ReadInt32();
             args.CompletionTime = br.ReadSingle();
+            args.NoExpBonus = br.ReadBoolean();
             OnPuzzleComplete(this, args);
         }
 
@@ -410,6 +412,7 @@ namespace HappinessNetwork
         public int TowerIndex;
         public int FloorNumber;
         public float CompletionTime;
+        public bool NoExpBonus;
     }
 
     public class VipDataArgs : EventArgs
@@ -419,6 +422,7 @@ namespace HappinessNetwork
         public int Hints;
         public int MegaHints;
         public int UndoSize;
+        public float ExpBonus;
     }
 
     public class SpendCoinsArgs : EventArgs

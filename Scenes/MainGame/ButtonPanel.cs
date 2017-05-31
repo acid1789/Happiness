@@ -124,7 +124,7 @@ namespace Happiness
 
         void SetButtonCount(int button, int current, int max)
         {
-            m_Buttons[button].UnderText = max == int.MaxValue ? string.Format("∞") : string.Format("{0} / {1}", current, max);
+            m_Buttons[button].UnderText = max == int.MaxValue ? string.Format("~") : string.Format("{0} / {1}", current, max);
             m_Buttons[button].Enabled = (current > 0);
         }
 

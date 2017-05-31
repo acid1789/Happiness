@@ -48,6 +48,7 @@ namespace Happiness
         UILabel m_ExpBase;
         UILabel m_ExpBonus;
         UILabel m_ExpTotal;
+        UILabel m_VipBonusExp;
         Rectangle m_ScoreTotalBar;
 
         UILabel m_LevelLabel;
@@ -122,9 +123,10 @@ namespace Happiness
             m_Time.Hidden = true;
 
             // Scores
+            float vipBonus = m_Game.ExpSlowdown ? 1.0f : m_Game.m_GameInfo.VipData.ExpBonus;
             double baseExp = success ? Balance.BaseExp(m_iTower) : 0;
             double bonusExp = success ? Balance.BonusExp(m_iTower, seconds) : 0;
-            double totalExp = baseExp + bonusExp;
+            double totalExp = (baseExp + bonusExp) * vipBonus;
             m_iTotalExp = (int)totalExp;
             m_iExpStep = (int)((float)m_iTotalExp * 0.05f);
 
@@ -147,9 +149,12 @@ namespace Happiness
             m_ExpTotalLabel = new UILabel("Total Exp:", scoreL, iScoreY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
             m_ExpTotal = new UILabel(((int)totalExp).ToString(), scoreR, iScoreY, (totalExp > 0) ? Color.Green : Color.Gray, Assets.HelpFont, UILabel.XMode.Right);
 
+            m_VipBonusExp = new UILabel(string.Format("*{0} VIP Bonus", vipBonus), scoreR + scoreSpace, iScoreY, Color.LightGreen, Assets.HelpFont, UILabel.XMode.Left);
+
             m_ExpBase.Hidden = true;
             m_ExpBonus.Hidden = true;
             m_ExpTotal.Hidden = true;
+            m_VipBonusExp.Hidden = true;
 
             // Level up
             int expBarWidth = (int)(Constants.EndScreen_ExpBarWidth * screenWidth);
@@ -275,6 +280,8 @@ namespace Happiness
                     break;
                 case AnimStep.TotalExp:
                     m_ExpTotal.Hidden = false;
+                    bool showVipExp = !m_Game.ExpSlowdown && m_Game.m_GameInfo.VipData.ExpBonus > 1;
+                    m_VipBonusExp.Hidden = !showVipExp;
                     m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
                 case AnimStep.LevelUp:
@@ -358,6 +365,7 @@ namespace Happiness
             m_ExpBonusLabel.Draw(spriteBatch);
             m_ExpBonus.Draw(spriteBatch);
             m_ExpTotal.Draw(spriteBatch);
+            m_VipBonusExp.Draw(spriteBatch);
             m_ExpTotalLabel.Draw(spriteBatch);
             spriteBatch.Draw(Assets.GoldBarHorizontal, m_ScoreTotalBar, Color.White);
 

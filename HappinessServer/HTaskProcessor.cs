@@ -114,6 +114,7 @@ namespace HappinessServer
             string sql = string.Format("SELECT * FROM game_data WHERE account_id={0};", aai.AccountID);
             task.Client.AccountId = aai.AccountID;
             task.Type = (int)HTask.HTaskType.PuzzleComplete_Validate;
+            task.Args = new object[] { pca, aai };
             AddDBQuery(sql, t);
         }
 
@@ -124,6 +125,7 @@ namespace HappinessServer
 
             object[] args = (object[])t.Args;
             PuzzleCompleteArgs pca = (PuzzleCompleteArgs)args[0];
+            AuthStringManager.AuthAccountInfo aai = (AuthStringManager.AuthAccountInfo)args[1];
             if (pca.TowerIndex < 0 || pca.TowerIndex >= gameData.TowerFloors.Length)
             {
                 // Invalid tower number
@@ -143,11 +145,14 @@ namespace HappinessServer
                     // Move to the next puzzle on this floor
                     if (pca.FloorNumber == gameData.TowerFloors[pca.TowerIndex])
                         gameData.TowerFloors[pca.TowerIndex]++;
-                    
+
+                    VipDataArgs vda = VipData.Create(aai.Vip);
+                    float expBonus = pca.NoExpBonus ? 1 : vda.ExpBonus;
+
                     // Level up?
                     double baseExp = Balance.BaseExp(pca.TowerIndex);
                     double bonusExp = Balance.BonusExp(pca.TowerIndex, pca.CompletionTime);
-                    double total = baseExp + bonusExp;
+                    double total = (baseExp + bonusExp) * expBonus;
                     int exp = (int)total;
                     gameData.Exp += exp;
                     int expForNextLevel = Balance.ExpForNextLevel(gameData.Level);

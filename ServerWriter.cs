@@ -86,9 +86,9 @@ namespace Happiness
             AddJob(new SW_SaveTutorialDataJob(tutorialData, authToken, timeStamp));
         }
 
-        public void SavePuzzleData(GameInfo gi, int tower, int floor, double completionTime, JobCompleteDelegate jobCompleteCB)
+        public void SavePuzzleData(GameInfo gi, int tower, int floor, double completionTime, bool noExpBonus, JobCompleteDelegate jobCompleteCB)
         {
-            AddJob(new SW_SavePuzzleJob(gi, tower, floor, (float)completionTime, jobCompleteCB));
+            AddJob(new SW_SavePuzzleJob(gi, tower, floor, (float)completionTime, noExpBonus, jobCompleteCB));
         }
 
         public void SpendCoins(string authToken, int coinCount, int spentOn, GameInfo gi)
@@ -180,17 +180,19 @@ namespace Happiness
         int _tower;
         int _floor;
         float _completionTime;
+        bool _noExpBonus;
 
         bool _waitingForResponse;
         ServerWriter.JobCompleteDelegate _jobsDone;
 
-        public SW_SavePuzzleJob(GameInfo gi, int tower, int floor, float completionTime, ServerWriter.JobCompleteDelegate jobFinishedCB) : base("SW_SavePuzzleJob")
+        public SW_SavePuzzleJob(GameInfo gi, int tower, int floor, float completionTime, bool noExpBonus, ServerWriter.JobCompleteDelegate jobFinishedCB) : base("SW_SavePuzzleJob")
         {
             _gi = gi;
             _tower = tower;
             _floor = floor;
             _completionTime = completionTime;
             _jobsDone = jobFinishedCB;
+            _noExpBonus = noExpBonus;
         }
 
         public override void Start()
@@ -222,7 +224,7 @@ namespace Happiness
             {
                 if (!_waitingForResponse)
                 {
-                    _client.PuzzleComplete(_gi.AuthString, _tower, _floor, _completionTime);
+                    _client.PuzzleComplete(_gi.AuthString, _tower, _floor, _completionTime, _noExpBonus);
                     _waitingForResponse = true;
                 }
                 else

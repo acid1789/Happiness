@@ -188,7 +188,7 @@ namespace Happiness
                 m_GameInfo.TowerData[tower].Floors = records.ToArray();
             }
 
-            m_ServerWriter.SavePuzzleData(m_GameInfo, tower, floor, elapsedTime, jobCompleteCB);
+            m_ServerWriter.SavePuzzleData(m_GameInfo, tower, floor, elapsedTime, ExpSlowdown, jobCompleteCB);
         }
 
         public void SpendCoins(int coinCount, int spentOn)

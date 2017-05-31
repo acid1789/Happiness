@@ -600,7 +600,7 @@ namespace Happiness
             Action a = new Action(type, iRow, iCol, iIcon, m_Puzzle);
             a.Perform(m_Puzzle);            
 
-            int undoSize = Game.m_GameInfo.VipData.UndoSize;
+            int undoSize = Game.m_GameInfo.VipData.UndoSize <= 0 ? int.MaxValue : Game.m_GameInfo.VipData.UndoSize;
             while (m_History.Count >= undoSize)
             {
                 m_History.RemoveAt(0);

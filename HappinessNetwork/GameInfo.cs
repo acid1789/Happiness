@@ -10,7 +10,7 @@ namespace HappinessNetwork
 {
     public class GameInfo
     {
-        public const int GameInfoVersion = 1;
+        public const int GameInfoVersion = 2;
 
         byte[] _hash;
         string _authString;
@@ -121,6 +121,11 @@ namespace HappinessNetwork
             _vipData.Hints = br.ReadInt32();
             _vipData.MegaHints = br.ReadInt32();
             _vipData.UndoSize = br.ReadInt32();
+
+            if( version >= 2 )
+                _vipData.ExpBonus = br.ReadSingle();
+            else
+                _vipData.ExpBonus = 1.0f;
         }
 
         void SaveVipData(BinaryWriter bw)
@@ -132,6 +137,7 @@ namespace HappinessNetwork
                 bw.Write(_vipData.Hints);
                 bw.Write(_vipData.MegaHints);
                 bw.Write(_vipData.UndoSize);
+                bw.Write(_vipData.ExpBonus);
             }
         }
 
