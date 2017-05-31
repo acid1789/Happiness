@@ -37,7 +37,7 @@ namespace Happiness
         TutorialSystem m_Tutorial;
         public GameInfo m_GameInfo;
         ServerWriter m_ServerWriter;
-
+        
         public Happiness()
         {
 #if DEBUG
@@ -48,6 +48,9 @@ namespace Happiness
             Settings s = Settings.LoadSettings();
             m_SoundManager.SoundVolume = s.SoundVolume;
             m_SoundManager.MusicVolume = s.MusicVolume;
+            ExpSlowdown = s.ExpSlowdown;
+            ErrorDetector = s.ErrorDetector;
+            ErrorDetector2 = s.ErrorDetector2;
 
             graphics = new GraphicsDeviceManager(this);
 
@@ -265,6 +268,10 @@ namespace Happiness
         }
 
         public int AccountId { get; set; }
+
+        public bool ExpSlowdown { get; set; }
+        public bool ErrorDetector { get; set; }
+        public bool ErrorDetector2 { get; set; }
         #endregion
 
         public static string PuzzleSaveName(int puzzleSize, int puzzleIndex)

@@ -12,6 +12,9 @@ namespace Happiness
 
         public float SoundVolume;
         public float MusicVolume;
+        public bool ExpSlowdown;
+        public bool ErrorDetector;
+        public bool ErrorDetector2;
 
         public static Settings LoadSettings()
         {
@@ -38,6 +41,12 @@ namespace Happiness
                     float.TryParse(settings["SoundVolume"], out s.SoundVolume);
                 if( settings.ContainsKey("MusicVolume") )
                     float.TryParse(settings["MusicVolume"], out s.MusicVolume);
+                if( settings.ContainsKey("ExpSlowdown") )
+                    bool.TryParse(settings["ExpSlowdown"], out s.ExpSlowdown);
+                if (settings.ContainsKey("ErrorDetector"))
+                    bool.TryParse(settings["ErrorDetector"], out s.ErrorDetector);
+                if (settings.ContainsKey("ErrorDetector2"))
+                    bool.TryParse(settings["ErrorDetector2"], out s.ErrorDetector2);
             }
             return s;
         }
@@ -47,6 +56,9 @@ namespace Happiness
             List<string> settings = new List<string>();
             settings.Add("SoundVolume=" + SoundVolume);
             settings.Add("MusicVolume=" + MusicVolume);
+            settings.Add("ExpSlowdown=" + ExpSlowdown);
+            settings.Add("ErrorDetector=" + ErrorDetector);
+            settings.Add("ErrorDetector2=" + ErrorDetector2);
 
             string settingsFile = GetSettingsFileName();
             File.WriteAllLines(settingsFile, settings.ToArray());            

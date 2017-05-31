@@ -9,8 +9,16 @@ namespace Happiness
 {
     public class UICheckbox
     {
+        public enum XMode
+        {
+            Left,
+            Center,
+            Right
+        }
+
         bool m_bEnabled;
         bool m_bChecked;
+        XMode m_XMode;
         int m_iCheckboxSize;
 
         string m_szText;       
@@ -20,22 +28,36 @@ namespace Happiness
         Color m_TextColor;
         Color m_TextDisabledColor;
 
-        public UICheckbox(string text, int left, int top, int screenHeight)
+        public UICheckbox(string text, int x, int top, int screenHeight, XMode xmode = XMode.Left)
         {
             m_bEnabled = true;
+            m_XMode = xmode;
             m_szText = text;
             m_TextColor = Color.LightGray;
             m_TextDisabledColor = Color.Gray;
 
             m_iCheckboxSize = (int)(Constants.MessageBox_CheckboxSize * screenHeight);
 
-            Layout(left, top);
+            Layout(x, top);
         }
 
-        void Layout(int left, int top)
+        void Layout(int x, int top)
         {
             Vector2 textSize = Assets.HelpFont.MeasureString(m_szText);
             int checkWidth = m_iCheckboxSize + 5 + (int)textSize.X;
+            int left = x;
+            switch (m_XMode)
+            {
+                case XMode.Left:
+                    left = x;
+                    break;
+                case XMode.Center:
+                    left = x - (checkWidth >> 1);
+                    break;
+                case XMode.Right:
+                    left = x - checkWidth;
+                    break;
+            }
             m_Rect = new Rectangle(left, top, checkWidth, m_iCheckboxSize);
             m_TextLocation = new Vector2(left + m_iCheckboxSize + 5, (m_Rect.Top + (m_iCheckboxSize >> 1)) - (textSize.Y / 2));
         }

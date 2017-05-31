@@ -166,7 +166,8 @@ namespace Happiness
                     {
                         Rectangle r = m_FinalRect;
                         r.Offset(xcoord, ycoord);
-                        sb.Draw(GameScene.GetIcon(y, iFinal), r, Color.White);
+                        bool error = Happiness.Game.ErrorDetector && !GameScene.Puzzle.IsCorrect(y, x);
+                        sb.Draw(GameScene.GetIcon(y, iFinal), r, error ? Color.Red : Color.White);
 
                         if (GameScene.ShouldDrawHint(y, x, iFinal))
                             Assets.HintSprite.Draw(sb, r, Color.White);
@@ -183,6 +184,12 @@ namespace Happiness
 
                                 if (GameScene.ShouldDrawHint(y, x, iIcon))
                                     Assets.HintSprite.Draw(sb, r, Color.White);
+                            }
+                            else if (Happiness.Game.ErrorDetector2 && GameScene.Puzzle.SolutionIcon(y, x) == iIcon)
+                            {
+                                Rectangle r = m_SmallRects[iIcon];
+                                r.Offset(xcoord, ycoord);
+                                sb.Draw(GameScene.GetIcon(y, iIcon), r, new Color(Color.Red, 0.0625f));
                             }
                         }
                     }

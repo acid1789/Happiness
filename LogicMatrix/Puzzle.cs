@@ -564,6 +564,17 @@ namespace LogicMatrix
             return false;
         }
 
+        public bool IsCorrect(int iRow, int iCol)
+        {
+            int iFinal = m_Rows[iRow].m_Cells[iCol].m_iFinalIcon;
+            return (iFinal >= 0 && iFinal == m_Solution[iRow, iCol]);
+        }
+
+        public int SolutionIcon(int iRow, int iCol)
+        {
+            return m_Solution[iRow, iCol];
+        }
+
         private void DebugError()
         {
             Reset();

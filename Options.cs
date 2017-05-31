@@ -17,6 +17,9 @@ namespace Happiness
 
         UISlider m_AudioSlider;
         UISlider m_MusicSlider;
+        UICheckbox m_ExpSlowdown;
+        UICheckbox m_ErrorDetector;
+        UICheckbox m_ErrorDetector2;
 
         UIButton m_DoneButton;
 
@@ -52,16 +55,42 @@ namespace Happiness
             m_AudioSlider.OnChanged += OnSoundChanged;
             m_MusicSlider = new UISlider(SoundManager.Inst.MusicVolume, 0.0f, 0.2f, new Rectangle(sliderLeft, top + marginTopBottom + (sliderHeight * 3), sliderWidth, sliderHeight), Assets.SliderBar, Assets.SliderCursor, new Rectangle(0, 0, cursorWidth, cursorHeight), "Music Volume", Assets.HelpFont);
             m_MusicSlider.OnChanged += OnMusicChanged;
+
+            int cbY = top + (marginTopBottom * 2) + (sliderHeight * 5);
+            m_ExpSlowdown = new UICheckbox("Exp Slowdown (VIP 4)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
+            m_ExpSlowdown.Checked = m_Game.ExpSlowdown;
+
+            cbY += m_ExpSlowdown.Rect.Height + marginTopBottom;
+            m_ErrorDetector = new UICheckbox("Error Detector (VIP 4)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
+            m_ErrorDetector.Checked = m_Game.ErrorDetector;
+
+            cbY += m_ExpSlowdown.Rect.Height + marginTopBottom;
+            m_ErrorDetector2 = new UICheckbox("Super Error Detector (VIP 8)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
+            m_ErrorDetector2.Checked = m_Game.ErrorDetector2;
+
+
+#if !DEBUG
+            m_ExpSlowdown.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
+            m_ErrorDetector.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
+            m_ErrorDetector2.Enabled = m_Game.m_GameInfo.VipData.Level >= 8;
+#endif
         }
 
         // Return false if this menu should close
         public bool HandleClick(int iX, int iY)
         {
+            m_ExpSlowdown.HandleClick(iX, iY);
+            m_ErrorDetector.HandleClick(iX, iY);
+            m_ErrorDetector2.HandleClick(iX, iY);
+
             if (m_DoneButton.Click(iX, iY))
             {
                 Settings s = Settings.LoadSettings();
                 s.SoundVolume = SoundManager.Inst.SoundVolume;
                 s.MusicVolume = SoundManager.Inst.MusicVolume;
+                m_Game.ExpSlowdown = s.ExpSlowdown = m_ExpSlowdown.Enabled ? m_ExpSlowdown.Checked : false;
+                m_Game.ErrorDetector = s.ErrorDetector = m_ErrorDetector.Enabled ? m_ErrorDetector.Checked : false;
+                m_Game.ErrorDetector2 = s.ErrorDetector2 = m_ErrorDetector2.Enabled ? m_ErrorDetector2.Checked : false;
                 s.Save();
                 return false;
             }
@@ -85,9 +114,14 @@ namespace Happiness
             sb.Draw(Assets.TransparentBox, m_Rect, Color.DarkGray);
             sb.Draw(Assets.TransparentBox, m_Rect, Color.DarkGray);
             sb.Draw(Assets.TransparentBox, m_Rect, Color.DarkGray);
+            sb.Draw(Assets.TransparentBox, m_Rect, Color.DarkGray);
+            sb.Draw(Assets.TransparentBox, m_Rect, Color.DarkGray);
 
             m_AudioSlider.Draw(sb);
             m_MusicSlider.Draw(sb);
+            m_ExpSlowdown.Draw(sb);
+            m_ErrorDetector.Draw(sb);
+            m_ErrorDetector2.Draw(sb);
 
             m_DoneButton.Draw(sb);
         }
