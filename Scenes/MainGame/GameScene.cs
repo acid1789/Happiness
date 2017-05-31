@@ -478,7 +478,8 @@ namespace Happiness
 
         public void DoBuyCoins(MessageBoxContext context)
         {
-
+            Pause();
+            m_CoinsDialog = new BuyCoinsModal();
         }
         #endregion
 

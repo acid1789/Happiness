@@ -32,7 +32,7 @@ namespace Happiness
             m_Buttons[1] = new UIButton(1, "H", Assets.DialogFont, new Rectangle(buttonsLeft, startY + buttonSize + buttonSpace, buttonSize, buttonSize), Assets.ScrollBar);
             m_Buttons[2] = new UIButton(2, "MH", Assets.DialogFont, new Rectangle(buttonsLeft, startY + ((buttonSize + buttonSpace) * 2), buttonSize, buttonSize), Assets.ScrollBar);
             m_Buttons[3] = new UIButton(3, "U", Assets.DialogFont, new Rectangle(buttonsLeft, startY + ((buttonSize + buttonSpace) * 3), buttonSize, buttonSize), Assets.ScrollBar);
-            m_Buttons[4] = new UIButton(4, "HC", Assets.DialogFont, new Rectangle(buttonsLeft, startY + ((buttonSize + buttonSpace) * 4), buttonSize, buttonSize), Assets.ScrollBar);
+            m_Buttons[4] = new UIButton(4, "HC", Assets.DialogFont, new Rectangle(buttonsLeft, startY + ((buttonSize + buttonSpace) * 4), buttonSize, buttonSize), Assets.ScrollBar);            
 
             int coinMargin = (int)(Constants.ButtonPanel_CoinMargin * Scene.Game.ScreenHeight);
             int coinSize = (int)(Constants.ButtonPanel_CoinSize * Scene.Game.ScreenHeight);
