@@ -218,8 +218,23 @@ namespace Happiness
                 System.IO.File.Delete(saveName);
         }
 
+        public void ValidateVIPSettings()
+        {
+            // Make sure settings match vip level
+#if !DEBUG
+            if( ErrorDetector && m_GameInfo.VipData.Level < 4 )
+                ErrorDetector = false;
+            if( ErrorDetector2 && m_GameInfo.VipData.Level < 8 )
+                ErrorDetector2 = false;
+            if( DisableTimer && m_GameInfo.VipData.Level < 1 )
+                DisableTimer = false;
+            if( ExpSlowdown && m_GameInfo.VipData.Level < 2 )
+                ExpSlowdown = false;
+#endif
+        }
 
-        #region Drawing
+
+#region Drawing
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -240,9 +255,9 @@ namespace Happiness
 
             base.Draw(gameTime);
         }
-        #endregion
+#endregion
 
-        #region Acccessors
+#region Acccessors
         public int ScreenWidth
         {
             get { return m_iScreenWidth; }
@@ -277,7 +292,7 @@ namespace Happiness
         public bool ErrorDetector { get; set; }
         public bool ErrorDetector2 { get; set; }
         public bool DisableTimer { get; set; }
-        #endregion
+#endregion
 
         public static string PuzzleSaveName(int puzzleSize, int puzzleIndex)
         {

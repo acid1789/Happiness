@@ -30,6 +30,11 @@ namespace HappinessServer
         // Vip Level 8 - 50000 Vip Points, $5,000
         // Vip Level 9 - 250000 Vip Points, $25,000
         // Vip Level 10 - 1000000 Vip Points, $100,000
+
+        // Disable Timer - Vip 1
+        // Disable Vip Exp Bonus = Vip 2
+        // Error Detector = Vip 4
+        // Super Error Detector = Vip 8
         
         static int[] s_VipLevels = { 50, 100, 250, 500, 1000, 2500, 10000, 500000, 250000, 1000000 };
 

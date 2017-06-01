@@ -81,6 +81,8 @@ namespace Happiness
             int buttonRight = Game.ScreenWidth - marginLeftRight - buttonWidth;
             m_Exit = new UIButton(0, "Exit", Assets.HelpFont, new Rectangle(buttonRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
             m_SignOut = new UIButton(0, "Sign Out", Assets.HelpFont, new Rectangle(buttonRight - marginLeftRight - buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
+
+            game.ValidateVIPSettings();
         }
 
         public override void Shutdown()
