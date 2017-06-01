@@ -157,11 +157,14 @@ namespace Happiness
 
         public void SaveTutorialData(ulong tutorialData)
         {
-            // Store local copy
-            m_GameInfo.GameData.Tutorial = tutorialData;
+            if (m_GameInfo.GameData.Tutorial != tutorialData)
+            {
+                // Store local copy
+                m_GameInfo.GameData.Tutorial = tutorialData;
 
-            // Send to the server
-            m_ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
+                // Send to the server
+                m_ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
+            }
         }
 
         public void SavePuzzleData(int tower, int floor, double elapsedTime, ServerWriter.JobCompleteDelegate jobCompleteCB)

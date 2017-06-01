@@ -33,6 +33,7 @@ namespace Happiness
             InputController.IC.OnClick += IC_OnClick;
             InputController.IC.OnDragBegin += IC_OnDragBegin;
             InputController.IC.OnDrag += IC_OnDrag;
+            InputController.IC.OnScroll += IC_OnScroll;
 
             NetworkManager nm = NetworkManager.Net;
 
@@ -195,6 +196,12 @@ namespace Happiness
                 m_FloorSelect.DragBegin(e);
             if( m_CoinsDialog != null )
                 m_CoinsDialog.DragBegin(e);
+        }
+
+        private void IC_OnScroll(int delta)
+        {
+            if( m_FloorSelect != null )
+                m_FloorSelect.Scroll(delta);
         }
         #endregion
 

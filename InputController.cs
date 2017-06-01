@@ -26,6 +26,7 @@ namespace Happiness
         public event EventHandler<KeyArgs> OnKeyDown;
         public event EventHandler<KeyArgs> OnKeyRepeat;
         public event EventHandler<KeyArgs> OnKeyUp;
+        public event Action<int> OnScroll;
 
         public InputController()
         {
@@ -161,6 +162,12 @@ namespace Happiness
                             OnDrag(this, m_DragArgs);
                     }                    
                 }
+            }
+
+            if (state.ScrollWheelValue != 0 && state.ScrollWheelValue != m_LastMouseState.ScrollWheelValue)
+            {
+                if( OnScroll != null )
+                    OnScroll(state.ScrollWheelValue - m_LastMouseState.ScrollWheelValue);
             }
 
             m_LastMouseState = state;

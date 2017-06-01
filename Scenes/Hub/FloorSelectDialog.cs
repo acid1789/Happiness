@@ -202,12 +202,23 @@ namespace Happiness
             m_DragY = args.CurrentY;
             if (deltaY != 0)
             {
-                m_FloorScrollPosition -= deltaY;
-                if (m_FloorScrollPosition < m_ScrollMin)
-                    m_FloorScrollPosition = m_ScrollMin;
-                if (m_FloorScrollPosition > 0)
-                    m_FloorScrollPosition = 0;
+                DoScroll(deltaY);
             }
+        }
+
+        public void Scroll(int delta)
+        {
+            float fDelta = (m_Floors[0].Height * 1.5f) * ((delta < 0) ? 1.0f : -1.0f);
+            DoScroll(fDelta);
+        }
+
+        void DoScroll(float deltaY)
+        {
+            m_FloorScrollPosition -= deltaY;
+            if (m_FloorScrollPosition < m_ScrollMin)
+                m_FloorScrollPosition = m_ScrollMin;
+            if (m_FloorScrollPosition > 0)
+                m_FloorScrollPosition = 0;
         }
         #endregion
 
