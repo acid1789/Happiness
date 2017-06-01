@@ -37,7 +37,8 @@ namespace Happiness
                 }
             }
 
-            DrawClock(sb);
+            if( !Happiness.Game.DisableTimer )
+                DrawClock(sb);
         }
 
         void DrawClueDescription_Horizontal(SpriteBatch spriteBatch, Clue clue)

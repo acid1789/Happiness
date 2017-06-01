@@ -15,6 +15,7 @@ namespace Happiness
         public bool ExpSlowdown;
         public bool ErrorDetector;
         public bool ErrorDetector2;
+        public bool DisableTimer;
 
         public static Settings LoadSettings()
         {
@@ -47,6 +48,8 @@ namespace Happiness
                     bool.TryParse(settings["ErrorDetector"], out s.ErrorDetector);
                 if (settings.ContainsKey("ErrorDetector2"))
                     bool.TryParse(settings["ErrorDetector2"], out s.ErrorDetector2);
+                if (settings.ContainsKey("DisableTimer"))
+                    bool.TryParse(settings["DisableTimer"], out s.DisableTimer);
             }
             return s;
         }
@@ -59,6 +62,7 @@ namespace Happiness
             settings.Add("ExpSlowdown=" + ExpSlowdown);
             settings.Add("ErrorDetector=" + ErrorDetector);
             settings.Add("ErrorDetector2=" + ErrorDetector2);
+            settings.Add("DisableTimer=" + DisableTimer);
 
             string settingsFile = GetSettingsFileName();
             File.WriteAllLines(settingsFile, settings.ToArray());            

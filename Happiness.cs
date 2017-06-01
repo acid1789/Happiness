@@ -51,6 +51,7 @@ namespace Happiness
             ExpSlowdown = s.ExpSlowdown;
             ErrorDetector = s.ErrorDetector;
             ErrorDetector2 = s.ErrorDetector2;
+            DisableTimer = s.DisableTimer;
 
             graphics = new GraphicsDeviceManager(this);
 
@@ -275,6 +276,7 @@ namespace Happiness
         public bool ExpSlowdown { get; set; }
         public bool ErrorDetector { get; set; }
         public bool ErrorDetector2 { get; set; }
+        public bool DisableTimer { get; set; }
         #endregion
 
         public static string PuzzleSaveName(int puzzleSize, int puzzleIndex)

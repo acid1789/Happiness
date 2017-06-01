@@ -20,6 +20,7 @@ namespace Happiness
         UICheckbox m_ExpSlowdown;
         UICheckbox m_ErrorDetector;
         UICheckbox m_ErrorDetector2;
+        UICheckbox m_DisableTimer;
 
         UIButton m_DoneButton;
 
@@ -68,12 +69,19 @@ namespace Happiness
             m_ErrorDetector2 = new UICheckbox("Super Error Detector (VIP 8)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
             m_ErrorDetector2.Checked = m_Game.ErrorDetector2;
 
+            cbY += m_ExpSlowdown.Rect.Height + marginTopBottom;
+            m_DisableTimer = new UICheckbox("Disable Timer (VIP 1)", m_iCenterDialogX, cbY, screenHeight, UICheckbox.XMode.Center);
+            m_DisableTimer.Checked = m_Game.DisableTimer;
+
 
 #if !DEBUG
             m_ExpSlowdown.Enabled = m_Game.m_GameInfo.VipData.Level >= 2;
             m_ErrorDetector.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
             m_ErrorDetector2.Enabled = m_Game.m_GameInfo.VipData.Level >= 8;
+            m_DisableTimer.Enabled = m_Game.m_GameInfo.VipData.Level >= 1;
 #endif
+            if( m_Game.CurrentScene is GameScene )
+                m_DisableTimer.Enabled = false;
         }
 
         // Return false if this menu should close
@@ -82,6 +90,7 @@ namespace Happiness
             m_ExpSlowdown.HandleClick(iX, iY);
             m_ErrorDetector.HandleClick(iX, iY);
             m_ErrorDetector2.HandleClick(iX, iY);
+            m_DisableTimer.HandleClick(iX, iY);
 
             if (m_DoneButton.Click(iX, iY))
             {
@@ -91,6 +100,7 @@ namespace Happiness
                 m_Game.ExpSlowdown = s.ExpSlowdown = m_ExpSlowdown.Enabled ? m_ExpSlowdown.Checked : false;
                 m_Game.ErrorDetector = s.ErrorDetector = m_ErrorDetector.Enabled ? m_ErrorDetector.Checked : false;
                 m_Game.ErrorDetector2 = s.ErrorDetector2 = m_ErrorDetector2.Enabled ? m_ErrorDetector2.Checked : false;
+                m_Game.DisableTimer = s.DisableTimer = m_DisableTimer.Checked;
                 s.Save();
                 return false;
             }
@@ -122,6 +132,7 @@ namespace Happiness
             m_ExpSlowdown.Draw(sb);
             m_ErrorDetector.Draw(sb);
             m_ErrorDetector2.Draw(sb);
+            m_DisableTimer.Draw(sb);
 
             m_DoneButton.Draw(sb);
         }

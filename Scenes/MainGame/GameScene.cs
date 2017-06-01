@@ -519,14 +519,16 @@ namespace Happiness
                 if (m_EndScreen == null)
                 {
                     DeleteSavedPuzzle();
-                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, ElapsedTime, Game.ScreenWidth, Game.ScreenHeight, Game);
+                    
+                    double seconds = Game.DisableTimer ? HappinessNetwork.Balance.ParTime(m_Puzzle.m_iSize - 3) : ElapsedTime;
+                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, seconds, Game.ScreenWidth, Game.ScreenHeight, Game);
                     m_EndScreen.OnNextPuzzle += M_EndScreen_OnNextPuzzle;
                     m_EndScreen.OnMainMenu += M_EndScreen_OnMainMenu;
                     m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;
                     if (m_Puzzle.IsSolved())
                     {
                         Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleComplete);
-                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, ElapsedTime, m_EndScreen.OnServerDataComplete);
+                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, seconds, m_EndScreen.OnServerDataComplete);
                     }
                     else
                     {
