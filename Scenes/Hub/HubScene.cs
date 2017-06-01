@@ -21,6 +21,7 @@ namespace Happiness
         UIButton m_SignOut;
         UIButton m_Exit;
         UIButton m_BuyCoins;
+        UICoinsDisplay m_Coins;
 
         FloorSelectDialog m_FloorSelect;
 
@@ -51,12 +52,12 @@ namespace Happiness
             int midX = centerX - (towerSize >> 1);
             int rightX = centerX + towerSize;
             m_Towers = new Tower[6];
-            m_Towers[0] = new Tower(3, game.m_GameInfo.GameData.TowerFloors[0], new Rectangle(leftX, towerTop, towerSize, towerSize), Assets.Towers[0]);
-            m_Towers[1] = new Tower(4, game.m_GameInfo.GameData.TowerFloors[1], new Rectangle(midX, towerTop, towerSize, towerSize), Assets.Towers[1]);
-            m_Towers[2] = new Tower(5, game.m_GameInfo.GameData.TowerFloors[2], new Rectangle(rightX, towerTop, towerSize, towerSize), Assets.Towers[2]);
-            m_Towers[3] = new Tower(6, game.m_GameInfo.GameData.TowerFloors[3], new Rectangle(leftX, centerY, towerSize, towerSize), Assets.Towers[3]);
-            m_Towers[4] = new Tower(7, game.m_GameInfo.GameData.TowerFloors[4], new Rectangle(midX, centerY, towerSize, towerSize), Assets.Towers[0]);
-            m_Towers[5] = new Tower(8, game.m_GameInfo.GameData.TowerFloors[5], new Rectangle(rightX, centerY, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[0] = new Tower(3, game.TheGameInfo.GameData.TowerFloors[0], new Rectangle(leftX, towerTop, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[1] = new Tower(4, game.TheGameInfo.GameData.TowerFloors[1], new Rectangle(midX, towerTop, towerSize, towerSize), Assets.Towers[1]);
+            m_Towers[2] = new Tower(5, game.TheGameInfo.GameData.TowerFloors[2], new Rectangle(rightX, towerTop, towerSize, towerSize), Assets.Towers[2]);
+            m_Towers[3] = new Tower(6, game.TheGameInfo.GameData.TowerFloors[3], new Rectangle(leftX, centerY, towerSize, towerSize), Assets.Towers[3]);
+            m_Towers[4] = new Tower(7, game.TheGameInfo.GameData.TowerFloors[4], new Rectangle(midX, centerY, towerSize, towerSize), Assets.Towers[0]);
+            m_Towers[5] = new Tower(8, game.TheGameInfo.GameData.TowerFloors[5], new Rectangle(rightX, centerY, towerSize, towerSize), Assets.Towers[0]);
 
             // Level/Exp display
             int expBarWidth = (int)(Constants.HubScene_ExpBarWidth * Game.ScreenWidth);
@@ -64,10 +65,10 @@ namespace Happiness
             int marginLeftRight = (int)(Constants.HubScene_MarginLeftRight * Game.ScreenWidth);
             int levelY = (int)(Constants.HubScene_MarginTopBottom * Game.ScreenHeight);                        
             m_LevelLabel = new UILabel("Level: ", marginLeftRight, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
-            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), marginLeftRight + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            m_Level = new UILabel(game.TheGameInfo.GameData.Level.ToString(), marginLeftRight + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(marginLeftRight, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;
-            m_ExpBar.Progress = (float)game.m_GameInfo.GameData.Exp / Balance.ExpForNextLevel(game.m_GameInfo.GameData.Level);
+            m_ExpBar.Progress = (float)game.TheGameInfo.GameData.Exp / Balance.ExpForNextLevel(game.TheGameInfo.GameData.Level);
 
             SetupTutorial();
 
@@ -82,6 +83,12 @@ namespace Happiness
             m_Exit = new UIButton(0, "Exit", Assets.HelpFont, new Rectangle(buttonRight, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
             m_SignOut = new UIButton(0, "Sign Out", Assets.HelpFont, new Rectangle(buttonRight - marginLeftRight - buttonWidth, buttonY, buttonWidth, buttonHeight), Assets.ScrollBar);
 
+            int startY = (int)(Constants.HelpPanel_Height * Game.ScreenHeight);
+            int coinsWidth = (int)(Constants.HubScene_CoinsWidth * Game.ScreenWidth);
+            m_Coins = new UICoinsDisplay(startY, Game.ScreenWidth - (coinsWidth + marginLeftRight), levelY, coinsWidth);
+            m_Coins.SetCoins(Game.TheGameInfo.HardCurrency);
+            Game.OnCurrencyChange += Game_OnCurrencyChange;
+
             game.ValidateVIPSettings();
         }
 
@@ -93,11 +100,13 @@ namespace Happiness
             InputController.IC.OnClick -= IC_OnClick;
             InputController.IC.OnDrag -= IC_OnDrag;
             InputController.IC.OnDragBegin -= IC_OnDragBegin;
+
+            Happiness.Game.OnCurrencyChange -= Game_OnCurrencyChange;
         }
 
         void SetupTutorial()
         {
-            Game.Tutorial.Load(Game.m_GameInfo.GameData.Tutorial);
+            Game.Tutorial.Load(Game.TheGameInfo.GameData.Tutorial);
             int centerX = Game.ScreenWidth >> 1;
             int towerSize = (int)(Constants.HubScene_TowerSize * Game.ScreenHeight);
             int towerTop = (int)(Constants.HubScene_TowerAreaTop * Game.ScreenHeight);
@@ -106,6 +115,12 @@ namespace Happiness
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClickTower, new Vector2(leftX, towerTop + (towerSize >> 1)), 0, new Rectangle(leftX - (tutorialWidth + 5), towerTop + (towerSize >> 1) + (Game.Tutorial.ArrowHeight >> 1), tutorialWidth, 0), "Tap the 3x3 tower to get started.", TutorialSystem.TutorialPiece.None, m_Towers[0].Rect);
             Game.Tutorial.TriggerPiece(TutorialSystem.TutorialPiece.ClickTower);
         }
+
+        private void Game_OnCurrencyChange(int hardCurrency)
+        {
+            m_Coins.SetCoins(hardCurrency);
+        }
+
 
         #region InputHandlers
         private void IC_OnClick(object sender, DragArgs e)
@@ -163,7 +178,8 @@ namespace Happiness
                 {
                     m_OptionsDialog = new Options(Game);
                 }
-                if (m_BuyCoins.Click(e.CurrentX, e.CurrentY))
+                if (m_BuyCoins.Click(e.CurrentX, e.CurrentY) ||
+                    m_Coins.HandleClick(e.CurrentX, e.CurrentY))
                 {
                     m_CoinsDialog = new BuyCoinsModal();
                 }
@@ -238,6 +254,7 @@ namespace Happiness
             m_BuyCoins.Draw(spriteBatch);
             m_Exit.Draw(spriteBatch);
             m_SignOut.Draw(spriteBatch);
+            m_Coins.Draw(spriteBatch);
 
 
             if ( m_FloorSelect != null )

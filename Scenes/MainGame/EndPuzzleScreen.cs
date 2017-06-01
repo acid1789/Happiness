@@ -123,7 +123,7 @@ namespace Happiness
             m_Time.Hidden = true;
 
             // Scores
-            float vipBonus = m_Game.ExpSlowdown ? 1.0f : m_Game.m_GameInfo.VipData.ExpBonus;
+            float vipBonus = m_Game.ExpSlowdown ? 1.0f : m_Game.TheGameInfo.VipData.ExpBonus;
             double baseExp = success ? Balance.BaseExp(m_iTower) : 0;
             double bonusExp = success ? Balance.BonusExp(m_iTower, seconds) : 0;
             double totalExp = (baseExp + bonusExp) * vipBonus;
@@ -162,12 +162,12 @@ namespace Happiness
             int expBarLeft = m_iCenterX - (expBarWidth >> 1);
             int levelY = iScoreY + scoreSpace + (int)(Constants.EndScreen_ScoreLevelGap * screenHeight);            
             m_LevelLabel = new UILabel("Level: ", expBarLeft, levelY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Left);
-            m_Level = new UILabel(game.m_GameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            m_Level = new UILabel(game.TheGameInfo.GameData.Level.ToString(), expBarLeft + m_LevelLabel.Width, levelY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, levelY + m_Level.Height, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.Yellow;            
             
-            m_iOriginalLevel = m_Game.m_GameInfo.GameData.Level;
-            m_iOriginalExp = m_Game.m_GameInfo.GameData.Exp;
+            m_iOriginalLevel = m_Game.TheGameInfo.GameData.Level;
+            m_iOriginalExp = m_Game.TheGameInfo.GameData.Exp;
             SetupExpDisplay();
 
             // Unlock
@@ -280,7 +280,7 @@ namespace Happiness
                     break;
                 case AnimStep.TotalExp:
                     m_ExpTotal.Hidden = false;
-                    bool showVipExp = !m_Game.ExpSlowdown && m_Game.m_GameInfo.VipData.ExpBonus > 1;
+                    bool showVipExp = !m_Game.ExpSlowdown && m_Game.TheGameInfo.VipData.ExpBonus > 1;
                     m_VipBonusExp.Hidden = !showVipExp;
                     m_Game.SoundManager.PlaySound(SoundManager.SEInst.GameLoad);
                     break;
@@ -329,9 +329,9 @@ namespace Happiness
                 m_Level.Font = Assets.DialogFont;
                 m_Level.PositionY -= 4;
 
-                m_bLevelUnlocked = m_iTower < (m_Game.m_GameInfo.GameData.TowerFloors.Length - 1) && m_iOriginalLevel >= Balance.UnlockThreshold(m_iTower) && m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
+                m_bLevelUnlocked = m_iTower < (m_Game.TheGameInfo.GameData.TowerFloors.Length - 1) && m_iOriginalLevel >= Balance.UnlockThreshold(m_iTower) && m_Game.TheGameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
                 if( m_bLevelUnlocked )
-                    m_Game.m_GameInfo.GameData.TowerFloors[m_iTower + 1] = 1;
+                    m_Game.TheGameInfo.GameData.TowerFloors[m_iTower + 1] = 1;
             }
             m_ExpBar.Progress = (float)m_iOriginalExp / (float)expForNextLevel;
             string expString = string.Format("{0:N0} / {1:N0}", m_iOriginalExp, expForNextLevel);

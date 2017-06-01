@@ -87,7 +87,7 @@ namespace Happiness
             m_Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.FloorPlay, new Vector2(m_Buttons[1].Rect.Left, m_Buttons[1].Rect.Bottom), (float)-Math.PI / 4,
                                                                                  new Rectangle(m_FloorScrollRect.Right + m_iLeftRightMargin, m_Buttons[1].Rect.Bottom + m_Game.Tutorial.ArrowWidth, floorPlayTutorialWidth, 0), "Press this button to play the selected floor.", TutorialSystem.TutorialPiece.None, m_Buttons[1].Rect);
 
-            SetupFloorData(game.m_GameInfo.TowerData[m_iTower]);
+            SetupFloorData(game.TheGameInfo.TowerData[m_iTower]);
             m_bFloorDataRetrieved = true;
         }
 

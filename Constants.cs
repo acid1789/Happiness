@@ -132,7 +132,8 @@ namespace Happiness
         public static float HubScene_MarginTopBottom = 10f / 720f;
         public static float HubScene_TutorialWidth = 170f / 1280f;
         public static float HubScene_ButtonWidth = 140f / 1280f;
-        public static float HubScene_ButtonHeight = 20f / 720f;
+        public static float HubScene_ButtonHeight = 30f / 720f;
+        public static float HubScene_CoinsWidth = 100f / 1280f;
 
         public static float FloorSelectDialog_Width = 1000f / 1280f;
         public static float FloorSelectDialog_Height = 600 / 720f;

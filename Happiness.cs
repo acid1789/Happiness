@@ -35,9 +35,11 @@ namespace Happiness
 
         Scene m_CurrentScene;
         TutorialSystem m_Tutorial;
-        public GameInfo m_GameInfo;
+        GameInfo m_GameInfo;
         ServerWriter m_ServerWriter;
-        
+
+        public event Action<int> OnCurrencyChange;
+
         public Happiness()
         {
 #if DEBUG
@@ -158,20 +160,20 @@ namespace Happiness
 
         public void SaveTutorialData(ulong tutorialData)
         {
-            if (m_GameInfo.GameData.Tutorial != tutorialData)
+            if (TheGameInfo.GameData.Tutorial != tutorialData)
             {
                 // Store local copy
-                m_GameInfo.GameData.Tutorial = tutorialData;
+                TheGameInfo.GameData.Tutorial = tutorialData;
 
                 // Send to the server
-                m_ServerWriter.SaveTutorialData(tutorialData, m_GameInfo.AuthString, DateTime.Now);
+                m_ServerWriter.SaveTutorialData(tutorialData, TheGameInfo.AuthString, DateTime.Now);
             }
         }
 
         public void SavePuzzleData(int tower, int floor, double elapsedTime, ServerWriter.JobCompleteDelegate jobCompleteCB)
         {
             bool updateExistingFloor = false;
-            foreach (TowerFloorRecord tfr in m_GameInfo.TowerData[tower].Floors)
+            foreach (TowerFloorRecord tfr in TheGameInfo.TowerData[tower].Floors)
             {
                 if (tfr.Floor == floor)
                 {
@@ -184,20 +186,20 @@ namespace Happiness
             if (!updateExistingFloor)
             {
                 // Floor isnt in the local list, add it now
-                List<TowerFloorRecord> records = new List<TowerFloorRecord>(m_GameInfo.TowerData[tower].Floors);
+                List<TowerFloorRecord> records = new List<TowerFloorRecord>(TheGameInfo.TowerData[tower].Floors);
                 TowerFloorRecord tfr = new TowerFloorRecord();
                 tfr.Floor = floor;
                 tfr.BestTime = (int)elapsedTime;
                 records.Add(tfr);
-                m_GameInfo.TowerData[tower].Floors = records.ToArray();
+                TheGameInfo.TowerData[tower].Floors = records.ToArray();
             }
 
-            m_ServerWriter.SavePuzzleData(m_GameInfo, tower, floor, elapsedTime, ExpSlowdown, jobCompleteCB);
+            m_ServerWriter.SavePuzzleData(TheGameInfo, tower, floor, elapsedTime, ExpSlowdown, jobCompleteCB);
         }
 
         public void SpendCoins(int coinCount, int spentOn)
         {
-            m_ServerWriter.SpendCoins(m_GameInfo.AuthString, coinCount, spentOn, m_GameInfo);
+            m_ServerWriter.SpendCoins(TheGameInfo.AuthString, coinCount, spentOn, TheGameInfo);
         }
 
         public void ResetTutorial()
@@ -207,7 +209,7 @@ namespace Happiness
             DeletePuzzleSave(3, 2);
             DeletePuzzleSave(3, 3);            
 
-            m_GameInfo.GameData.Tutorial = 0;
+            TheGameInfo.GameData.Tutorial = 0;
 
         }
 
@@ -216,6 +218,11 @@ namespace Happiness
             string saveName = PuzzleSaveName(size, index);
             if (System.IO.File.Exists(saveName))
                 System.IO.File.Delete(saveName);
+        }
+
+        private void M_GameInfo_OnCurrencyChange(int obj)
+        {
+            OnCurrencyChange?.Invoke(obj);
         }
 
         public void ValidateVIPSettings()
@@ -284,6 +291,16 @@ namespace Happiness
         public SoundManager SoundManager
         {
             get { return m_SoundManager; }
+        }
+        
+        public GameInfo TheGameInfo
+        {
+            get { return m_GameInfo; }
+            set
+            {
+                m_GameInfo = value;
+                m_GameInfo.OnCurrencyChange += M_GameInfo_OnCurrencyChange; ;
+            }
         }
 
         public int AccountId { get; set; }

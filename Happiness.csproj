@@ -58,6 +58,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="TutorialSystem.cs" />
     <Compile Include="UI\IconButton.cs" />
+    <Compile Include="UI\UICoinsDisplay.cs" />
     <Compile Include="UI\UIFrame.cs" />
     <Compile Include="UI\UIProgressBar.cs" />
     <Compile Include="UI\UILabel.cs" />

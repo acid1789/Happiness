@@ -20,6 +20,8 @@ namespace HappinessNetwork
         TowerData[] _towerData;
         VipDataArgs _vipData;
 
+        public event Action<int> OnCurrencyChange;
+
 
         public GameInfo()
         {
@@ -180,8 +182,17 @@ namespace HappinessNetwork
         }
 
         public string AuthString { get { return _authString; } set { _authString = value; } }
-        public string DisplayName { get { return _displayName; } set { _displayName = value; } }
-        public int HardCurrency { get { return _hardCurrency; } set { _hardCurrency = value; } }
+        public string DisplayName { get { return _displayName; } set { _displayName = value; } }        
         public byte[] Hash { get { return _hash; } }
+
+        public int HardCurrency
+        {
+            get { return _hardCurrency; }
+            set
+            {
+                _hardCurrency = value;
+                OnCurrencyChange?.Invoke(_hardCurrency);
+            }
+        }
     }
 }

@@ -404,7 +404,7 @@ namespace Happiness
 
         private void _client_OnHardCurrencyUpdate(object sender, EventArgs e)
         {
-            Happiness.Game.m_GameInfo.HardCurrency = ((HClient)sender).HardCurrency;
+            Happiness.Game.TheGameInfo.HardCurrency = ((HClient)sender).HardCurrency;
             _finished = true;            
         }
 

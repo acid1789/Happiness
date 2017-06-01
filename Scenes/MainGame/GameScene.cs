@@ -95,11 +95,11 @@ namespace Happiness
             m_HelpPanel = new HelpPanel(this, new Rectangle(buttonPanelWidth, 0, m_GamePanel.Rect.Width, m_GamePanel.Rect.Top));
             m_ButtonPanel = new ButtonPanel(this, new Rectangle(0, 0, buttonPanelWidth, m_VerticalCluePanel.Rect.Top));
 
-            HappinessNetwork.VipDataArgs vip = Game.m_GameInfo.VipData;
+            HappinessNetwork.VipDataArgs vip = Game.TheGameInfo.VipData;
             m_ButtonPanel.SetHintCount(vip.Hints - m_iHintCount, vip.Hints);
             m_ButtonPanel.SetMegaHintCount(vip.MegaHints - m_iMegaHintCount, vip.MegaHints);
             m_ButtonPanel.SetUndoCount(m_History.Count, vip.UndoSize);
-            m_ButtonPanel.SetCoins(Game.m_GameInfo.HardCurrency);
+            m_ButtonPanel.SetCoins(Game.TheGameInfo.HardCurrency);
 
             m_UIPanels = new List<UIPanel>();
             m_UIPanels.Add(m_GamePanel);
@@ -391,7 +391,7 @@ namespace Happiness
 
             if (m_Hint == null)
             {
-                if (Game.m_GameInfo.HardCurrency < 2)
+                if (Game.TheGameInfo.HardCurrency < 2)
                 {
                     m_MessageBox = new MessageBox("You don't have enough coins for a hint (2)", MessageBoxButtons.BuyCoinsCancel, (int)MessageBoxContext.InsufficientFunds_Hint, Game.ScreenWidth, Game.ScreenHeight);
                 }
@@ -412,7 +412,7 @@ namespace Happiness
 
                     // Modify the count
                     m_iHintCount++;
-                    int maxHints = Game.m_GameInfo.VipData.Hints;
+                    int maxHints = Game.TheGameInfo.VipData.Hints;
                     m_ButtonPanel.SetHintCount(maxHints - m_iHintCount, maxHints);
 
                     SavePuzzle();
@@ -425,7 +425,7 @@ namespace Happiness
 
         public void DoMegaHint(bool verified = false)
         {
-            if (Game.m_GameInfo.HardCurrency < 50)
+            if (Game.TheGameInfo.HardCurrency < 50)
             {
                 m_MessageBox = new MessageBox("You don't have enough coins for a Mega Hint (50)", MessageBoxButtons.BuyCoinsCancel, (int)MessageBoxContext.InusfficientFunds_MegaHint, Game.ScreenWidth, Game.ScreenHeight);
             }
@@ -440,7 +440,7 @@ namespace Happiness
 
                 // Modify the count
                 m_iMegaHintCount++;
-                int maxHints = Game.m_GameInfo.VipData.MegaHints;
+                int maxHints = Game.TheGameInfo.VipData.MegaHints;
                 m_ButtonPanel.SetMegaHintCount(maxHints - m_iMegaHintCount, maxHints);
 
                 // Show the hint
@@ -472,7 +472,7 @@ namespace Happiness
 
                 a.Revert(m_Puzzle);
 
-                m_ButtonPanel.SetUndoCount(m_History.Count, Game.m_GameInfo.VipData.UndoSize);
+                m_ButtonPanel.SetUndoCount(m_History.Count, Game.TheGameInfo.VipData.UndoSize);
             }
         }
 
@@ -490,7 +490,7 @@ namespace Happiness
             if( Game.CurrentScene != this )
                 return;
 
-            m_ButtonPanel.SetCoins(Game.m_GameInfo.HardCurrency);
+            m_ButtonPanel.SetCoins(Game.TheGameInfo.HardCurrency);
             if (m_Hint != null)
             {
                 if( m_Hint.ShouldHide(m_Puzzle) )
@@ -602,7 +602,7 @@ namespace Happiness
             Action a = new Action(type, iRow, iCol, iIcon, m_Puzzle);
             a.Perform(m_Puzzle);            
 
-            int undoSize = Game.m_GameInfo.VipData.UndoSize <= 0 ? int.MaxValue : Game.m_GameInfo.VipData.UndoSize;
+            int undoSize = Game.TheGameInfo.VipData.UndoSize <= 0 ? int.MaxValue : Game.TheGameInfo.VipData.UndoSize;
             while (m_History.Count >= undoSize)
             {
                 m_History.RemoveAt(0);

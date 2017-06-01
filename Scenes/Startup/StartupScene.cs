@@ -114,7 +114,7 @@ namespace Happiness
                     break;
                 case GameInfoValidator.LoadStatus.ServerFetchComplete:
                     m_szWaitText = "Fetched from server";
-                    Game.m_GameInfo = m_GIV.m_GameInfo;
+                    Game.TheGameInfo = m_GIV.m_GameInfo;
                     GotoHubScene();
                     break;
                 case GameInfoValidator.LoadStatus.ServerUnreachable:
