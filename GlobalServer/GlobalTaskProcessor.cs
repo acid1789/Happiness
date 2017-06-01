@@ -230,7 +230,7 @@ namespace GlobalServer
             }
 
             // Store transaction in the database
-            string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before_t={2}, after_t={3}, server_record={4}, timestamp={5};", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.Ticks);
+            string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before_t={2}, after_t={3}, server_record={4}, timestamp=\"{5}\";", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             AddDBQuery(sql, null, false);
 
             // Store currency in the database
