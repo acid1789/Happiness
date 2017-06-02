@@ -22,12 +22,14 @@ namespace Happiness
         UIButton m_Exit;
         UIButton m_BuyCoins;
         UICoinsDisplay m_Coins;
+        UIVIPDisplay m_VIP;
 
         FloorSelectDialog m_FloorSelect;
 
         SoundDialog m_SoundDialog;
         Options m_OptionsDialog;
         BuyCoinsModal m_CoinsDialog;
+        VIPDialog m_VipDialog;
 
         public HubScene(Happiness game) : base(game)
         {
@@ -85,9 +87,13 @@ namespace Happiness
 
             int startY = (int)(Constants.HelpPanel_Height * Game.ScreenHeight);
             int coinsWidth = (int)(Constants.HubScene_CoinsWidth * Game.ScreenWidth);
-            m_Coins = new UICoinsDisplay(startY, Game.ScreenWidth - (coinsWidth + marginLeftRight), levelY, coinsWidth);
+            int coinsLeft = Game.ScreenWidth - (coinsWidth + marginLeftRight);
+            m_Coins = new UICoinsDisplay(startY, coinsLeft, levelY, coinsWidth);
             m_Coins.SetCoins(Game.TheGameInfo.HardCurrency);
             Game.OnCurrencyChange += Game_OnCurrencyChange;
+
+            int vipTop = (levelY * 2) + m_Coins.Height;
+            m_VIP = new UIVIPDisplay(coinsLeft + marginLeftRight, vipTop, coinsWidth - marginLeftRight);
 
             game.ValidateVIPSettings();
         }
@@ -150,6 +156,13 @@ namespace Happiness
                 m_CoinsDialog = null;
             }
 
+            if (m_VipDialog != null)
+            {
+                if(!m_VipDialog.HandleClick(e.CurrentX, e.CurrentY))
+                    m_VipDialog = null;
+                return;
+            }
+
             if (m_FloorSelect != null)
             {
                 if (!m_FloorSelect.HandleClick(e.CurrentX, e.CurrentY))
@@ -192,6 +205,10 @@ namespace Happiness
 
                     // Goto startup scene
                     Game.GotoScene(new StartupScene(Game));
+                }
+                if (m_VIP.HandleClick(e.CurrentX, e.CurrentY))
+                {
+                    m_VipDialog = new VIPDialog();
                 }
             }
         }
@@ -242,8 +259,13 @@ namespace Happiness
                 m_CoinsDialog.Draw(spriteBatch);
                 return;
             }
+            if (m_VipDialog != null)
+            {
+                m_VipDialog.Draw(spriteBatch);
+                return;
+            }
 
-            foreach( Tower t in m_Towers )
+            foreach ( Tower t in m_Towers )
                 t.Draw(spriteBatch);
 
             m_LevelLabel.Draw(spriteBatch);
@@ -255,6 +277,7 @@ namespace Happiness
             m_Exit.Draw(spriteBatch);
             m_SignOut.Draw(spriteBatch);
             m_Coins.Draw(spriteBatch);
+            m_VIP.Draw(spriteBatch);
 
 
             if ( m_FloorSelect != null )

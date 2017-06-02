@@ -49,6 +49,7 @@
     <Compile Include="GlobalProduct.cs" />
     <Compile Include="LogInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VIPLevels.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HappinessNetwork;
+using NetworkCore;
 
 namespace HappinessServer
 {
@@ -36,89 +37,24 @@ namespace HappinessServer
         // Error Detector = Vip 4
         // Super Error Detector = Vip 8
         
-        static int[] s_VipLevels = { 50, 100, 250, 500, 1000, 2500, 10000, 500000, 250000, 1000000 };
 
         public static VipDataArgs Create(int vipPoints)
         {
             int level = 0;
-            while (level < s_VipLevels.Length && vipPoints >= s_VipLevels[level])
+            while (level < VIPLevels.Levels.Length && vipPoints >= VIPLevels.Levels[level])
             {
                 level++;
             }
 
             VipDataArgs vda = new VipDataArgs();
             vda.Level = level;
-            vda.Progress = s_VipLevels[level] - vipPoints;
-            switch (level)
-            {
-                default:
-                case 0:
-                    vda.Hints = 2;
-                    vda.MegaHints = 0;
-                    vda.UndoSize = 3;
-                    vda.ExpBonus = 1;
-                    break;
-                case 1:
-                    vda.Hints = 3;
-                    vda.MegaHints = 1;
-                    vda.UndoSize = 5;
-                    vda.ExpBonus = 1.1f;
-                    break;
-                case 2:
-                    vda.Hints = 5;
-                    vda.MegaHints = 3;
-                    vda.UndoSize = 10;
-                    vda.ExpBonus = 1.25f;
-                    break;
-                case 3:
-                    vda.Hints = 8;
-                    vda.MegaHints = 3;
-                    vda.UndoSize = 15;
-                    vda.ExpBonus = 1.6f;
-                    break;
-                case 4:
-                    vda.Hints = 12;
-                    vda.MegaHints = 4;
-                    vda.UndoSize = 25;
-                    vda.ExpBonus = 2.0f;
-                    break;
-                case 5:
-                    vda.Hints = 17;
-                    vda.MegaHints = 5;
-                    vda.UndoSize = 40;
-                    vda.ExpBonus = 2.5f;
-                    break;
-                case 6:
-                    vda.Hints = 25;
-                    vda.MegaHints = 6;
-                    vda.UndoSize = -1;
-                    vda.ExpBonus = 3.2f;
-                    break;
-                case 7:
-                    vda.Hints = 40;
-                    vda.MegaHints = 10;
-                    vda.UndoSize = -1;
-                    vda.ExpBonus = 4.25f;
-                    break;
-                case 8:
-                    vda.Hints = 80;
-                    vda.MegaHints = 15;
-                    vda.UndoSize = -1;
-                    vda.ExpBonus = 6.0f;
-                    break;
-                case 9:
-                    vda.Hints = -1;
-                    vda.MegaHints = 20;
-                    vda.UndoSize = -1;
-                    vda.ExpBonus = 8.75f;
-                    break;
-                case 10:
-                    vda.Hints = -1;
-                    vda.MegaHints = -1;
-                    vda.UndoSize = -1;
-                    vda.ExpBonus = 12.0f;
-                    break;
-            }
+            vda.Progress = vipPoints;
+
+            VIPDetails details = VIPDetails.Levels[level];
+            vda.Hints = details.Hints;
+            vda.MegaHints = details.MegaHints;
+            vda.UndoSize = details.UndoSize;
+            vda.ExpBonus = details.ExpBonus;
             return vda;
         }
     }

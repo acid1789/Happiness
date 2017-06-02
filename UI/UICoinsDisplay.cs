@@ -26,7 +26,13 @@ namespace Happiness
 
         public bool HandleClick(int x, int y)
         {
-            return m_CoinClickRect.Contains(x, y);
+            if (m_CoinClickRect.Contains(x, y))
+            {
+                Happiness.Game.SoundManager.PlaySound(SoundManager.SEInst.MenuAccept);
+                return true;
+            }
+
+            return false;
         }
 
         public void Draw(SpriteBatch sb)
@@ -39,5 +45,7 @@ namespace Happiness
         {
             m_szCoins = coins.ToString("N0");
         }
+
+        public int Height { get { return m_GoldCoinRect.Height; } }
     }
 }

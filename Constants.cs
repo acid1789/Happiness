@@ -172,6 +172,16 @@ namespace Happiness
         public static float ProductDisplay_ButtonWidth = 100 / 1280f;
         public static float ProductDisplay_ButtonHeight = 40 / 1280f;
 
+        public static float VIPDialog_Width = 800f / 1280f;
+        public static float VIPDialog_Height = 600f / 720f;
+        public static float VIPDialog_ExpBarWidth = 600f / 1280f;
+        public static float VIPDialog_ExpBarHeight = 30f / 720f;
+        public static float VIPDialog_MarginTopBottom = 20f / 720f;
+        public static float VIPDialog_LevelsAreaWidth = 500f / 1280f;
+        public static float VIPDialog_LRButtonWidth = 60f / 1280f;
+        public static float VIPDialog_LRButtonHeight = 50f / 720f;
+        public static float VIPDialog_LRButtonSpace = 10f / 1280f;
+
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
 
         public static float ArrowUp = (float)-Math.PI / 2;
