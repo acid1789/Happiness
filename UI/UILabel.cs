@@ -20,6 +20,8 @@ namespace Happiness
         Vector2 m_vPosition;
         Color m_Color;
         SpriteFont m_Font;
+        int m_X;
+        XMode m_XMode;
 
         bool m_bHidden;
 
@@ -31,19 +33,25 @@ namespace Happiness
             m_Color = color;
             m_Font = font;
 
-            if (mode == XMode.Left)
-                m_vPosition = new Vector2(x, y);
-            else if (mode == XMode.Center)
+            m_XMode = mode;
+            m_X = x;
+            m_vPosition = new Vector2(x, y);
+            DoLayout();
+        }
+
+        void DoLayout()
+        {
+            if (m_XMode == XMode.Left)
+                m_vPosition = new Vector2(m_X, m_vPosition.Y);
+            else if (m_XMode == XMode.Center)
             {
-                Vector2 size = font.MeasureString(text);
-                m_vPosition.X = x - (size.X * 0.5f);
-                m_vPosition.Y = y;
+                Vector2 size = m_Font.MeasureString(m_szText);
+                m_vPosition.X = m_X - (size.X * 0.5f);
             }
             else
             {
-                Vector2 size = font.MeasureString(text);
-                m_vPosition.X = x - size.X;
-                m_vPosition.Y = y;
+                Vector2 size = m_Font.MeasureString(m_szText);
+                m_vPosition.X = m_X - size.X;
             }
         }
 
@@ -85,13 +93,13 @@ namespace Happiness
         public string Text
         {
             get { return m_szText; }
-            set { m_szText = value; }
+            set { m_szText = value; DoLayout(); }
         }
 
         public int PositionX
         {
             get { return (int)m_vPosition.X; }
-            set { m_vPosition.X = value; }
+            set { m_X = value; DoLayout(); }
         }
 
         public int PositionY

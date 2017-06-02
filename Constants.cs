@@ -181,6 +181,7 @@ namespace Happiness
         public static float VIPDialog_LRButtonWidth = 60f / 1280f;
         public static float VIPDialog_LRButtonHeight = 50f / 720f;
         public static float VIPDialog_LRButtonSpace = 10f / 1280f;
+        public static float VIPDialog_LineSpace = 5f / 720f;
 
         public static char[] Ascii0to9Shift = { ')', '!', '@', '#', '$', '%', '^', '&', '*', '(' };
 

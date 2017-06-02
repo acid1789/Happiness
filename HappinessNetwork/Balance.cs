@@ -62,5 +62,7 @@ namespace HappinessNetwork
             new VIPDetails { Hints = -1, MegaHints = 20, UndoSize = -1, ExpBonus = 8.75f }, // 9
             new VIPDetails { Hints = -1, MegaHints = -1, UndoSize = -1, ExpBonus = 12 }     // 10
         };
+
+        public static string DisplayString(int value) { return value < 0 ? "Unlimited" : value.ToString(); }
     }
 }

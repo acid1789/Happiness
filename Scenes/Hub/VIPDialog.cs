@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using NetworkCore;
+using HappinessNetwork;
 
 namespace Happiness
 {
@@ -73,7 +74,7 @@ namespace Happiness
             m_ExpBar.Progress = (float)game.TheGameInfo.VipData.Progress / (float)VIPLevels.Levels[game.TheGameInfo.VipData.Level];
 
 
-            string expStr = string.Format("{0} / {1}", game.TheGameInfo.VipData.Progress, VIPLevels.Levels[game.TheGameInfo.VipData.Level]);
+            string expStr = string.Format("{0} / {1}", game.TheGameInfo.VipData.Progress.ToString("n0"), VIPLevels.Levels[game.TheGameInfo.VipData.Level].ToString("n0"));
             m_ExpText = new UILabel(expStr, centerDialogX, xpBarTop + expBarHeight, Color.WhiteSmoke, Assets.HelpFont, UILabel.XMode.Center);
             
             int buttonWidth = (int)(Constants.BuyCreditsDialog_ButtonWidth * screenWidth);
@@ -94,45 +95,71 @@ namespace Happiness
             m_BtnLeft = new UIButton(0, "<", Assets.MenuFont, new Rectangle(m_LevelsAreaFrame.Rect.Left - (lrButtonWidth + lrButtonSpace), lrButtonTop, lrButtonWidth, lrButtonHeight), Assets.ScrollBar);
             m_BtnRight = new UIButton(1, ">", Assets.MenuFont, new Rectangle(m_LevelsAreaFrame.Rect.Right + lrButtonSpace, lrButtonTop, lrButtonWidth, lrButtonHeight), Assets.ScrollBar);
 
-            int rowY = levelsAreaTop + lrButtonSpace;
+            int lineSpace = (int)(Constants.VIPDialog_LineSpace * screenHeight);
+
+            int rowY = levelsAreaTop + (lineSpace * 2);
             m_DetailsLevelLabel = new UILabel("VIP Level: 0", m_LevelsAreaFrame.Rect.Left + lrButtonSpace, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
             m_DetailsRequiredPoints = new UILabel("Points Required: 50000", m_LevelsAreaFrame.Rect.Right - lrButtonSpace, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Right);
             
-            rowY += m_DetailsLevelLabel.Height;            
-            m_HintsLabel = new UILabel("Hints: ", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
-            m_Hints = new UILabel("0", centerDialogX, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            rowY += m_DetailsLevelLabel.Height + (lineSpace * 3);            
+            m_HintsLabel = new UILabel("Hints (per puzzle): ", centerDialogX, rowY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Right);
+            m_Hints = new UILabel("0", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Left);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_MegaHintsLabel = new UILabel("Mega Hints: ", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
-            m_MegaHints = new UILabel("0", centerDialogX, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_MegaHintsLabel = new UILabel("Mega Hints (per puzzle): ", centerDialogX, rowY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Right);
+            m_MegaHints = new UILabel("0", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Left);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_UndoSizeLabel = new UILabel("Undo Size: ", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
-            m_UndoSize = new UILabel("0", centerDialogX, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_UndoSizeLabel = new UILabel("Undo Size: ", centerDialogX, rowY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Right);
+            m_UndoSize = new UILabel("0", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Left);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_ExpBonusLabel = new UILabel("Experience Bonus: ", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
-            m_ExpBonus = new UILabel("1.5", centerDialogX, rowY, Color.White, Assets.HelpFont, UILabel.XMode.Left);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_ExpBonusLabel = new UILabel("Experience Bonus: ", centerDialogX, rowY, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Right);
+            m_ExpBonus = new UILabel("1.5", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Left);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_DisableTimer = new UILabel("Can Disable Timer", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Center);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_DisableTimer = new UILabel("Can Disable Timer", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Center);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_DisableExpBonus = new UILabel("Can Disable VIP Exp Bonus", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Center);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_DisableExpBonus = new UILabel("Can Disable VIP Exp Bonus", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Center);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_ErrorDetector = new UILabel("Can enable the Error Detector", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Center);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_ErrorDetector = new UILabel("Can enable the Error Detector", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Center);
 
-            rowY += m_DetailsLevelLabel.Height;
-            m_ErrorDetector2 = new UILabel("Can enable the Super Error Detector", centerDialogX, rowY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Center);
+            rowY += m_HintsLabel.Height + lineSpace;
+            m_ErrorDetector2 = new UILabel("Can enable the Super Error Detector", centerDialogX, rowY, Color.Yellow, Assets.DialogFont, UILabel.XMode.Center);
 
-            m_DetailsLevel = game.TheGameInfo.VipData.Level;
+            SetDetailLevel(game.TheGameInfo.VipData.Level);            
+        }
+
+        void SetDetailLevel(int level)
+        {
+            m_DetailsLevel = Math.Max(Math.Min(level, VIPDetails.Levels.Length - 1), 0);
+            m_DetailsLevelLabel.Text = "VIP Level: " + m_DetailsLevel;
+            m_DetailsRequiredPoints.Text = "Points Required: " + ((m_DetailsLevel == 0) ? "0" : VIPLevels.Levels[m_DetailsLevel - 1].ToString("n0"));            
+            m_Hints.Text = VIPDetails.DisplayString(VIPDetails.Levels[m_DetailsLevel].Hints);
+            m_MegaHints.Text = VIPDetails.DisplayString(VIPDetails.Levels[m_DetailsLevel].MegaHints);
+            m_UndoSize.Text = VIPDetails.DisplayString(VIPDetails.Levels[m_DetailsLevel].UndoSize);
+            m_ExpBonus.Text = VIPDetails.Levels[m_DetailsLevel].ExpBonus.ToString() + "x";
+
+            m_DisableTimer.Hidden = level < 1;
+            m_DisableExpBonus.Hidden = level < 2;
+            m_ErrorDetector.Hidden = level < 4;
+            m_ErrorDetector2.Hidden = level < 8;
+
+            m_BtnLeft.Enabled = m_DetailsLevel > 0;
+            m_BtnRight.Enabled = m_DetailsLevel < (VIPDetails.Levels.Length - 1);
         }
 
         public bool HandleClick(int x, int y)
         {
-            if( m_Close.Click(x, y) )
+            if (m_Close.Click(x, y))
                 return false;
+            else if (m_BtnLeft.Click(x, y))
+                SetDetailLevel(m_DetailsLevel - 1);
+            else if (m_BtnRight.Click(x, y))
+                SetDetailLevel(m_DetailsLevel + 1);
+
             return true;
         }
 
