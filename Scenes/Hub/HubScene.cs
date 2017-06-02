@@ -10,6 +10,13 @@ namespace Happiness
 {
     public class HubScene : Scene
     {
+        enum MessageBoxContext
+        {
+            ResetTutorial,
+            ExitGame,
+            SignOut,
+        }
+
         Tower[] m_Towers;
 
         UILabel m_LevelLabel;
@@ -30,6 +37,8 @@ namespace Happiness
         Options m_OptionsDialog;
         BuyCoinsModal m_CoinsDialog;
         VIPDialog m_VipDialog;
+
+        MessageBox m_MessageBox;
 
         public HubScene(Happiness game) : base(game)
         {
@@ -134,6 +143,16 @@ namespace Happiness
             if( e.Abort )
                 return;
 
+            if (m_MessageBox != null)
+            {
+                MessageBoxResult result = m_MessageBox.HandleClick(e.CurrentX, e.CurrentY);
+                if (result != MessageBoxResult.NoResult)
+                {
+                    DoMessageBoxResult(result);
+                }
+                return;
+            }
+
             if (m_SoundDialog != null)
             {
                 m_SoundDialog.HandleClick(e.CurrentX, e.CurrentY);
@@ -184,8 +203,7 @@ namespace Happiness
 
                 if (m_ResetTutorial.Click(e.CurrentX, e.CurrentY))
                 {
-                    Happiness.Game.ResetTutorial();
-                    SetupTutorial();
+                    m_MessageBox = new MessageBox("Are you sure you want to restart the tutorial?", MessageBoxButtons.YesNo, (int)MessageBoxContext.ResetTutorial, Game.ScreenWidth, Game.ScreenHeight);                    
                 }
                 if (m_Options.Click(e.CurrentX, e.CurrentY))
                 {
@@ -197,15 +215,9 @@ namespace Happiness
                     m_CoinsDialog = new BuyCoinsModal();
                 }
                 if ( m_Exit.Click(e.CurrentX, e.CurrentY) )
-                    Happiness.Game.Exit();
+                    m_MessageBox = new MessageBox("Are you sure you want to exit the game?", MessageBoxButtons.YesNo, (int)MessageBoxContext.ExitGame, Game.ScreenWidth, Game.ScreenHeight);                
                 if (m_SignOut.Click(e.CurrentX, e.CurrentY))
-                {
-                    // Nuke local game data
-                    GameInfoValidator.Instance.DeleteLocalFile();
-
-                    // Goto startup scene
-                    Game.GotoScene(new StartupScene(Game));
-                }
+                    m_MessageBox = new MessageBox("Are you sure you want to sign out?", MessageBoxButtons.YesNo, (int)MessageBoxContext.SignOut, Game.ScreenWidth, Game.ScreenHeight);                
                 if (m_VIP.HandleClick(e.CurrentX, e.CurrentY))
                 {
                     m_VipDialog = new VIPDialog();
@@ -239,6 +251,38 @@ namespace Happiness
                 m_FloorSelect.Scroll(delta);
         }
         #endregion
+
+        void DoMessageBoxResult(MessageBoxResult result)
+        {
+            MessageBoxContext context = (MessageBoxContext)m_MessageBox.Context;
+            switch (context)
+            {
+                case MessageBoxContext.ResetTutorial:
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Happiness.Game.ResetTutorial();
+                        SetupTutorial();
+                    }
+                    break;
+                case MessageBoxContext.ExitGame:
+                    if (result == MessageBoxResult.Yes)
+                        Happiness.Game.Exit();
+                    break;
+                case MessageBoxContext.SignOut:
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        // Nuke local game data
+                        GameInfoValidator.Instance.DeleteLocalFile();
+
+                        // Goto startup scene
+                        Game.GotoScene(new StartupScene(Game));
+                    }
+                    break;
+            }
+
+            m_MessageBox = null;
+        }
+
 
         public override void Update(GameTime gameTime)
         {
@@ -287,6 +331,9 @@ namespace Happiness
                 m_SoundDialog.Draw(spriteBatch);
             if( m_OptionsDialog != null )
                 m_OptionsDialog.Draw(spriteBatch);
+
+            if(m_MessageBox != null )
+                m_MessageBox.Draw(spriteBatch);
         }
 
         void ActivateTower(Tower t)
