@@ -32,6 +32,7 @@ namespace HappinessServer
             client.OnValidateGameInfo += Client_OnValidateGameInfo;
             client.OnCoinBalanceRequest += Client_OnCoinBalanceRequest;
             client.OnProductsRequest += Client_OnProductsRequest;
+            client.OnBuildVipDataArgs = BuildVipDataArgs;
 
             return client;
         }
@@ -42,6 +43,11 @@ namespace HappinessServer
             
 
             TaskProcessor.AddTask(new HTask(HTask.HTaskType.ValidateGameInfo, (HClient)client, client.AuthString, null));
+        }
+
+        VipDataArgs BuildVipDataArgs(int vipPoints)
+        {
+            return VipData.Create(vipPoints);
         }
 
 #region Client Event Handlers

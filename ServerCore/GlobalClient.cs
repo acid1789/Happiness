@@ -93,12 +93,13 @@ namespace ServerCore
             SendPacket();
         }
 
-        public void HardCurrencyUpdate(int accountId, int currency)
+        public void HardCurrencyUpdate(int accountId, int currency, int vip)
         {
             BeginPacket(GPacketType.CurrencyUpdate);
 
             _outgoingBW.Write(accountId);
             _outgoingBW.Write(currency);
+            _outgoingBW.Write(vip);
 
             SendPacket();
         }
@@ -159,6 +160,7 @@ namespace ServerCore
             args.AccountId = br.ReadInt32();
             args.Amount = br.ReadInt32();
             args.ServerRecord = br.ReadUInt64();
+            args.VIP = 0;
             OnSpendCoins(this, args);
         }
 
@@ -167,6 +169,7 @@ namespace ServerCore
             CurrencyUpdateArgs args = new CurrencyUpdateArgs();
             args.AccountId = br.ReadInt32();
             args.NewCurrency = br.ReadInt32();
+            args.NewVIP = br.ReadInt32();
 
             OnCurrencyUpdate(this, args);
         }
@@ -219,12 +222,14 @@ namespace ServerCore
         public int AccountId;
         public int Amount;
         public ulong ServerRecord;
+        public int VIP;
     }
 
     public class CurrencyUpdateArgs : EventArgs
     {
         public int AccountId;
         public int NewCurrency;
+        public int NewVIP;
     }
     #endregion
 }

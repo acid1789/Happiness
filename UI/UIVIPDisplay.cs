@@ -27,6 +27,11 @@ namespace Happiness
             m_ClickArea = new Rectangle(x, y, width, m_VipLevel.Height);
         }
 
+        public void UpdateLevel()
+        {
+            m_VipLevel.Text = Happiness.Game.TheGameInfo.VipData.Level.ToString();
+        }
+
         public bool HandleClick(int x, int y)
         {
             if (m_ClickArea.Contains(x, y))

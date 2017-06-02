@@ -276,7 +276,8 @@ namespace Happiness
         private void _client_OnHardCurrencyUpdate(object sender, EventArgs e)
         {
             _waitingForResponse = false;
-            _gi.HardCurrency = _client.HardCurrency;
+            _gi.VipData = _client.VipInfo;
+            _gi.HardCurrency = _client.HardCurrency;            
         }
 
         public override bool Update()
@@ -404,7 +405,9 @@ namespace Happiness
 
         private void _client_OnHardCurrencyUpdate(object sender, EventArgs e)
         {
-            Happiness.Game.TheGameInfo.HardCurrency = ((HClient)sender).HardCurrency;
+            HClient hc = (HClient)sender;
+            Happiness.Game.TheGameInfo.VipData = hc.VipInfo;
+            Happiness.Game.TheGameInfo.HardCurrency = hc.HardCurrency;
             _finished = true;            
         }
 

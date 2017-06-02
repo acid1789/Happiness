@@ -210,7 +210,7 @@ namespace GlobalServer
         void SpendCoinsHandler(Task t)
         {
             GlobalSpendCoinArgs args = (GlobalSpendCoinArgs)t.Args;
-            string sql = string.Format("SELECT hard_currency FROM accounts WHERE account_id={0};", args.AccountId);
+            string sql = string.Format("SELECT hard_currency,vip FROM accounts WHERE account_id={0};", args.AccountId);
             t.Type = (int)GlobalTask.GlobalType.SpendCoins_Process;
             AddDBQuery(sql, t);
         }
@@ -220,6 +220,7 @@ namespace GlobalServer
             GlobalTask task = (GlobalTask)t;
             GlobalSpendCoinArgs args = (GlobalSpendCoinArgs)t.Args;
             int currency = (int)t.Query.Rows[0][0];
+            int vip = (int)t.Query.Rows[0][1];
             int before = currency;
             
             currency -= args.Amount;
@@ -229,18 +230,20 @@ namespace GlobalServer
                 currency = 0;
             }
 
+            vip += args.VIP;
+
             // Store transaction in the database
             string sql = string.Format("INSERT INTO transactions SET account_id={0}, amount={1}, before_t={2}, after_t={3}, server_record={4}, timestamp=\"{5}\";", args.AccountId, -args.Amount, before, currency, args.ServerRecord, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             AddDBQuery(sql, null, false);
 
             // Store currency in the database
-            sql = string.Format("UPDATE accounts SET hard_currency={0} WHERE account_id={1};", currency, args.AccountId);
+            sql = string.Format("UPDATE accounts SET hard_currency={0},vip={1} WHERE account_id={2};", currency, vip, args.AccountId);
             AddDBQuery(sql, null, false);
 
             if (task.Client != null)
             {
                 // Tell the client about it
-                task.Client.HardCurrencyUpdate(args.AccountId, currency);
+                task.Client.HardCurrencyUpdate(args.AccountId, currency, vip);
             }
             else
             {
@@ -249,7 +252,7 @@ namespace GlobalServer
                 foreach (Connection c in gameServers)
                 {
                     GlobalClient gc = (GlobalClient)c;
-                    gc.HardCurrencyUpdate(args.AccountId, currency);
+                    gc.HardCurrencyUpdate(args.AccountId, currency, vip);
                 }
             }
         }
@@ -351,7 +354,7 @@ namespace GlobalServer
             ulong serverRecord = (ulong)t.Query.Rows[0][0];
 
             t.Type = (int)GlobalTask.GlobalType.SpendCoins;
-            t.Args = new GlobalSpendCoinArgs() { AccountId = (int)args[0], Amount = -(int)args[2], ServerRecord = serverRecord };
+            t.Args = new GlobalSpendCoinArgs() { AccountId = (int)args[0], Amount = -(int)args[2], ServerRecord = serverRecord, VIP = (int)args[3] };
             ((GlobalTask)t).Client = null;
             AddTask(t);
         }

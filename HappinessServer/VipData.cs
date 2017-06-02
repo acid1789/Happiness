@@ -48,7 +48,7 @@ namespace HappinessServer
 
             VipDataArgs vda = new VipDataArgs();
             vda.Level = level;
-            vda.Progress = vipPoints;
+            vda.Points = vipPoints;
 
             VIPDetails details = VIPDetails.Levels[level];
             vda.Hints = details.Hints;

@@ -100,6 +100,7 @@ namespace Happiness
             m_Coins = new UICoinsDisplay(startY, coinsLeft, levelY, coinsWidth);
             m_Coins.SetCoins(Game.TheGameInfo.HardCurrency);
             Game.OnCurrencyChange += Game_OnCurrencyChange;
+            Game.OnVipDataChange += Game_OnVipDataChange;
 
             int vipTop = (levelY * 2) + m_Coins.Height;
             m_VIP = new UIVIPDisplay(coinsLeft + marginLeftRight, vipTop, coinsWidth - marginLeftRight);
@@ -117,6 +118,7 @@ namespace Happiness
             InputController.IC.OnDragBegin -= IC_OnDragBegin;
 
             Happiness.Game.OnCurrencyChange -= Game_OnCurrencyChange;
+            Happiness.Game.OnVipDataChange -= Game_OnVipDataChange;
         }
 
         void SetupTutorial()
@@ -134,6 +136,11 @@ namespace Happiness
         private void Game_OnCurrencyChange(int hardCurrency)
         {
             m_Coins.SetCoins(hardCurrency);
+        }
+
+        private void Game_OnVipDataChange(int obj)
+        {
+            m_VIP.UpdateLevel();
         }
 
 

@@ -190,12 +190,14 @@ namespace ServerCore
         {
             CurrencyUpdateArgs args = (CurrencyUpdateArgs)t.Args;
 
+            _server.AuthManager.UpdateAccount(args.AccountId, args.NewCurrency, args.NewVIP);
+
             // Find the client
             GameClient client = _server.InputThread.FindClientByID(args.AccountId);
             if (client != null)
             {
                 // Tell the client
-                client.CurrencyUpdate(args.NewCurrency);
+                client.CurrencyUpdate(args.NewCurrency, args.NewVIP);
             }
         }
         #endregion

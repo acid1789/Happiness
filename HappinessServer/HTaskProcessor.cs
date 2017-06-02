@@ -289,7 +289,7 @@ namespace HappinessServer
                 return;
             }
 
-            task.Client.CurrencyUpdate(aai.HardCurrency);
+            task.Client.CurrencyUpdate(aai.HardCurrency, aai.Vip);
         }
 
         void ValidateGameInfo_Handler(Task t)

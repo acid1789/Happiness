@@ -52,6 +52,19 @@ namespace ServerCore
             return null;
         }
 
+        public void UpdateAccount(int accountId, int hardCurrency, int vip)
+        {
+            foreach (AuthAccountInfo aai in _accounts.Values)
+            {
+                if (aai.AccountID == accountId)
+                {
+                    aai.HardCurrency = hardCurrency;
+                    aai.Vip = vip;
+                    break;
+                }
+            }
+        }
+
         void DumpAccounts(double secondsOld)
         {
             List<string> toDump = new List<string>();

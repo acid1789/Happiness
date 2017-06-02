@@ -81,6 +81,9 @@ namespace NetworkCore
             int index = _blockList.IndexOf((uint)sender);
             return (index >= 0 );
         }
+
+        protected virtual void WriteVipData(int vipPoints) { }
+        protected virtual void ReadVipData(BinaryReader br) { }
         #endregion
 
         #region Packet Construction        
@@ -127,13 +130,14 @@ namespace NetworkCore
             SendPacket();
         }
 
-        public void CurrencyUpdate(int newCurrency)
+        public void CurrencyUpdate(int newCurrency, int newVip)
         {
             _hardCurrency = newCurrency;
 
             BeginPacket(GCPacketType.CurrencyUpdate);
 
             _outgoingBW.Write(newCurrency);
+            WriteVipData(newVip);
 
             SendPacket();
         }
@@ -184,6 +188,7 @@ namespace NetworkCore
         void CurrencyUpdateHandler(BinaryReader br)
         {
             _hardCurrency = br.ReadInt32();
+            ReadVipData(br);
             if( OnHardCurrencyUpdate != null )
                 OnHardCurrencyUpdate(this, null);
         }

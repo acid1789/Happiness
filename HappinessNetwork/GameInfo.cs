@@ -21,6 +21,7 @@ namespace HappinessNetwork
         VipDataArgs _vipData;
 
         public event Action<int> OnCurrencyChange;
+        public event Action OnVipDataChange;
 
 
         public GameInfo()
@@ -118,28 +119,14 @@ namespace HappinessNetwork
         void LoadVipData(BinaryReader br, int version)
         {
             _vipData = new VipDataArgs();
-            _vipData.Level = br.ReadInt32();
-            _vipData.Progress = br.ReadInt32();
-            _vipData.Hints = br.ReadInt32();
-            _vipData.MegaHints = br.ReadInt32();
-            _vipData.UndoSize = br.ReadInt32();
-
-            if( version >= 2 )
-                _vipData.ExpBonus = br.ReadSingle();
-            else
-                _vipData.ExpBonus = 1.0f;
+            _vipData.Read(br, version);            
         }
 
         void SaveVipData(BinaryWriter bw)
         {
             if (_vipData != null)
             {
-                bw.Write(_vipData.Level);
-                bw.Write(_vipData.Progress);
-                bw.Write(_vipData.Hints);
-                bw.Write(_vipData.MegaHints);
-                bw.Write(_vipData.UndoSize);
-                bw.Write(_vipData.ExpBonus);
+                _vipData.Write(bw);
             }
         }
 
@@ -161,7 +148,45 @@ namespace HappinessNetwork
             return _hash;
         }
 
-        
+        public static byte[] HashVipData(VipDataArgs vipData)
+        {
+            if( vipData == null )
+                return null;
+
+            MemoryStream ms = new MemoryStream();
+            BinaryWriter bw = new BinaryWriter(ms);
+            vipData.Write(bw);
+
+            MD5 md5 = MD5.Create();
+            byte[] hash = md5.ComputeHash(ms.GetBuffer());
+            bw.Close();
+            return hash;
+        }
+
+        public static bool MD5Compare(byte[] hashA, byte[] hashB)
+        {
+            // if both are null, return true
+            if( hashA == null && hashB == null )
+                return true;
+
+            // If either is null, return false
+            if( hashA == null || hashB == null )
+                return false;
+
+            // Length check
+            if( hashA.Length != hashB.Length )
+                return false;
+
+            // Now compare the bytes
+            for (int i = 0; i < hashA.Length; i++)
+            {
+                if( hashA[i] != hashB[i] )
+                    return false;
+            }
+            
+            // The same!
+            return true;
+        }
 
         public GameDataArgs GameData
         {
@@ -178,7 +203,19 @@ namespace HappinessNetwork
         public VipDataArgs VipData
         {
             get { return _vipData; }
-            set { _vipData = value; }
+            set
+            {
+                if (OnVipDataChange != null)
+                {
+                    if( _vipData == null || _vipData.Points != value.Points )
+                    {
+                        _vipData = value;
+                        OnVipDataChange();
+                    }
+                }
+                else
+                    _vipData = value;
+            }
         }
 
         public string AuthString { get { return _authString; } set { _authString = value; } }

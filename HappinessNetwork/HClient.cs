@@ -45,8 +45,13 @@ namespace HappinessNetwork
         public event Action<HClient> OnProductsRequest;
         public event Action<GlobalProduct[]> OnProductsResponse;
 
+        public delegate VipDataArgs BuildVipDataArgsFunc(int vipPoints);
+        public BuildVipDataArgsFunc OnBuildVipDataArgs;
+
         public static string ServerAddress = "www.ronzgames.com";
         public static int ServerPort = 1255;
+
+        public VipDataArgs VipInfo;
 
         //public string RemoteDebugInfo;
 
@@ -108,6 +113,19 @@ namespace HappinessNetwork
         {
             LogInterface.Log(string.Format("BeginPacket({0})", type), LogInterface.LogMessageType.Debug);
             BeginPacket((ushort)type);
+        }
+
+        protected override void WriteVipData(int vipPoints)
+        {
+            VipDataArgs vip = OnBuildVipDataArgs.Invoke(vipPoints);
+            vip.Write(_outgoingBW);
+        }
+
+        protected override void ReadVipData(BinaryReader br)
+        {
+            base.ReadVipData(br);
+            VipInfo = new VipDataArgs();
+            VipInfo.Read(br);
         }
 
         #region Packet Construction
@@ -418,11 +436,35 @@ namespace HappinessNetwork
     public class VipDataArgs : EventArgs
     {
         public int Level;
-        public int Progress;
+        public int Points;
         public int Hints;
         public int MegaHints;
         public int UndoSize;
         public float ExpBonus;
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(Level);
+            bw.Write(Points);
+            bw.Write(Hints);
+            bw.Write(MegaHints);
+            bw.Write(UndoSize);
+            bw.Write(ExpBonus);
+        }
+
+        public void Read(BinaryReader br, int version = 2)
+        {
+            Level = br.ReadInt32();
+            Points = br.ReadInt32();
+            Hints = br.ReadInt32();
+            MegaHints = br.ReadInt32();
+            UndoSize = br.ReadInt32();
+
+            if (version >= 2)
+                ExpBonus = br.ReadSingle();
+            else
+                ExpBonus = 1.0f;
+        }
     }
 
     public class SpendCoinsArgs : EventArgs

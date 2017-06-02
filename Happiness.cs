@@ -39,6 +39,7 @@ namespace Happiness
         ServerWriter m_ServerWriter;
 
         public event Action<int> OnCurrencyChange;
+        public event Action<int> OnVipDataChange;
 
         public Happiness()
         {
@@ -224,6 +225,11 @@ namespace Happiness
         {
             OnCurrencyChange?.Invoke(obj);
         }
+        
+        private void M_GameInfo_OnVipDataChange()
+        {
+            OnVipDataChange?.Invoke(0);
+        }
 
         public void ValidateVIPSettings()
         {
@@ -300,6 +306,7 @@ namespace Happiness
             {
                 m_GameInfo = value;
                 m_GameInfo.OnCurrencyChange += M_GameInfo_OnCurrencyChange; ;
+                m_GameInfo.OnVipDataChange += M_GameInfo_OnVipDataChange;
             }
         }
 
