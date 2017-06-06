@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Happiness
 {
-    class UIButton
+    public class UIButton
     {
         Rectangle m_Rect;
         Texture2D m_MainTexture;

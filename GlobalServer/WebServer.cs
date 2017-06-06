@@ -102,7 +102,11 @@ namespace GlobalServer
                 }
 
                 string purchaseResult = BraintreeManager.DoPurchase(args["payment_method_nonce"], args["uid"], args["pid"]);
-                return string.Format("<HTML><BODY>Thank you!<br>{0}</BODY></HTML>", purchaseResult);
+                string html = LoadPurchaseCompleteHtml();
+                html = html.Replace("PRODUCT_ID", args["pid"]);
+
+                return html;
+                //return string.Format("<HTML><BODY>Thank you!<br>{0}</BODY></HTML>", purchaseResult);
             }
             catch (Exception ex)
             {
@@ -129,7 +133,7 @@ namespace GlobalServer
             html = html.Replace("USD_AMMOUNT", prod.USD.ToString());
 
             html = html.Replace("USER_ID", request.QueryString["uid"]);
-            html = html.Replace("PRODUCT_ID", request.QueryString["pid"]);
+            html = html.Replace("PRODUCT_ID", request.QueryString["pid"]);            
 
             return html;
         }
@@ -140,6 +144,19 @@ namespace GlobalServer
             string result = null;
 
             using (Stream stream = assembly.GetManifestResourceStream("GlobalServer.Purchase.html"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                result = reader.ReadToEnd();
+            }
+            return result;
+        }
+
+        static string LoadPurchaseCompleteHtml()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string result = null;
+
+            using (Stream stream = assembly.GetManifestResourceStream("GlobalServer.PurchaseComplete.html"))
             using (StreamReader reader = new StreamReader(stream))
             {
                 result = reader.ReadToEnd();

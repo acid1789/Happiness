@@ -4,7 +4,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=10">        
         <meta name="viewport" content="width=device-width" />
 
-        <title>Ronz Games Purchase Credits</title>
+        <title>Ronz Games Coins Purhcased!</title>
         <link rel=stylesheet type=text/css href="http://www.ronzgames.com/css/app.css">
         <link rel=stylesheet type=text/css href="http://www.ronzgames.com/css/overrides.css">
         <link rel=stylesheet type=text/css href="http://www.ronzgames.com/css/happiness.css">
@@ -17,26 +17,11 @@
         <div>
             <img src="http://www.ronzgames.com/css/images/logo.png" />
         </div>
+        <br />
+        <div class="ty_text">Thank You!</div>
+        <br/>
         <div>
             <img src="http://www.ronzgames.com/css/images/productPRODUCT_ID.png"/>
         </div>
-        <form id="payment-form" method="post" action="/checkout">
-            <section>
-                <div class="bt-drop-in-wrapper">
-                    <div id="bt-dropin"></div>
-                </div>
-            </section>
-
-            <input type="hidden" value="USER_ID" name="uid" />
-            <input type="hidden" value="PRODUCT_ID" name="pid" />
-
-            <button class="button" type="submit"><span>Purchase</span></button>
-        </form>
-
-        <script>
-            var checkout = new Demo({ formID: "payment-form" });
-            var client_token = "CLIENT_AUTH_TOKEN";
-            braintree.setup(client_token, "dropin", { container: "bt-dropin" });
-        </script>
     </body>
 </html>

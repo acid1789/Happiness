@@ -103,6 +103,7 @@ namespace Happiness
             textY += (int)m_PurchaseWaitMessages[0].Height;
             m_PurchaseWaitMessages[3] = new UILabel("Your coins and VIP points will be awarded when the transaction finishes processing.", centerDialogX, textY, Color.White, Assets.HelpFont, UILabel.XMode.Center);
 
+            m_iSelectedProduct = -1;
             FetchProducts();
         }
 
@@ -122,18 +123,26 @@ namespace Happiness
                     if (m_Products[product].Button.Click(iX, iY))
                     {
                         PurchaseProduct(product);
+                        return true;
                     }
                 }
             }
 
             if (m_State == PurchaseState.ConfirmingPurchase &&
-                m_PurchaseButton.Click(iX, iY) )
+                (m_PurchaseButton.Click(iX, iY) || m_Products[m_iSelectedProduct].Button.Click(iX, iY)) )
             {
                 DoPurchase();
             }
 
-            if ( m_CancelButton.Click(iX, iY) )
+            if (m_CancelButton.Click(iX, iY))
+            {
+                if (m_State == PurchaseState.ConfirmingPurchase)
+                {
+                    m_State = PurchaseState.SelectingProduct;
+                    return true;
+                }
                 return false;
+            }
             return true;
         }
         public void DragBegin(DragArgs args)
@@ -148,14 +157,28 @@ namespace Happiness
             {
                 float deltaY = m_DragY - args.CurrentY;
                 m_DragY = args.CurrentY;
-                if (deltaY != 0)
-                {
-                    m_ScrollPosition += deltaY;
-                    if (m_ScrollPosition < 0)
-                        m_ScrollPosition = 0;
-                    if (m_ScrollPosition > m_ScrollMax)
-                        m_ScrollPosition = m_ScrollMax;
-                }
+                DoScroll(deltaY);
+            }
+        }
+
+        public void Scroll(int delta)
+        {
+            if (m_State == PurchaseState.SelectingProduct)
+            {
+                float fDelta = (m_Products[0].Height * 1.5f) * ((delta < 0) ? 1.0f : -1.0f);
+                DoScroll(fDelta);
+            }
+        }
+
+        void DoScroll(float deltaY)
+        {
+            if (deltaY != 0)
+            {
+                m_ScrollPosition += deltaY;
+                if (m_ScrollPosition < 0)
+                    m_ScrollPosition = 0;
+                if (m_ScrollPosition > m_ScrollMax)
+                    m_ScrollPosition = m_ScrollMax;
             }
         }
         #endregion
@@ -219,12 +242,11 @@ namespace Happiness
                 ProductDisplay disp = new ProductDisplay(p, m_ScrollRect.Left, m_ScrollRect.Width);
                 m_Products.Add(disp);
             }
-            m_Products[1].Selected = true;
 
             int productsHeight = (int)(m_Products.Count * m_Products[0].Height);
             m_ScrollMax = (m_ScrollRect.Height < productsHeight ) ? productsHeight - m_ScrollRect.Height : 0;
         }
-
+        
         void PurchaseProduct(int product)
         {
             m_State = PurchaseState.ConfirmingPurchase;

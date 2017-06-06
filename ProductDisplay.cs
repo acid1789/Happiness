@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Happiness
 {
-    class ProductDisplay
+    public class ProductDisplay
     {
         int m_iProductID;
         int m_iLeft;
@@ -98,6 +98,8 @@ namespace Happiness
         {
             get { return m_fHeight; }
         }
+
+        public int Width { get { return m_iWidth; } }
 
         public bool Selected
         {

@@ -1,0 +1,14 @@
+body { 
+    background: url(images/bg.jpg) no-repeat center center fixed; 
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+
+.ty_text {
+    font-family:    "Comic Sans MS", "Comic Sans", cursive;
+    font-size:      40px;
+    color:          #daa520;
+    text-shadow:    2px 2px #000000;
+}

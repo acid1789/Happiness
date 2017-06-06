@@ -256,6 +256,8 @@ namespace Happiness
         {
             if( m_FloorSelect != null )
                 m_FloorSelect.Scroll(delta);
+            if( m_CoinsDialog != null )
+                m_CoinsDialog.Scroll(delta);
         }
         #endregion
 

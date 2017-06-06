@@ -268,9 +268,9 @@ namespace Happiness
 
             base.Draw(gameTime);
         }
-#endregion
+        #endregion
 
-#region Acccessors
+        #region Acccessors
         public int ScreenWidth
         {
             get { return m_iScreenWidth; }
@@ -414,4 +414,7 @@ namespace Happiness
             return lines.ToArray();
         }
     }
+
+    
+    
 }
