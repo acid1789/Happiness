@@ -149,7 +149,7 @@ namespace Happiness
             m_ExpTotalLabel = new UILabel("Total Exp:", scoreL, iScoreY, Color.Goldenrod, Assets.HelpFont, UILabel.XMode.Right);
             m_ExpTotal = new UILabel(((int)totalExp).ToString(), scoreR, iScoreY, (totalExp > 0) ? Color.Green : Color.Gray, Assets.HelpFont, UILabel.XMode.Right);
 
-            m_VipBonusExp = new UILabel(string.Format("*{0} VIP Bonus", vipBonus), scoreR + scoreSpace, iScoreY, Color.LightGreen, Assets.HelpFont, UILabel.XMode.Left);
+            m_VipBonusExp = new UILabel(string.Format("x{0} VIP Bonus", vipBonus), scoreR + scoreSpace, iScoreY, Color.LightGreen, Assets.HelpFont, UILabel.XMode.Left);
 
             m_ExpBase.Hidden = true;
             m_ExpBonus.Hidden = true;

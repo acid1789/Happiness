@@ -74,12 +74,12 @@ namespace Happiness
             m_DisableTimer.Checked = m_Game.DisableTimer;
 
 
-#if !DEBUG
-            m_ExpSlowdown.Enabled = m_Game.m_GameInfo.VipData.Level >= 2;
-            m_ErrorDetector.Enabled = m_Game.m_GameInfo.VipData.Level >= 4;
-            m_ErrorDetector2.Enabled = m_Game.m_GameInfo.VipData.Level >= 8;
-            m_DisableTimer.Enabled = m_Game.m_GameInfo.VipData.Level >= 1;
-#endif
+//#if !DEBUG
+            m_ExpSlowdown.Enabled = m_Game.TheGameInfo.VipData.Level >= 2;
+            m_ErrorDetector.Enabled = m_Game.TheGameInfo.VipData.Level >= 4;
+            m_ErrorDetector2.Enabled = m_Game.TheGameInfo.VipData.Level >= 8;
+            m_DisableTimer.Enabled = m_Game.TheGameInfo.VipData.Level >= 1;
+//#endif
             if( m_Game.CurrentScene is GameScene )
                 m_DisableTimer.Enabled = false;
         }

@@ -71,10 +71,10 @@ namespace Happiness
             m_LevelLabel.PositionY = (xpBarTop - m_LevelLabel.Height) - 6;
             m_ExpBar = new UIProgressBar(new Rectangle(expBarLeft, xpBarTop, expBarWidth, expBarHeight));
             m_ExpBar.ProgressColor = Color.DarkBlue;
-            m_ExpBar.Progress = (float)game.TheGameInfo.VipData.Points / (float)VIPLevels.Levels[game.TheGameInfo.VipData.Level];
+            m_ExpBar.Progress = (game.TheGameInfo.VipData.Level >= 10) ? 1.0f : (float)game.TheGameInfo.VipData.Points / (float)VIPLevels.Levels[game.TheGameInfo.VipData.Level];
 
 
-            string expStr = string.Format("{0} / {1}", game.TheGameInfo.VipData.Points.ToString("n0"), VIPLevels.Levels[game.TheGameInfo.VipData.Level].ToString("n0"));
+            string expStr = (game.TheGameInfo.VipData.Level >= 10) ? game.TheGameInfo.VipData.Points.ToString("n0") : string.Format("{0} / {1}", game.TheGameInfo.VipData.Points.ToString("n0"), VIPLevels.Levels[game.TheGameInfo.VipData.Level].ToString("n0"));
             m_ExpText = new UILabel(expStr, centerDialogX, xpBarTop + expBarHeight, Color.WhiteSmoke, Assets.HelpFont, UILabel.XMode.Center);
             
             int buttonWidth = (int)(Constants.BuyCreditsDialog_ButtonWidth * screenWidth);

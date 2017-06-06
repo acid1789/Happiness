@@ -411,9 +411,12 @@ namespace Happiness
                     m_Hint = m_Puzzle.GenerateHint(visibleClues.ToArray());
 
                     // Modify the count
-                    m_iHintCount++;
                     int maxHints = Game.TheGameInfo.VipData.Hints;
-                    m_ButtonPanel.SetHintCount(maxHints - m_iHintCount, maxHints);
+                    if (maxHints >= 0)
+                    {
+                        m_iHintCount++;
+                        m_ButtonPanel.SetHintCount(maxHints - m_iHintCount, maxHints);
+                    }
 
                     SavePuzzle();
 
@@ -431,12 +434,12 @@ namespace Happiness
             }
             else if (m_bVerifyMegaHintPurchase && !verified)
             {
-                m_MessageBox = new MessageBox("Would you like to spend 50 coins for a Mega Hint?", MessageBoxButtons.YesNo, (int)MessageBoxContext.InusfficientFunds_MegaHint, Game.ScreenWidth, Game.ScreenHeight, "Don't ask again");
+                m_MessageBox = new MessageBox("Would you like to spend 16 coins for a Mega Hint?", MessageBoxButtons.YesNo, (int)MessageBoxContext.InusfficientFunds_MegaHint, Game.ScreenWidth, Game.ScreenHeight, "Don't ask again");
             }
             else
             {
                 // Subtract the coins
-                Game.SpendCoins(50, 2);
+                Game.SpendCoins(16, 2);
 
                 // Modify the count
                 m_iMegaHintCount++;
