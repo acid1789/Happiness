@@ -426,7 +426,7 @@ namespace Happiness
                     _client.Update();
             }
 
-            if( _destroy )
+            if( _destroy && _finished )
                 return false;
 
 

@@ -141,6 +141,8 @@ namespace Happiness
                     m_State = PurchaseState.SelectingProduct;
                     return true;
                 }
+                if( m_VerifyPurchase != null )
+                    m_VerifyPurchase.Destroy(); // Allow this to be destroyed when its done
                 return false;
             }
             return true;
