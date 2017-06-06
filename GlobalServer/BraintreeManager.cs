@@ -28,14 +28,43 @@ namespace GlobalServer
             }
         }
 
+        public static string UserIDToCustomerId(string userId)
+        {
+            string btCustomer = "rgc_" + userId;
+            return btCustomer;
+        }
+
         public static string GetClientToken(string customerId)
         {
-            string clientToken = Gateway.ClientToken.generate();//new ClientTokenRequest { CustomerId = customerId });
+            string btCustomer = UserIDToCustomerId(customerId);
+            Customer c = null;
+            try { c = Gateway.Customer.Find(btCustomer); } catch (Exception ex) { }
+            string clientToken = (c == null) ? Gateway.ClientToken.generate() : Gateway.ClientToken.generate(new ClientTokenRequest { CustomerId = btCustomer });
             return clientToken;
         }
 
         public static string DoPurchase(string nonce, string uid, string pid)
         {
+            string btCustomer = UserIDToCustomerId(uid);
+            Customer c = null;
+            try { c = Gateway.Customer.Find(btCustomer); } catch (Exception) { }
+            /*
+            try
+            {
+                if (c == null)
+                {
+                    Result<Customer> cr = Gateway.Customer.Create(new CustomerRequest() { CustomerId = btCustomer, PaymentMethodNonce = nonce });
+                    ServerCore.LogThread.GetLog().Log(NetworkCore.LogInterface.LogMessageType.System, true, "Braintree create customer: " + cr.Message);
+                }
+                else
+                {
+                    Result<Customer> cr = Gateway.Customer.Update(btCustomer, new CustomerRequest() { CustomerId = btCustomer, PaymentMethodNonce = nonce });
+                    ServerCore.LogThread.GetLog().Log(NetworkCore.LogInterface.LogMessageType.System, true, "Braintree update customer: " + cr.Message);
+                }
+            }
+            catch (Exception) { }
+            */
+
             NetworkCore.GlobalProduct p = Marketplace.Instance.GetProduct(pid);
             var request = new TransactionRequest
             {
@@ -43,9 +72,14 @@ namespace GlobalServer
                 PaymentMethodNonce = nonce,
                 Options = new TransactionOptionsRequest
                 {
-                    SubmitForSettlement = true
+                    SubmitForSettlement = true,
+                    StoreInVaultOnSuccess = true
                 }
             };
+            if (c == null)
+                request.Customer = new CustomerRequest() { Id = btCustomer };
+            else
+                request.CustomerId = btCustomer;
 
             Result<Transaction> result = Gateway.Transaction.Sale(request);
             if (result.IsSuccess())
