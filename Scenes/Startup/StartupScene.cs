@@ -24,8 +24,10 @@ namespace Happiness
         Rectangle m_LogoRectangle;
         string m_szCreditLine;
         string m_szMusicCreditLine;
+        string m_szArtistCreditLine;
         Vector2 m_vCreditPosition;
         Vector2 m_vMusicCreditPosition;
+        Vector2 m_vArtistCreditPosition;
 
         GameInfoValidator m_GIV;
         Rectangle m_WaitRect;
@@ -51,6 +53,7 @@ namespace Happiness
 
             m_szCreditLine = "A logic puzzle game by Ron O'Hara";
             m_szMusicCreditLine = "Muisc by Ronald Jenkees (www.ronaldjenkees.com)";
+            m_szArtistCreditLine = "Artwork by: <your name here!> (Artist Wanted)";
 
             int creditX = (int)(Constants.Startup_CreditX * game.ScreenWidth);
             int creditY = (int)(Constants.Startup_CreditY * game.ScreenHeight);
@@ -59,6 +62,9 @@ namespace Happiness
             m_vCreditPosition.Y = game.ScreenHeight - creditY;
             m_vMusicCreditPosition.Y = game.ScreenHeight - musicY;
             m_vMusicCreditPosition.X = creditX + 20;
+
+            m_vArtistCreditPosition.X = game.ScreenWidth / 2;
+            m_vArtistCreditPosition.Y = game.ScreenHeight - musicY;
 
 
             int waitIconSize = (int)(Constants.Startup_WaitIconSize * game.ScreenWidth);
@@ -144,6 +150,7 @@ namespace Happiness
             // Draw Credits
             Happiness.ShadowString(spriteBatch, Assets.MenuFont, m_szCreditLine, m_vCreditPosition, Color.Goldenrod);
             Happiness.ShadowString(spriteBatch, Assets.DialogFont, m_szMusicCreditLine, m_vMusicCreditPosition, Color.LightGray);
+            Happiness.ShadowString(spriteBatch, Assets.DialogFont, m_szArtistCreditLine, m_vArtistCreditPosition, Color.LightGray);
 
             // Show sign in dialog
             if (m_SignInDialog != null)
