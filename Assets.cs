@@ -339,20 +339,24 @@ namespace Happiness
 
         static void LoadMusic(ContentManager content)
         {
-            MenuSong = content.Load<Song>("Audio/jenkees/02_-_Ronald_Jenkees_-_Neptune");            
+            try
+            {
+                MenuSong = content.Load<Song>("Audio/jenkees/02_-_Ronald_Jenkees_-_Neptune");
 
-            GameSongs = new Song[11];
-            GameSongs[0] = content.Load<Song>("Audio/jenkees/01_-_Ronald_Jenkees_-_Derty");
-            GameSongs[1] = content.Load<Song>("Audio/jenkees/03_-_Ronald_Jenkees_-_Canon_in_D_Remix");
-            GameSongs[2] = content.Load<Song>("Audio/jenkees/04_-_Ronald_Jenkees_-_Clutter");
-            GameSongs[3] = content.Load<Song>("Audio/jenkees/05_-_Ronald_Jenkees_-_Super-Fun");
-            GameSongs[4] = content.Load<Song>("Audio/jenkees/06_-_Ronald_Jenkees_-_The_Rocky_Song_Remixed");
-            GameSongs[5] = content.Load<Song>("Audio/jenkees/07_-_Ronald_Jenkees_-_Snap");
-            GameSongs[6] = content.Load<Song>("Audio/jenkees/08_-_Ronald_Jenkees_-_The_Sunfish_Song");
-            GameSongs[7] = content.Load<Song>("Audio/jenkees/09_-_Ronald_Jenkees_-_Loui");
-            GameSongs[8] = content.Load<Song>("Audio/jenkees/10_-_Ronald_Jenkees_-_Gold_Spinners");
-            GameSongs[9] = content.Load<Song>("Audio/jenkees/11_-_Ronald_Jenkees_-_Remix_To_A_Remix");
-            GameSongs[10] = content.Load<Song>("Audio/jenkees/12_-_Ronald_Jenkees_-_Almost_Undamaged");
+                GameSongs = new Song[11];
+                GameSongs[0] = content.Load<Song>("Audio/jenkees/01_-_Ronald_Jenkees_-_Derty");
+                GameSongs[1] = content.Load<Song>("Audio/jenkees/03_-_Ronald_Jenkees_-_Canon_in_D_Remix");
+                GameSongs[2] = content.Load<Song>("Audio/jenkees/04_-_Ronald_Jenkees_-_Clutter");
+                GameSongs[3] = content.Load<Song>("Audio/jenkees/05_-_Ronald_Jenkees_-_Super-Fun");
+                GameSongs[4] = content.Load<Song>("Audio/jenkees/06_-_Ronald_Jenkees_-_The_Rocky_Song_Remixed");
+                GameSongs[5] = content.Load<Song>("Audio/jenkees/07_-_Ronald_Jenkees_-_Snap");
+                GameSongs[6] = content.Load<Song>("Audio/jenkees/08_-_Ronald_Jenkees_-_The_Sunfish_Song");
+                GameSongs[7] = content.Load<Song>("Audio/jenkees/09_-_Ronald_Jenkees_-_Loui");
+                GameSongs[8] = content.Load<Song>("Audio/jenkees/10_-_Ronald_Jenkees_-_Gold_Spinners");
+                GameSongs[9] = content.Load<Song>("Audio/jenkees/11_-_Ronald_Jenkees_-_Remix_To_A_Remix");
+                GameSongs[10] = content.Load<Song>("Audio/jenkees/12_-_Ronald_Jenkees_-_Almost_Undamaged");
+            }
+            catch (Exception) { }
         }
 
         static void LoadSounds(ContentManager content)

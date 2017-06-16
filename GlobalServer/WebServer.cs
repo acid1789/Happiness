@@ -30,7 +30,10 @@ namespace GlobalServer
             //    throw new ArgumentException("method");
 
             foreach (string s in prefixes)
+            {
+                Console.WriteLine("WebListening to: " + s);
                 _listener.Prefixes.Add(s);
+            }
 
 
             _responderMethod = method;
@@ -133,7 +136,13 @@ namespace GlobalServer
             html = html.Replace("USD_AMMOUNT", prod.USD.ToString());
 
             html = html.Replace("USER_ID", request.QueryString["uid"]);
-            html = html.Replace("PRODUCT_ID", request.QueryString["pid"]);            
+            html = html.Replace("PRODUCT_ID", request.QueryString["pid"]);
+
+#if DEBUG
+            html = html.Replace("BRAINTREE_PREFIX", "");
+#else
+            html = html.Replace("BRAINTREE_PREFIX", "http://www.ronzgames.com/braintree");       
+#endif
 
             return html;
         }

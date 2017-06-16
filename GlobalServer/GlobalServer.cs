@@ -23,7 +23,7 @@ namespace GlobalServer
 #if DEBUG
             LogThread.AlwaysPrintToConsole = true;
 #endif
-            _webServer = new WebServer(null, "http://localhost:8080/purchase/", "http://localhost:8080/checkout/");
+            _webServer = new WebServer(null, "http://127.0.0.1:8080/purchase/", "http://127.0.0.1:8080/checkout/");
             _webServer.Run();
 
             Marketplace m = new Marketplace(_server);

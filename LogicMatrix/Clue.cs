@@ -1632,74 +1632,75 @@ namespace LogicMatrix
 
         public void Dump(int iIndex, Puzzle P)
         {
-            Debug.Write(string.Format("Clue({0}): ", iIndex));
+            string output = (string.Format("Clue({0}): ", iIndex));
             switch (m_Type)
             {
                 case eClueType.Given:
-                    Debug.WriteLine(string.Format("Type: Given ({0}, {1}, {2})", m_iRow, m_iCol, P.m_Solution[m_iRow, m_iCol]));
+                    output += (string.Format("Type: Given ({0}, {1}, {2})", m_iRow, m_iCol, P.m_Solution[m_iRow, m_iCol]));
                     break;
                 case eClueType.Vertical:
                     {
-                        Debug.Write("Type: Vertical  VType: ");
+                        output += ("Type: Vertical  VType: ");
                         switch (m_VerticalType)
                         {
                             case eVerticalType.Two:
-                                Debug.WriteLine(string.Format("Two ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol]));
+                                output += (string.Format("Two ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol]));
                                 break;
                             case eVerticalType.Three:
-                                Debug.WriteLine(string.Format("Three ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
+                                output += (string.Format("Three ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
                                 break;
                             case eVerticalType.EitherOr:
-                                Debug.WriteLine(string.Format("EitherOr ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, (m_iRow2 == m_iNotCell) ? m_iHorizontal1 : P.m_Solution[m_iRow2, m_iCol], m_iRow3, (m_iRow3 == m_iNotCell) ? m_iHorizontal1 : P.m_Solution[m_iRow3, m_iCol]));
+                                output += (string.Format("EitherOr ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, (m_iRow2 == m_iNotCell) ? m_iHorizontal1 : P.m_Solution[m_iRow2, m_iCol], m_iRow3, (m_iRow3 == m_iNotCell) ? m_iHorizontal1 : P.m_Solution[m_iRow3, m_iCol]));
                                 break;
-                            case eVerticalType.TwoNot: 
-                                Debug.WriteLine(string.Format("TwoNot ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iNotCell));
+                            case eVerticalType.TwoNot:
+                                output += (string.Format("TwoNot ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iNotCell));
                                 break;
                             case eVerticalType.ThreeTopNot:
-                                Debug.WriteLine(string.Format("ThreeTopNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, m_iNotCell, m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
+                                output += (string.Format("ThreeTopNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, m_iNotCell, m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
                                 break;
                             case eVerticalType.ThreeMidNot:
-                                Debug.WriteLine(string.Format("ThreeMidNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iNotCell, m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
+                                output += (string.Format("ThreeMidNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iNotCell, m_iRow3, P.m_Solution[m_iRow3, m_iCol]));
                                 break;
                             case eVerticalType.ThreeBotNot:
-                                Debug.WriteLine(string.Format("ThreeBotNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, m_iNotCell));
+                                output += (string.Format("ThreeBotNot ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol], m_iRow3, m_iNotCell));
                                 break;
                         }
                     }
                     break;
                 case eClueType.Horizontal:
                     {
-                        Debug.Write("Type: Horizontal  HType: ");
+                        output += ("Type: Horizontal  HType: ");
                         switch (m_HorizontalType)
                         {
-                            case eHorizontalType.NextTo: 
-                                Debug.WriteLine(string.Format("NextTo ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
+                            case eHorizontalType.NextTo:
+                                output += (string.Format("NextTo ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
                                 break;
                             case eHorizontalType.NotNextTo:
-                                Debug.WriteLine(string.Format("NotNextTo ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iHorizontal1));
+                                output += (string.Format("NotNextTo ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iHorizontal1));
                                 break;
                             case eHorizontalType.LeftOf:
-                                Debug.WriteLine(string.Format("LeftOf ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
+                                output += (string.Format("LeftOf ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
                                 break;
                             case eHorizontalType.NotLeftOf:
-                                Debug.WriteLine(string.Format("NotLeftOf ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
+                                output += (string.Format("NotLeftOf ([{0}]:{1}, [{2}]:{3})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2]));
                                 break;
                             case eHorizontalType.Span:
-                                Debug.WriteLine(string.Format("Span ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
+                                output += (string.Format("Span ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
                                 break;
                             case eHorizontalType.SpanNotLeft:
-                                Debug.WriteLine(string.Format("SpanNotLeft ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, m_iHorizontal1, m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
+                                output += (string.Format("SpanNotLeft ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, m_iHorizontal1, m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
                                 break;
                             case eHorizontalType.SpanNotMid:
-                                Debug.WriteLine(string.Format("SpanNotMid ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iHorizontal1, m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
+                                output += (string.Format("SpanNotMid ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, m_iHorizontal1, m_iRow3, P.m_Solution[m_iRow3, m_iCol3]));
                                 break;
                             case eHorizontalType.SpanNotRight:
-                                Debug.WriteLine(string.Format("SpanNotRight ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, m_iHorizontal1));
+                                output += (string.Format("SpanNotRight ([{0}]:{1}, [{2}]:{3}, [{4}]:{5})", m_iRow, P.m_Solution[m_iRow, m_iCol], m_iRow2, P.m_Solution[m_iRow2, m_iCol2], m_iRow3, m_iHorizontal1));
                                 break;
                         }
                     }
                     break;
             }
+            Debug.WriteLine(output);
         }
 
         #region Hint

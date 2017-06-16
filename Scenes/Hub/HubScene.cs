@@ -46,9 +46,7 @@ namespace Happiness
             InputController.IC.OnDragBegin += IC_OnDragBegin;
             InputController.IC.OnDrag += IC_OnDrag;
             InputController.IC.OnScroll += IC_OnScroll;
-
-            NetworkManager nm = NetworkManager.Net;
-
+            
             SoundManager.Inst.PlayMainMenuMusic();
 
             //m_SoundDialog = new SoundDialog(game.ScreenWidth, game.ScreenHeight, game);

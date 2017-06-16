@@ -13,8 +13,12 @@ namespace SecretsInjector
         {
             if (args[0] == "set")
             {
-                string google = Environment.GetEnvironmentVariable("HAPPINESS_GOOGLE_SECRET");
+                string singleQuote = "\"";
+                string escapedQuote = "\\" + "\"";
+                string google = Environment.GetEnvironmentVariable("HAPPINESS_GOOGLE_SECRET").Replace(singleQuote, escapedQuote);
                 string facebook = Environment.GetEnvironmentVariable("HAPPINESS_FACEBOOK_APPID");
+
+
 
                 SetFile(args[1] + "/GoogleAuth.cs", google);
                 SetFile(args[1] + "/FacebookAuth.cs", facebook);

@@ -15,7 +15,7 @@ namespace LogicMatrix
         public PuzzleRow[] m_Rows;
         public PuzzleRow[] m_MarkerRows;
         public Random m_Rand;
-        public ArrayList m_Clues;
+        public List<Clue> m_Clues;
         public List<Clue> m_GivenClues;
         public List<Clue> m_VeritcalClues;
         public List<Clue> m_HorizontalClues;
@@ -42,7 +42,7 @@ namespace LogicMatrix
             int iCount = 0;
             for (int i = 0; i < m_Clues.Count; i++)
             {
-                Clue c = (Clue)m_Clues[i];
+                Clue c = m_Clues[i];
                 if (c.m_Type == eClueType.Given)
                     iCount++;
             }
@@ -92,7 +92,7 @@ namespace LogicMatrix
 
         private void GenerateClues()
         {
-            m_Clues = new ArrayList();
+            m_Clues = new List<Clue>();
             while (!IsSolved())
             {
                 Clue c = new Clue(this, m_Rand);
@@ -321,8 +321,7 @@ namespace LogicMatrix
                     return;
                 }
             }
-            Debug.Write("Passes: ");
-            Debug.WriteLine(iPass++);
+            Debug.WriteLine("Passes: " + iPass++);
 
             // Sort the list based on most used
             m_Clues.Sort();
@@ -428,24 +427,28 @@ namespace LogicMatrix
 
         private void DumpPuzzle()
         {
+            string output = "";
             for (int i = 0; i < m_iSize; i++)
             {
                 for (int j = 0; j < m_iSize; j++)
                 {
-                    Debug.Write("[");
+                    output += "[";
                     for (int k = 0; k < m_iSize; k++)
                     {
                         if (!m_Rows[i].m_Cells[j].m_bValues[k])
-                            Debug.Write(" ");
+                            output += " ";
                         else
-                            Debug.Write(k);
+                            output += k;
                         if (k < m_iSize - 1)
-                            Debug.Write(",");
+                            output += ",";
                     }
                     if (j < m_iSize - 1)
-                        Debug.Write("], ");
+                        output += "], ";
                     else
-                        Debug.WriteLine("]");
+                    {
+                        Debug.WriteLine(output + "]");
+                        output = "";
+                    }
                 }
             }
 
@@ -455,17 +458,21 @@ namespace LogicMatrix
 
         public void DumpSolution()
         {
+            string output = "";
             for (int i = 0; i < m_iSize; i++)
             {
                 for (int j = 0; j < m_iSize; j++)
                 {
-                    Debug.Write("[");
-                    Debug.Write(m_Solution[i, j]);
-                    
-                    if( j < m_iSize - 1)
-                        Debug.Write("], ");
+                    output += ("[");
+                    output += (m_Solution[i, j]);
+
+                    if (j < m_iSize - 1)
+                        output += ("], ");
                     else
-                        Debug.WriteLine("]");
+                    {
+                        Debug.WriteLine(output + "]");
+                        output = "";
+                    }
                 }
             }
 
@@ -485,7 +492,7 @@ namespace LogicMatrix
         private void ScrambleClues()
         {
             int iNumClues = m_Clues.Count;
-            ArrayList copy = new ArrayList(m_Clues);
+            List<Clue> copy = new List<Clue>(m_Clues);
             int[] iScramble = new int[iNumClues];
             RandomDistribution(m_Rand, iScramble);
 

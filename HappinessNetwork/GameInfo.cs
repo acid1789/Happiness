@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.IO;
-using System.Security.Cryptography;
+using PCLCrypto;
+using static PCLCrypto.WinRTCrypto;
 
 namespace HappinessNetwork
 {
@@ -141,26 +142,11 @@ namespace HappinessNetwork
             SaveTowerData(bw);
             SaveVipData(bw);
 
-            MD5 md5 = MD5.Create();
-            _hash = md5.ComputeHash(ms.GetBuffer());
+            IHashAlgorithmProvider algoProv = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithm.Md5);
+            _hash = algoProv.HashData(ms.ToArray());
 
-            bw.Close();
+            bw.Dispose();
             return _hash;
-        }
-
-        public static byte[] HashVipData(VipDataArgs vipData)
-        {
-            if( vipData == null )
-                return null;
-
-            MemoryStream ms = new MemoryStream();
-            BinaryWriter bw = new BinaryWriter(ms);
-            vipData.Write(bw);
-
-            MD5 md5 = MD5.Create();
-            byte[] hash = md5.ComputeHash(ms.GetBuffer());
-            bw.Close();
-            return hash;
         }
 
         public static bool MD5Compare(byte[] hashA, byte[] hashB)

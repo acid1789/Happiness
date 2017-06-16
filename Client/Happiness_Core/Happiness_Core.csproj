@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B53C4E5D-702B-423E-90DA-5C9C099FC2B4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Happiness_Core</RootNamespace>
+    <AssemblyName>Happiness_Core</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\..\HappinessNetwork\HappinessNetwork.csproj">
+      <Project>{d4b75aee-412b-45bf-b9ab-911641272454}</Project>
+      <Name>HappinessNetwork</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LogicMatrix\LogicMatrix.csproj">
+      <Project>{8ae57b9a-aced-4428-a804-993eb37e966b}</Project>
+      <Name>LogicMatrix</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NetworkCore\NetworkCore.csproj">
+      <Project>{6877f982-bb8d-428e-b017-afb86a00be95}</Project>
+      <Name>NetworkCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstract\FacebookAuth.cs" />
+    <Compile Include="Abstract\GoogleAuth.cs" />
+    <Compile Include="Assets.cs" />
+    <Compile Include="BuyCoinsModal.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="GameInfoValidator.cs" />
+    <Compile Include="Abstract\InputController.cs" />
+    <Compile Include="Abstract\Platform.cs" />
+    <Compile Include="ProductDisplay.cs" />
+    <Compile Include="PurchaseSystem.cs" />
+    <Compile Include="Scenes\Hub\FloorDisplay.cs" />
+    <Compile Include="Scenes\Hub\FloorSelectDialog.cs" />
+    <Compile Include="Scenes\Hub\HubScene.cs" />
+    <Compile Include="Scenes\Hub\SoundDialog.cs" />
+    <Compile Include="Scenes\Hub\Tower.cs" />
+    <Compile Include="Scenes\Hub\VIPDialog.cs" />
+    <Compile Include="Scenes\Scene.cs" />
+    <Compile Include="Scenes\MainGame\Action.cs" />
+    <Compile Include="Scenes\MainGame\ButtonPanel.cs" />
+    <Compile Include="Scenes\MainGame\CellDialog.cs" />
+    <Compile Include="Scenes\MainGame\EndPuzzleScreen.cs" />
+    <Compile Include="Scenes\MainGame\GamePanel.cs" />
+    <Compile Include="Scenes\MainGame\GameScene.cs" />
+    <Compile Include="Scenes\MainGame\HelpPanel.cs" />
+    <Compile Include="Scenes\MainGame\HorizontalCluePanel.cs" />
+    <Compile Include="Scenes\MainGame\PauseMenu.cs" />
+    <Compile Include="Scenes\MainGame\VerticalCluePanel.cs" />
+    <Compile Include="Scenes\Startup\DisplayNameDialog.cs" />
+    <Compile Include="Scenes\Startup\SignInDialog.cs" />
+    <Compile Include="Scenes\Startup\StartupScene.cs" />
+    <Compile Include="ServerWriter.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SoundManager.cs" />
+    <Compile Include="TutorialSystem.cs" />
+    <Compile Include="UI\FormattedLine.cs" />
+    <Compile Include="Abstract\Color.cs" />
+    <Compile Include="Happiness.cs" />
+    <Compile Include="Options.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Abstract\ContentManager.cs" />
+    <Compile Include="Abstract\FileManager.cs" />
+    <Compile Include="Abstract\Keys.cs" />
+    <Compile Include="Abstract\MediaPlayer.cs" />
+    <Compile Include="Abstract\Rectangle.cs" />
+    <Compile Include="UI\AnimatedSprite.cs" />
+    <Compile Include="UI\IconButton.cs" />
+    <Compile Include="UI\MessageBox.cs" />
+    <Compile Include="UI\UIButton.cs" />
+    <Compile Include="UI\UICheckbox.cs" />
+    <Compile Include="UI\UICoinsDisplay.cs" />
+    <Compile Include="UI\UIFrame.cs" />
+    <Compile Include="UI\UIInputField.cs" />
+    <Compile Include="UI\UILabel.cs" />
+    <Compile Include="UI\UIPanel.cs" />
+    <Compile Include="UI\UIProgressBar.cs" />
+    <Compile Include="UI\UISlider.cs" />
+    <Compile Include="UI\UIVIPDisplay.cs" />
+    <Compile Include="Abstract\Renderer.cs" />
+    <Compile Include="Abstract\Song.cs" />
+    <Compile Include="Abstract\SoundEffect.cs" />
+    <Compile Include="Abstract\SoundEffectInstance.cs" />
+    <Compile Include="Abstract\SpriteEffects.cs" />
+    <Compile Include="Abstract\SpriteFont.cs" />
+    <Compile Include="Abstract\Texture2D.cs" />
+    <Compile Include="Abstract\Vector2.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

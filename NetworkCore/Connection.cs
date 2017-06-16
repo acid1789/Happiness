@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Net.Sockets;
 using System.IO;
 
 namespace NetworkCore
@@ -38,6 +37,8 @@ namespace NetworkCore
         protected BinaryWriter _outgoingBW;
 
         protected uint _sessionKey;
+
+        
 
         public Connection(Socket s)
         {
@@ -78,13 +79,11 @@ namespace NetworkCore
                 if (_socket.Connected)
                 {
                     // Read in packet data
-                    if (_socket.Available > 0)
+                    byte[] data = new byte[4096];
+                    int bytesReceived = _socket.Receive(data);
+                    if (bytesReceived > 0)
                     {
                         _lastSeen = DateTime.Now;
-
-                        byte[] data = new byte[_socket.Available];
-                        int bytesReceived = _socket.Receive(data);
-
                         if (_pendingData != null)
                         {
                             _pendingData.AddRange(data);
@@ -92,7 +91,7 @@ namespace NetworkCore
                             _pendingData = null;
                         }
 
-                        ProcessPacketData(data);
+                        ProcessPacketData(data, bytesReceived);
                     }
 
                     // Are you still there?
@@ -115,11 +114,11 @@ namespace NetworkCore
             {
                 byte[] packet = _pendingData.ToArray();
                 _pendingData = null;
-                ProcessPacketData(packet);
+                ProcessPacketData(packet, packet.Length);
             }
         }
 
-        void ProcessPacketData(byte[] data)
+        void ProcessPacketData(byte[] data, int dataLength)
         {
             // Find the packet marker
             int packetStart = 0;
@@ -146,9 +145,9 @@ namespace NetworkCore
                 _packetHandlers[packetType](br);
 
                 int bytesProcessed = (int)ms.Position;
-                if (bytesProcessed < data.Length)
+                if (bytesProcessed < dataLength)
                 {
-                    int remaining = data.Length - bytesProcessed;
+                    int remaining = dataLength - bytesProcessed;
                     byte[] remainingData = new byte[remaining];
                     Buffer.BlockCopy(data, bytesProcessed, remainingData, 0, remaining);
                     _pendingData = new List<byte>();
@@ -191,7 +190,7 @@ namespace NetworkCore
             _lastSent = DateTime.Now;
             LogInterface.Log(string.Format("SendPacket {0} bytes", data.Length), LogInterface.LogMessageType.Debug);
 
-            _outgoingBW.Close();
+            _outgoingBW.Dispose();
             _outgoingBW = null;
             _outgoingPacket = null;
         }
@@ -203,7 +202,7 @@ namespace NetworkCore
 
             try
             {
-                _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);                
+                _socket = new Socket();                
                 _socket.Connect(address, port);
             }
             catch (Exception ex)
@@ -220,7 +219,7 @@ namespace NetworkCore
             if (len > 0)
             {
                 byte[] encoded = br.ReadBytes(len);
-                str = Encoding.UTF8.GetString(encoded);
+                str = Encoding.UTF8.GetString(encoded, 0, encoded.Length);
             }
             return str;
         }
@@ -288,7 +287,7 @@ namespace NetworkCore
             get
             {
                 if( _socket != null && _socket.Connected )
-                    return _socket.RemoteEndPoint.ToString();
+                    return _socket.RemoteEndPoint;
                 return "*disconnected*";
             }
         }

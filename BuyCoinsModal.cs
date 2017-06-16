@@ -261,8 +261,12 @@ namespace Happiness
             m_State = PurchaseState.PurchasingProduct;
 
             // Open the browser
-            string host = "localhost";            
-            string url = string.Format("http://{0}:8080/purchase?uid={1}&pid={2}", host, Happiness.Game.AccountId, m_Products[m_iSelectedProduct].ProductID);
+#if DEBUG
+            string host = "localhost:8080";            
+#else
+            string host = "www.ronzgames.com/braintree";
+#endif
+            string url = string.Format("http://{0}/purchase?uid={1}&pid={2}", host, Happiness.Game.AccountId, m_Products[m_iSelectedProduct].ProductID);
             System.Diagnostics.Process.Start(url);
 
             // Querry the server for the credits/vip

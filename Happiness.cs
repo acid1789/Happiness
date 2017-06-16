@@ -95,7 +95,6 @@ namespace Happiness
         protected override void OnExiting(object sender, EventArgs args)
         {
             m_ServerWriter.Shutdown();
-            NetworkManager.Net.Shutdown();
             base.OnExiting(sender, args);
         }
 

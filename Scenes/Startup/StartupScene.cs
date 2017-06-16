@@ -10,16 +10,8 @@ using HappinessNetwork;
 namespace Happiness
 {
     public class StartupScene : Scene
-    {
-        enum SignInStep
-        {
-            CachedDataCheck,
-            EmailSignIn
-        }
-
-        SignInStep m_Step;
+    {        
         SignInDialog m_SignInDialog;
-        DisplayNameDialog m_DisplayNameDialog;
 
         Rectangle m_LogoRectangle;
         string m_szCreditLine;
@@ -35,9 +27,7 @@ namespace Happiness
         string m_szWaitText;
         
         public StartupScene(Happiness game) : base(game)
-        {
-            m_Step = SignInStep.CachedDataCheck;
-            
+        {            
             //LoadStartupDetails();
             m_GIV = GameInfoValidator.Instance;
             m_GIV.BeginLoadFromDisk();

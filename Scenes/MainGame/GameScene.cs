@@ -21,7 +21,6 @@ namespace Happiness
 
         // Dialogs
         EndPuzzleScreen m_EndScreen;
-        ReconnectScreen m_ReconnectScreen;
         MessageBox m_MessageBox;
 
         // Panels
@@ -77,13 +76,13 @@ namespace Happiness
             m_iHintCount = 0;
             m_iMegaHintCount = 0;
             m_History = new List<Action>();
-            
+
             Game.SoundManager.PlayGameMusic();
 
             // Create the puzzle
             m_iPuzzleIndex = puzzleIndex;
             m_Puzzle = new Puzzle(puzzleIndex, puzzleSize, 1);
-            if( load )
+            if (load)
                 LoadPuzzle();
 
             // Initialize the UI
@@ -120,13 +119,13 @@ namespace Happiness
                                                                                TutorialSystem.TutorialPiece.HorizontalClueArea, Rectangle.Empty, true);
             Rectangle clue1Area = new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top, m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClueArea, clueArrow, 0,
-                bottomTutorialRect, "This area is for the horizontal clues.\nHorizontal clues give hints about the icons from left to right or right to left.\n\nTap this first Horizontal Clue.", 
+                bottomTutorialRect, "This area is for the horizontal clues.\nHorizontal clues give hints about the icons from left to right or right to left.\n\nTap this first Horizontal Clue.",
                 TutorialSystem.TutorialPiece.SpanExplanation, clue1Area);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.SpanExplanation, clueArrow, 0, 
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.SpanExplanation, clueArrow, 0,
                 bottomTutorialRect, "The arrow across the top of the clue indicates that this is a span clue.\nA span clue describes a series of 3 neighboring columns. The span can go from left to right or right to left but the center column will always be inbetween the two outer columns.",
                 TutorialSystem.TutorialPiece.ClueHelp, Rectangle.Empty, true);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.ClueHelp, new Vector2(m_HelpPanel.Rect.Left, m_HelpPanel.Rect.Bottom), Constants.ArrowDiagonalUpRight,
-                bottomTutorialRect, "This area gives a brief description of the currently highlighted clue.\n\nSince this clue is a span type clue, it is showing that in a group of 3 columns {icon:Simpsons[2]} is on one edge of the group and {icon:Superheros[3]} is on the other edge.\nSince there is a NOT icon in the center of this span, in the center column can not have the {icon:Hubble[4]}.", 
+                bottomTutorialRect, "This area gives a brief description of the currently highlighted clue.\n\nSince this clue is a span type clue, it is showing that in a group of 3 columns {icon:Simpsons[2]} is on one edge of the group and {icon:Superheros[3]} is on the other edge.\nSince there is a NOT icon in the center of this span, in the center column can not have the {icon:Hubble[4]}.",
                 TutorialSystem.TutorialPiece.SpanHelp1, Rectangle.Empty, true);
 
             Rectangle centerGridArea = new Rectangle(m_GamePanel.Rect.Left + m_GamePanel.CellWidth, m_GamePanel.Rect.Top + m_GamePanel.CellHeight, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
@@ -146,7 +145,7 @@ namespace Happiness
                 TutorialSystem.TutorialPiece.Hulk2, centerTopGridArea);
 
             Vector2 clue2Position = new Vector2(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight) + (m_HorizontalCluePanel.ClueHeight >> 1));
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2a, clue2Position, 0, 
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue2a, clue2Position, 0,
                 bottomTutorialRect, "We have done all we can right now with the first clue.\nLets move on to the next clue.\n\nTap the second horizontal clue.",
                 TutorialSystem.TutorialPiece.HorizontalClue2b, new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
@@ -168,7 +167,7 @@ namespace Happiness
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3a, clue3Position, 0, bottomTutorialRect, "There is nothing else we can do with this clue for now so lets move on to the next clue.\n\nTap the third horizontal clue.\n", TutorialSystem.TutorialPiece.HorizontalClue3b,
                 new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight * 2), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3b, m_GamePanel.IconPosition(2, 1, 0), Constants.ArrowDiagonalUpRight, bottomTutorialRect, 
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue3b, m_GamePanel.IconPosition(2, 1, 0), Constants.ArrowDiagonalUpRight, bottomTutorialRect,
                 "This is another span type clue. Most of what it is telling us, we already know. It is however telling us that the {icon:Simpsons[3]} is in the center column.\n\nTap the bottom grid area of the center column.",
                 TutorialSystem.TutorialPiece.Homer1, centerBottomGridArea);
 
@@ -180,19 +179,19 @@ namespace Happiness
                 new Rectangle(m_HorizontalCluePanel.Rect.Left, m_HorizontalCluePanel.Rect.Top + (m_HorizontalCluePanel.ClueHeight * 4), m_HorizontalCluePanel.Rect.Width, m_HorizontalCluePanel.ClueHeight));
 
             Rectangle rightTopGridArea = new Rectangle(m_GamePanel.Rect.Right - m_GamePanel.CellWidth, m_GamePanel.Rect.Top, m_GamePanel.CellWidth, m_GamePanel.CellHeight);
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5b, Vector2.Add(iconSideOffset, m_GamePanel.IconPosition(0, 2, 2)), 0, bottomTutorialRect, 
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue5b, Vector2.Add(iconSideOffset, m_GamePanel.IconPosition(0, 2, 2)), 0, bottomTutorialRect,
                 "This clue tells us that the {icon:Superheros[2]} is in a column somewhere to the right of the {icon:Simpsons[3]}.\nSince we already know where the {icon:Simpsons[3]} is, and there is only one column to the right of it, we know where the {icon:Superheros[2]} is.\n\nTap the top right grid cell.", TutorialSystem.TutorialPiece.GreenLantern4, rightTopGridArea);
-            
+
             bool online = true;
 
             Vector2 hideClueTarget = new Vector2(m_ButtonPanel.HideClueRect.Right, m_ButtonPanel.HideClueRect.Top + (m_ButtonPanel.HideClueRect.Height >> 1));
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HideClue1, hideClueTarget, Constants.ArrowLeft, bottomTutorialRect,
                 "We have learned all we possibly can from this clue since we know where both the {icon:Simpsons[3]} and the {icon:Superheros[2]} are.\nWe can now hide this clue so we can more easily see the relevant clues.\nYou can unhide all the clues anytime you want in the pause menu.\n\nTap the 'HC' button to hide this clue.",
                 online ? TutorialSystem.TutorialPiece.Hint1 : TutorialSystem.TutorialPiece.Hint2, m_ButtonPanel.HideClueRect);
-            
+
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Hint1, new Vector2(m_ButtonPanel.HintRect.Right, m_ButtonPanel.HintRect.Top + (m_ButtonPanel.HintRect.Height >> 1)), Constants.ArrowLeft, bottomTutorialRect,
                 "If you get stuck on a puzzle you can spend {icon:GoldCoin}2 to get a hint of what to do next.\nThere are a maximum number of hints you can use per puzzle, this number increases with your VIP level.\n\nTap the 'H' button to get a hint.", TutorialSystem.TutorialPiece.Hint2, m_ButtonPanel.HintRect);
-            
+
             if (online)
             {
                 m_MessageBox = new MessageBox("Would you like to spend 2 coins for a hint?", MessageBoxButtons.YesNo, (int)MessageBoxContext.InsufficientFunds_Hint, Game.ScreenWidth, Game.ScreenHeight, "Don't ask again");
@@ -220,7 +219,7 @@ namespace Happiness
             }
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Undo, new Vector2(m_ButtonPanel.UndoRect.Right, m_ButtonPanel.UndoRect.Top + (m_ButtonPanel.UndoRect.Height >> 1)), Constants.ArrowLeft, bottomTutorialRect,
-                "If you make a mistake, you can undo previous actions by tapping the 'U' button.\nThere are a limited number of actions that you can undo indicated by the number under the 'U' button. The number on the left is the number of actions currently in the history. The number on the right is the maximum number of actions stored in the history. The maximum increases with your VIP level.", 
+                "If you make a mistake, you can undo previous actions by tapping the 'U' button.\nThere are a limited number of actions that you can undo indicated by the number under the 'U' button. The number on the left is the number of actions currently in the history. The number on the right is the maximum number of actions stored in the history. The maximum increases with your VIP level.",
                 TutorialSystem.TutorialPiece.HorizontalClue4b, Rectangle.Empty, true);
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.HorizontalClue4b, clue4Position, 0, bottomTutorialRect,
                 "There are only two cells left to solve. We need to figure out which cells the {icon:Hubble[4]} and the {icon:Hubble[3]} belong in.\nLets go back to the fourth horizontal clue.\n\nTap the fourth horizontal clue.\n",
@@ -237,7 +236,7 @@ namespace Happiness
                 EndPuzzleScreen tempEnd = new EndPuzzleScreen(false, 3, 0, Game.ScreenWidth, Game.ScreenHeight, Game);
             }
 
-            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Puzzle2, new Vector2(-1000, -1000), 0, 
+            Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Puzzle2, new Vector2(-1000, -1000), 0,
                 new Rectangle(Game.ScreenWidth - 170, Game.ScreenHeight - 80, 150, 0), "Solve this puzzle", TutorialSystem.TutorialPiece.EndScreen4, new Rectangle(0, 0, Game.ScreenWidth, Game.ScreenHeight));
 
             Game.Tutorial.SetPieceData(TutorialSystem.TutorialPiece.Horizontal_NextTo, clue2Position, 0, bottomTutorialRect,
@@ -311,14 +310,14 @@ namespace Happiness
         #endregion
 
         #region Puzzle File
-        
+
 
         public void SavePuzzle()
         {
             string saveName = Happiness.PuzzleSaveName(m_Puzzle.m_iSize, m_iPuzzleIndex);
             FileStream fs = File.Open(saveName, FileMode.Create);
             BinaryWriter bw = new BinaryWriter(fs);
-                        
+
             bw.Write(ElapsedTime);
             bw.Write(m_iHintCount);
             bw.Write(m_iMegaHintCount);
@@ -337,7 +336,7 @@ namespace Happiness
                     }
                 }
             }
-            bw.Close();          
+            bw.Close();
         }
 
         public void LoadPuzzle()
@@ -356,7 +355,7 @@ namespace Happiness
                 m_History = new List<Action>();
                 for (int i = 0; i < historyCount; i++)
                 {
-                    m_History.Add(Action.Load(br, m_Puzzle.m_iSize));                   
+                    m_History.Add(Action.Load(br, m_Puzzle.m_iSize));
                 }
                 for (int iRow = 0; iRow < m_Puzzle.m_iSize; iRow++)
                 {
@@ -490,13 +489,13 @@ namespace Happiness
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if( Game.CurrentScene != this )
+            if (Game.CurrentScene != this)
                 return;
 
             m_ButtonPanel.SetCoins(Game.TheGameInfo.HardCurrency);
             if (m_Hint != null)
             {
-                if( m_Hint.ShouldHide(m_Puzzle) )
+                if (m_Hint.ShouldHide(m_Puzzle))
                     m_Hint = null;
             }
 
@@ -513,34 +512,28 @@ namespace Happiness
         #region EndScreen
         void DoEndScreenUpdate(GameTime gameTime)
         {
-            if (m_ReconnectScreen != null)
+
+            if (m_EndScreen == null)
             {
-                m_ReconnectScreen.Update(gameTime);
-            }           
-            else
-            {
-                if (m_EndScreen == null)
+                DeleteSavedPuzzle();
+
+                double seconds = Game.DisableTimer ? HappinessNetwork.Balance.ParTime(m_Puzzle.m_iSize - 3) : ElapsedTime;
+                m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, seconds, Game.ScreenWidth, Game.ScreenHeight, Game);
+                m_EndScreen.OnNextPuzzle += M_EndScreen_OnNextPuzzle;
+                m_EndScreen.OnMainMenu += M_EndScreen_OnMainMenu;
+                m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;
+                if (m_Puzzle.IsSolved())
                 {
-                    DeleteSavedPuzzle();
-                    
-                    double seconds = Game.DisableTimer ? HappinessNetwork.Balance.ParTime(m_Puzzle.m_iSize - 3) : ElapsedTime;
-                    m_EndScreen = new EndPuzzleScreen(m_Puzzle.IsSolved(), m_Puzzle.m_iSize, seconds, Game.ScreenWidth, Game.ScreenHeight, Game);
-                    m_EndScreen.OnNextPuzzle += M_EndScreen_OnNextPuzzle;
-                    m_EndScreen.OnMainMenu += M_EndScreen_OnMainMenu;
-                    m_EndScreen.OnRestartPuzzle += M_EndScreen_OnRestartPuzzle;
-                    if (m_Puzzle.IsSolved())
-                    {
-                        Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleComplete);
-                        Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, seconds, m_EndScreen.OnServerDataComplete);
-                    }
-                    else
-                    {
-                        Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleFailed);
-                    }
+                    Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleComplete);
+                    Game.SavePuzzleData(m_Puzzle.m_iSize - 3, m_iPuzzleIndex, seconds, m_EndScreen.OnServerDataComplete);
                 }
                 else
-                    m_EndScreen.Update(gameTime);
+                {
+                    Game.SoundManager.PlaySound(SoundManager.SEInst.GamePuzzleFailed);
+                }
             }
+            else
+                m_EndScreen.Update(gameTime);
         }
 
         private void M_EndScreen_OnRestartPuzzle(object sender, EventArgs e)
@@ -571,17 +564,14 @@ namespace Happiness
             // Draw all the UI Pannels
             for (int i = m_UIPanels.Count - 1; i >= 0; i--)
                 m_UIPanels[i].Draw(spriteBatch);
-
-            if (m_ReconnectScreen != null)
-                m_ReconnectScreen.Draw(spriteBatch, Game.ScreenWidth, Game.ScreenHeight);
-
+            
             if (m_EndScreen != null)
                 m_EndScreen.Draw(spriteBatch, Game.ScreenWidth, Game.ScreenHeight);
 
-            if( m_PauseMenu != null )
+            if (m_PauseMenu != null)
                 m_PauseMenu.Draw(spriteBatch);
 
-            if( m_MessageBox != null )
+            if (m_MessageBox != null)
                 m_MessageBox.Draw(spriteBatch);
         }
         #endregion
@@ -603,7 +593,7 @@ namespace Happiness
             }
 
             Action a = new Action(type, iRow, iCol, iIcon, m_Puzzle);
-            a.Perform(m_Puzzle);            
+            a.Perform(m_Puzzle);
 
             int undoSize = Game.TheGameInfo.VipData.UndoSize <= 0 ? int.MaxValue : Game.TheGameInfo.VipData.UndoSize;
             while (m_History.Count >= undoSize)
@@ -634,7 +624,7 @@ namespace Happiness
 
         public bool ShouldDrawHint(int row, int col, int icon)
         {
-            return ( m_Hint != null && m_Hint.ShouldDraw(row, col, icon) );
+            return (m_Hint != null && m_Hint.ShouldDraw(row, col, icon));
         }
 
         public void SelectClue(Clue clue, UIPanel panel)
@@ -671,7 +661,7 @@ namespace Happiness
         #region Input
         private void M_Input_OnClick(object sender, DragArgs e)
         {
-            if( e.Abort )
+            if (e.Abort)
                 return;
 
             int iX = e.CurrentX;
@@ -807,7 +797,7 @@ namespace Happiness
 
         void M_Input_OnKeyUp(object sender, KeyArgs e)
         {
-            if( e.Key == Microsoft.Xna.Framework.Input.Keys.Escape )
+            if (e.Key == Microsoft.Xna.Framework.Input.Keys.Escape)
                 Pause();
         }
 
@@ -841,7 +831,7 @@ namespace Happiness
                     }
                     break;
             }
-        }        
+        }
         #endregion
 
         #region Accessors
