@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Diagnostics;
 
 using Microsoft.Xna.Framework;
+using Happiness_Shared;
 
 namespace Happiness_Desktop
 {

@@ -1,25 +1,49 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Happiness_Shared;
+using System;
 
 namespace Happiness_Android
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class HappinessAndroidGame : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        RasterizerState m_RasterizerState = new RasterizerState() { ScissorTestEnable = true };
 
-        public Game1()
+        GoolgleAuth_Android _google;
+        FacebookAuth_Android _facebook;
+        PurchaseSystem_Android _purchase;
+        FileManager_Android _fileManager;
+        Platform_Android _platform;
+        InputController_XNA _input;
+        MediaPlayer_XNA _mediaPlayer;
+        Renderer_XNA _renderer;
+        Happiness.Happiness _theGame;
+
+        public HappinessAndroidGame()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
+            Console.WriteLine("HappinessAndroidGame");
+            
+            _google = new GoolgleAuth_Android();
+            _facebook = new FacebookAuth_Android();
+            _purchase = new PurchaseSystem_Android();
+            _platform = new Platform_Android() { TheGame = this };
+            _input = new InputController_XNA();
+            _fileManager = new FileManager_Android();
+            _mediaPlayer = new MediaPlayer_XNA();
+            _theGame = new Happiness.Happiness();
+
             graphics.IsFullScreen = true;
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 480;
+            //graphics.PreferredBackBufferWidth = 1280;
+            //graphics.PreferredBackBufferHeight = 720;
             graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
         }
 
@@ -34,6 +58,13 @@ namespace Happiness_Android
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            _theGame.Initialize(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
+        }
+
+        protected override void OnExiting(object sender, EventArgs args)
+        {
+            base.OnExiting(sender, args);
+            _theGame.OnExiting();
         }
 
         /// <summary>
@@ -44,8 +75,10 @@ namespace Happiness_Android
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            spriteBatch.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height);
+            _renderer = new Renderer_XNA(spriteBatch);
 
-            // TODO: use this.Content to load your game content here
+            _theGame.LoadContent(new ContentManager_XNA() { Content = Content });
         }
 
         /// <summary>
@@ -64,11 +97,7 @@ namespace Happiness_Android
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                Exit();
-
-            // TODO: Add your update logic here
-
+            _theGame.Update(gameTime.ElapsedGameTime.TotalSeconds, _renderer);
             base.Update(gameTime);
         }
 
@@ -78,9 +107,11 @@ namespace Happiness_Android
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, m_RasterizerState);
+            _theGame.Draw(_renderer);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

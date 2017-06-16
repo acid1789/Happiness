@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     class Renderer_XNA : Happiness.Renderer
     {

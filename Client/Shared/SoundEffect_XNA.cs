@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Audio;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     class SoundEffect_XNA : Happiness.SoundEffect
     {

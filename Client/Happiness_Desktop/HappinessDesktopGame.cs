@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Happiness_Shared;
 
 namespace Happiness_Desktop
 {
@@ -39,9 +40,13 @@ namespace Happiness_Desktop
             _fileManager = new FileManager_Desktop();
             _mediaPlayer = new MediaPlayer_XNA();
             _theGame = new Happiness.Happiness();
-                        
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
+
+            //graphics.PreferredBackBufferWidth = 1280;
+            //graphics.PreferredBackBufferHeight = 720;
+
+
+            graphics.PreferredBackBufferWidth = 2560;
+            graphics.PreferredBackBufferHeight = 1440;
 
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -73,7 +78,7 @@ namespace Happiness_Desktop
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            spriteBatch.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, 1280, 720);
+            spriteBatch.GraphicsDevice.ScissorRectangle = new Rectangle(0, 0, spriteBatch.GraphicsDevice.Viewport.Width, spriteBatch.GraphicsDevice.Viewport.Height);
             _renderer = new Renderer_XNA(spriteBatch);
 
             _theGame.LoadContent(new ContentManager_XNA() { Content = Content});

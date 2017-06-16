@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     class InputController_XNA : Happiness.InputController
     {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Media;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     public class MediaPlayer_XNA : Happiness.MediaPlayer
     {

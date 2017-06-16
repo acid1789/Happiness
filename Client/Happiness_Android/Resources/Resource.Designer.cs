@@ -26,6 +26,8 @@ namespace Happiness_Android
 		
 		public static void UpdateIdValues()
 		{
+			global::PCLCrypto.Resource.String.ApplicationName = global::Happiness_Android.Resource.String.ApplicationName;
+			global::PCLCrypto.Resource.String.Hello = global::Happiness_Android.Resource.String.Hello;
 		}
 		
 		public partial class Attribute

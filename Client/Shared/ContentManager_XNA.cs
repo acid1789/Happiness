@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     class ContentManager_XNA : Happiness.ContentManager
     {

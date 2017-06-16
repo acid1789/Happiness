@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Happiness_Desktop
+namespace Happiness_Shared
 {
     class Texture2D_XNA : Happiness.Texture2D
     {

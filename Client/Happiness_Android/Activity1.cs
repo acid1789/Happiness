@@ -15,10 +15,12 @@ namespace Happiness_Android
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize)]
     public class Activity1 : Microsoft.Xna.Framework.AndroidGameActivity
     {
+        public static Activity1 Instance { get; set; }
         protected override void OnCreate(Bundle bundle)
         {
+            Instance = this;
             base.OnCreate(bundle);
-            var g = new Game1();
+            var g = new HappinessAndroidGame();
             SetContentView((View)g.Services.GetService(typeof(View)));
             g.Run();
         }
