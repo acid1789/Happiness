@@ -38,21 +38,35 @@
     <ApplicationIcon>Happiness.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ContentManager_XNA.cs" />
+    <Compile Include="../Shared/ContentManager_XNA.cs">
+      <Link>Shared/ContentManager_XNA.cs</Link>
+    </Compile>
     <Compile Include="FacebookAuth_Desktop.cs" />
     <Compile Include="FileManager_Desktop.cs" />
     <Compile Include="GoolgleAuth_Desktop.cs" />
     <Compile Include="HappinessDesktopGame.cs" />
-    <Compile Include="InputController_XNA.cs" />
-    <Compile Include="MediaPlayer_XNA.cs" />
+    <Compile Include="../Shared/InputController_XNA.cs">
+      <Link>Shared/InputController_XNA.cs</Link>
+    </Compile>
+    <Compile Include="../Shared/MediaPlayer_XNA.cs">
+      <Link>Shared/MediaPlayer_XNA.cs</Link>
+    </Compile>
     <Compile Include="Platform_Desktop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PurchaseSystem_Desktop.cs" />
-    <Compile Include="Renderer_XNA.cs" />
-    <Compile Include="SoundEffect_XNA.cs" />
-    <Compile Include="SpriteFont_XNA.cs" />
-    <Compile Include="Texture2D_XNA.cs" />
+    <Compile Include="../Shared/Renderer_XNA.cs">
+      <Link>Shared/Renderer_XNA.cs</Link>
+    </Compile>
+    <Compile Include="../Shared/SoundEffect_XNA.cs">
+      <Link>Shared/SoundEffect_XNA.cs</Link>
+    </Compile>
+    <Compile Include="../Shared/SpriteFont_XNA.cs">
+      <Link>Shared/SpriteFont_XNA.cs</Link>
+    </Compile>
+    <Compile Include="../Shared/Texture2D_XNA.cs">
+      <Link>Shared/Texture2D_XNA.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Google.Apis, Version=1.27.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
