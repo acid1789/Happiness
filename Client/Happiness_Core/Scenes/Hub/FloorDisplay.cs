@@ -41,7 +41,7 @@ namespace Happiness
 
             int halfWidth = width >> 1;
             int quarterWidth = halfWidth >> 1;
-            int textGap = 10;
+            int textGap = (int)(Constants.FloorDisplay_TextGap * Happiness.Game.ScreenWidth);
             int textLeft = left + quarterWidth - textGap;
             int textMid = left + halfWidth;
             int textRight = textMid + textGap + quarterWidth;
@@ -53,7 +53,7 @@ namespace Happiness
             m_FriendRankDisplay = new UILabel(m_iRank_Friends.ToString("n0"), textMid, 0, Color.White, Assets.HelpFont, UILabel.XMode.Center);
             m_GlobalRankDisplay = new UILabel(m_iRank_Global.ToString("n0"), textRight, 0, Color.White, Assets.HelpFont, UILabel.XMode.Center);
 
-            m_iTextLineSpace = 20;
+            m_iTextLineSpace = (int)(Constants.FloorDisplay_TextLineSpace * Happiness.Game.ScreenHeight);
             m_fHeight = (Assets.HelpFont.MeasureString("qQ").Y * 2);// + m_iTextLineSpace;
 
             m_FloorDisplay = new UILabel(floor.ToString(), left + 4, 0, Color.Goldenrod, Assets.DialogFont, UILabel.XMode.Left);

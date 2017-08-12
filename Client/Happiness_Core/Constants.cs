@@ -152,6 +152,9 @@ namespace Happiness
         public static float FloorSelectDialog_FloorSelectTutorialWidth = 180f / 1280f;
         public static float FloorSelectDialog_PlayTutorialWidth = 200f / 1280f;
 
+        public static float FloorDisplay_TextGap = 10f / 1280f;
+        public static float FloorDisplay_TextLineSpace = 20f / 720f;
+
         public static float TutorialSystem_ArrowTravelDistance = 8f / 1280f;
         public static float TutorialSystem_ArrowSpeed = 2.7f;
         public static float TutorialSystem_ArrowWidth = 120f / 1280f;
