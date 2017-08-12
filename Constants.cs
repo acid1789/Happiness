@@ -65,6 +65,7 @@ namespace Happiness
         public static float SignInDialog_Width = 600f / 1280f;
         public static float SignInDialog_Height = 500f / 720f;
         public static float SignInDialog_Margin = 20f / 720f;
+        public static float SignInDialog_StatusOffsetY = 50f / 720f;
         public static float SignInDialog_InputWidth = 350f / 1280f;
         public static float SignInDialog_InputLeft = 180f / 1280f;
         public static float SignInDialog_InputTop = 100f / 720f;

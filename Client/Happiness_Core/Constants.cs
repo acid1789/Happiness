@@ -65,6 +65,7 @@ namespace Happiness
         public static float SignInDialog_Width = 600f / 1280f;
         public static float SignInDialog_Height = 500f / 720f;
         public static float SignInDialog_Margin = 20f / 720f;
+        public static float SignInDialog_StatusOffsetY = 40f / 720f;
         public static float SignInDialog_InputWidth = 350f / 1280f;
         public static float SignInDialog_InputLeft = 180f / 1280f;
         public static float SignInDialog_InputTop = 100f / 720f;
@@ -135,8 +136,8 @@ namespace Happiness
         public static float HubScene_MarginLeftRight = 20f / 1280f;
         public static float HubScene_MarginTopBottom = 10f / 720f;
         public static float HubScene_TutorialWidth = 170f / 1280f;
-        public static float HubScene_ButtonWidth = 140f / 1280f;
-        public static float HubScene_ButtonHeight = 30f / 720f;
+        public static float HubScene_ButtonWidth = 150f / 1280f;
+        public static float HubScene_ButtonHeight = 50f / 720f;
         public static float HubScene_CoinsWidth = 100f / 1280f;
 
         public static float FloorSelectDialog_Width = 1000f / 1280f;

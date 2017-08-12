@@ -53,6 +53,7 @@ namespace Happiness
         string m_szStatusText;
         Color m_StatusColor;
         Vector2 m_vStatusPosition;
+        int m_iStatusOffsetY;
 
         SignInType m_SignInType;
         Mode m_Mode;
@@ -77,6 +78,7 @@ namespace Happiness
             m_Rect = new Rectangle(left, top, width, height);
 
             m_iMargin = (int)(Constants.SignInDialog_Margin * screenHeight);
+            m_iStatusOffsetY = (int)(Constants.SignInDialog_StatusOffsetY * screenHeight);
 
 
             SetTitle("Sign In");
@@ -390,7 +392,7 @@ namespace Happiness
             {
                 m_szStatusText = value;
                 Vector2 size = Assets.HelpFont.MeasureString(m_szStatusText);
-                m_vStatusPosition = new Vector2(m_iCenterDialogX - (size.X * 0.5f), m_Rect.Top + m_iMargin + 50);
+                m_vStatusPosition = new Vector2(m_iCenterDialogX - (size.X * 0.5f), m_Rect.Top + m_iMargin + m_iStatusOffsetY);
             }
         }
 
