@@ -22,8 +22,8 @@ namespace Happiness
         public static float CellDialogHeight = 600f / 720f;
         public static float CellDialogSmallIconSize = 200f / 720f;
         public static float CellDialogLargeIconSize = 400f / 720f;
-        public static float CellDialog_SmallButtonWidth = 60f / 1280f;
-        public static float CellDialog_SmallButtonHeight = 50f / 720f;
+        public static float CellDialog_SmallButtonWidth = 90f / 1280f;
+        public static float CellDialog_SmallButtonHeight = 80f / 720f;
         public static float CellDialog_ButtonWidth = 200f / 1280f;
         public static float CellDialog_ButtonHeight = 40f / 720f;
 
@@ -143,8 +143,8 @@ namespace Happiness
         public static float FloorSelectDialog_Height = 600 / 720f;
         public static float FloorSelectDialog_MarginTopBottom = 40f / 720f;
         public static float FloorSelectDialog_MarginLeftRight = 50f / 1280f;
-        public static float FloorSelectDialog_NavButtonWidth = 60f / 1280f;
-        public static float FloorSelectDialog_NavButtonHeight = 50f / 720f;
+        public static float FloorSelectDialog_NavButtonWidth = 90f / 1280f;
+        public static float FloorSelectDialog_NavButtonHeight = 80f / 720f;
         public static float FloorSelectDialog_LBButtonWidth = 180f / 1280f;
         public static float FloorSelectDialog_LBButtonHeight = 50f / 720f;
         public static float FloorSelectDialog_FloorScrollWidth = 400f / 1280f;
