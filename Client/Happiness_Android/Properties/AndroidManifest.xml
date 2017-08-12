@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Happiness_Android.Happiness_Android" android:versionCode="1" android:versionName="1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="Happiness.Happiness" android:versionCode="1" android:versionName="1.0" android:installLocation="auto">
 	<uses-sdk />
-	<application android:label="Happiness_Android" android:icon="@drawable/Icon"></application>
+	<application android:label="Happiness" android:icon="@drawable/Icon"></application>
 </manifest>

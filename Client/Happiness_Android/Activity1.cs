@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Happiness_Android
 {
-    [Activity(Label = "Happiness_Android"
+    [Activity(Label = "Happiness"
         , MainLauncher = true
         , Icon = "@drawable/icon"
         , Theme = "@style/Theme.Splash"

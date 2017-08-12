@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("Happiness_Android.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("Happiness.Resource", IsApplication=true)]
 
-namespace Happiness_Android
+namespace Happiness
 {
 	
 	
@@ -26,16 +26,16 @@ namespace Happiness_Android
 		
 		public static void UpdateIdValues()
 		{
-			global::PCLCrypto.Resource.String.ApplicationName = global::Happiness_Android.Resource.String.ApplicationName;
-			global::PCLCrypto.Resource.String.Hello = global::Happiness_Android.Resource.String.Hello;
-			global::Xamarin.Auth.Resource.Animation.slide_in_right = global::Happiness_Android.Resource.Animation.slide_in_right;
-			global::Xamarin.Auth.Resource.Animation.slide_out_left = global::Happiness_Android.Resource.Animation.slide_out_left;
-			global::Xamarin.Auth.Resource.Drawable.ic_arrow_back = global::Happiness_Android.Resource.Drawable.ic_arrow_back;
-			global::Xamarin.Auth.Resource.Id.webview = global::Happiness_Android.Resource.Id.webview;
-			global::Xamarin.Auth.Resource.Layout.activity_webview = global::Happiness_Android.Resource.Layout.activity_webview;
-			global::Xamarin.Auth.Resource.String.ApplicationName = global::Happiness_Android.Resource.String.ApplicationName;
-			global::Xamarin.Auth.Resource.String.Hello = global::Happiness_Android.Resource.String.Hello;
-			global::Xamarin.Auth.Resource.String.title_activity_webview = global::Happiness_Android.Resource.String.title_activity_webview;
+			global::PCLCrypto.Resource.String.ApplicationName = global::Happiness.Resource.String.ApplicationName;
+			global::PCLCrypto.Resource.String.Hello = global::Happiness.Resource.String.Hello;
+			global::Xamarin.Auth.Resource.Animation.slide_in_right = global::Happiness.Resource.Animation.slide_in_right;
+			global::Xamarin.Auth.Resource.Animation.slide_out_left = global::Happiness.Resource.Animation.slide_out_left;
+			global::Xamarin.Auth.Resource.Drawable.ic_arrow_back = global::Happiness.Resource.Drawable.ic_arrow_back;
+			global::Xamarin.Auth.Resource.Id.webview = global::Happiness.Resource.Id.webview;
+			global::Xamarin.Auth.Resource.Layout.activity_webview = global::Happiness.Resource.Layout.activity_webview;
+			global::Xamarin.Auth.Resource.String.ApplicationName = global::Happiness.Resource.String.ApplicationName;
+			global::Xamarin.Auth.Resource.String.Hello = global::Happiness.Resource.String.Hello;
+			global::Xamarin.Auth.Resource.String.title_activity_webview = global::Happiness.Resource.String.title_activity_webview;
 		}
 		
 		public partial class Animation
