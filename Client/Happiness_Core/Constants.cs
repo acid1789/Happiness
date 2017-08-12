@@ -70,6 +70,10 @@ namespace Happiness
         public static float SignInDialog_InputTop = 100f / 720f;
         public static float SignInDialog_AuthGap = 10f / 720f;
         public static float SignInDialog_AuthSize = 60f / 720f;
+        public static float SignInDialog_IconButtonWidth = 280f / 1280f;
+        public static float SignInDialog_IconMarginLeftRight = 18f / 1280f;
+        public static float SignInDialog_IconMarginTopBottom = 8f / 720f;
+        public static float SignInDialog_IconButtonGap = 20f / 720f;
         public static float SignInDialog_StatusGap = 5f / 720f;
         public static float SignInDialog_ButtonGap = 80f / 720f;
         public static float SignInDialog_ButtonGapLeft = 40f / 1280f;

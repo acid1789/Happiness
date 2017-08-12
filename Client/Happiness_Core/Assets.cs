@@ -311,7 +311,7 @@ namespace Happiness
 
         static void LoadFonts(ContentManager Content)
         {
-            MenuFont = Content.Load<SpriteFont>("MenuFont");
+            MenuFont = Content.Load<SpriteFont>("MenuFont");            
             DialogFont = Content.Load<SpriteFont>("DialogFont");
             HelpFont = Content.Load<SpriteFont>("HelpFont");
         }

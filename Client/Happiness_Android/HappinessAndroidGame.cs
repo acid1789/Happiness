@@ -14,8 +14,8 @@ namespace Happiness_Android
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RasterizerState m_RasterizerState = new RasterizerState() { ScissorTestEnable = true };
-
-        GoolgleAuth_Android _google;
+        
+        GoogleAuth_Android _google;
         FacebookAuth_Android _facebook;
         PurchaseSystem_Android _purchase;
         FileManager_Android _fileManager;
@@ -32,7 +32,7 @@ namespace Happiness_Android
 
             Console.WriteLine("HappinessAndroidGame");
             
-            _google = new GoolgleAuth_Android();
+            _google = new GoogleAuth_Android();
             _facebook = new FacebookAuth_Android();
             _purchase = new PurchaseSystem_Android();
             _platform = new Platform_Android() { TheGame = this };

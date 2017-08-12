@@ -9,10 +9,14 @@ namespace Happiness_Shared
     class Renderer_XNA : Happiness.Renderer
     {
         SpriteBatch _sb;
+        public static Vector2 FontScale;
 
         public Renderer_XNA(SpriteBatch sb)
         {
             _sb = sb;
+            float ws = _sb.GraphicsDevice.Viewport.Width / 1280f;
+            float hs = _sb.GraphicsDevice.Viewport.Height / 720f;
+            FontScale = new Vector2(ws, hs);
         }
 
         public override Happiness.Rectangle ScissorRectangle
@@ -52,7 +56,7 @@ namespace Happiness_Shared
         public override void DrawString(Happiness.SpriteFont font, string text, Happiness.Vector2 position, Happiness.Color color)
         {
             SpriteFont_XNA f = (SpriteFont_XNA)font;
-            _sb.DrawString(f.XNAFont, text, HappinessV2ToXNAV2(position), HappinessColorToXNAColor(color));
+            _sb.DrawString(f.XNAFont, text, HappinessV2ToXNAV2(position), HappinessColorToXNAColor(color), 0, Vector2.Zero, FontScale.Y, SpriteEffects.None, 0);
         }
 
         public static Happiness.Rectangle XNARectToHappinessRect(Rectangle r)

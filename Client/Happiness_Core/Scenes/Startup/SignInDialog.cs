@@ -18,7 +18,9 @@ namespace Happiness
         {
             Email,
             Google,
-            Facebook
+            Facebook,
+
+            None
         }
 
         Rectangle m_Rect;
@@ -79,10 +81,10 @@ namespace Happiness
             SetTitle("Sign In");
 
             int iconSize = (int)(Constants.SignInDialog_AuthSize * screenHeight);
-            int buttonWidth = 280;
-            int iconX = 18;
-            int iconY = 8;
-            int buttonMargin = 20;
+            int buttonWidth = (int)(Constants.SignInDialog_IconButtonWidth * screenWidth);
+            int iconX = (int)(Constants.SignInDialog_IconMarginLeftRight * screenWidth);
+            int iconY = (int)(Constants.SignInDialog_IconMarginTopBottom * screenHeight);
+            int buttonMargin = (int)(Constants.SignInDialog_IconButtonGap * screenHeight);
             int buttonHeight = iconSize + (iconY * 2);
             int buttonLeft = m_iCenterDialogX - (buttonWidth / 2);
 

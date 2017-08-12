@@ -14,8 +14,8 @@ namespace Happiness_Desktop
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         RasterizerState m_RasterizerState = new RasterizerState() { ScissorTestEnable = true };
-
-        GoolgleAuth_Desktop _google;
+        
+        GoogleAuth_Desktop _google;
         FacebookAuth_Desktop _facebook;
         PurchaseSystem_Desktop _purchase;
         Platform_Desktop _platform;
@@ -32,7 +32,7 @@ namespace Happiness_Desktop
 #endif
             graphics = new GraphicsDeviceManager(this);
 
-            _google = new GoolgleAuth_Desktop();
+            _google = new GoogleAuth_Desktop();
             _facebook = new FacebookAuth_Desktop();
             _purchase = new PurchaseSystem_Desktop();
             _platform = new Platform_Desktop() { TheGame = this };

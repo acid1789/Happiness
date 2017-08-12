@@ -11,6 +11,7 @@ namespace Happiness
         protected static GoogleAuth _instance;
         public static GoogleAuth Instance { get { return _instance; } }
 
-        public abstract string[] DoAuth();
+        public abstract void BeginAuth();
+        public abstract string[] FinishAuth();
     }
 }

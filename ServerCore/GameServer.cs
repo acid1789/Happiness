@@ -30,7 +30,7 @@ namespace ServerCore
             ListenThread.OnConnectionAccepted += new EventHandler<SocketArg>(lt_OnConnectionAccepted);            
         }
 
-        public abstract GameClient CreateClient(Socket s);
+        public abstract GameClient CreateClient(NetworkCore.Socket s);
     
         void lt_OnConnectionAccepted(object sender, SocketArg e)
         {

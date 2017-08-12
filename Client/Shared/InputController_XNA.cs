@@ -58,8 +58,10 @@ namespace Happiness_Shared
         {
             TouchCollection touches = TouchPanel.GetState();
             if (touches.Count > 0)
-            {
+            {                
                 TouchLocation tl = touches[0];
+
+                Console.WriteLine("Touch (0 / {0}): {1}", touches.Count, tl.Position);
                 m_DragArgs.CurrentX = (int)tl.Position.X;
                 m_DragArgs.CurrentY = (int)tl.Position.Y;
                 switch (tl.State)

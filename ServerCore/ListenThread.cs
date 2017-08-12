@@ -10,9 +10,9 @@ namespace ServerCore
 {
     public class SocketArg : EventArgs
     {
-        public Socket Socket;
+        public NetworkCore.Socket Socket;
 
-        public SocketArg(Socket s)
+        public SocketArg(NetworkCore.Socket s)
         {
             Socket = s;
         }
@@ -51,32 +51,14 @@ namespace ServerCore
         
         void ListenThreadFunc()
         {
-            Socket listenSocket = null;
-            try
-            {
-                listenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                IPEndPoint ep = new IPEndPoint(IPAddress.Any, _port);
-                listenSocket.Bind(ep);
-                LogThread.Log("ListenThread: Listening on port " + _port, LogThread.LogMessageType.Normal, true);
+            NetworkCore.Listener listener = new NetworkCore.Listener();
+            listener.OnNewConnection += Listener_OnNewConnection;
+            listener.Listen(_port);            
+        }
 
-                while (true)
-                {
-                    listenSocket.Listen(10);
-                    Socket conn = listenSocket.Accept();
-                    if (conn != null && OnConnectionAccepted != null)
-                    {
-                        LogThread.Log("ListenThread: Connection Accepted", LogThread.LogMessageType.Debug);
-                        OnConnectionAccepted(this, new SocketArg(conn));
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogThread.Log(ex.ToString(), LogThread.LogMessageType.Error, true);
-
-                listenSocket.Close();
-                _theThread = null;
-            }
+        private void Listener_OnNewConnection(NetworkCore.Socket obj)
+        {
+            OnConnectionAccepted?.Invoke(this, new SocketArg(obj));
         }
     }
 }

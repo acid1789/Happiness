@@ -87,12 +87,18 @@ namespace GlobalServer
             _taskHandlers[(int)GlobalTask.GlobalType.Purchase_Product_Finish] = PurchaseProdcutFinishHandler;
         }
 
-        bool ValidPassword(string pwIn, int oAuthMode, string pwDB, string googleId, string facebookId)
+        bool ValidPassword(string pwIn, int oAuthMode, string pwDB, string googleId, string facebookId, string email)
         {
             switch (oAuthMode)
             {
                 case 1: // Google
-                    return pwIn == googleId;
+                    {
+                        System.Net.WebClient wc = new System.Net.WebClient();
+                        string url = "https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + pwIn;
+                        string json = wc.DownloadString(url);
+                        Dictionary<string, string> attribs = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                        return attribs.ContainsKey("email") && attribs["email"] == email;
+                    }
                 case 2: // Facebook
                     return pwIn == facebookId;
             }
@@ -103,10 +109,10 @@ namespace GlobalServer
         void AccountInfoRequestHandler(Task t)
         {
             GlobalTask task = (GlobalTask)t;
-            // Fetch account from the database
-            AccountInfoRequestArgs args = (AccountInfoRequestArgs)task.Args;
-            DBQuery q = AddDBQuery(string.Format("SELECT * FROM accounts WHERE email=\"{0}\";", args.Email), task);
+            AccountInfoRequestArgs args = (AccountInfoRequestArgs)task.Args;           
             
+            // Fetch account from the database
+            DBQuery q = AddDBQuery(string.Format("SELECT * FROM accounts WHERE email=\"{0}\";", args.Email), task);            
             task.Type = (int)GlobalTask.GlobalType.AccountInfoProcess;
         }
 
@@ -140,7 +146,7 @@ namespace GlobalServer
                 string pw = row[2].ToString();
                 string google_id = (row[7] is DBNull) ? null : row[7].ToString();
                 string facebook_id = (row[8] is DBNull) ? null : row[8].ToString();
-                if( ValidPassword(args.Password, args.OAuthMode, pw, google_id, facebook_id) )
+                if( ValidPassword(args.Password, args.OAuthMode, pw, google_id, facebook_id, args.Email) )
                 {
                     // password match
                     displayName = row[3].ToString();

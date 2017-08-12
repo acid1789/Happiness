@@ -17,6 +17,12 @@ namespace NetworkCore
             _connected = false;
         }
 
+        public Socket(TcpSocketClient c)
+        {
+            _client = c;
+            _connected = true;
+        }
+
         public bool Connect(string address, int port)
         {
             if (_connected)

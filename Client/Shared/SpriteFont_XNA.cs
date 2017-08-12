@@ -16,6 +16,7 @@ namespace Happiness_Shared
         public override Happiness.Vector2 MeasureString(string str)
         {
             Vector2 size = XNAFont.MeasureString(str);
+            size *= Renderer_XNA.FontScale.Y;
             return Renderer_XNA.XNAV2ToHappinessV2(size);
         }
     }

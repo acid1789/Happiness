@@ -43,7 +43,7 @@
     </Compile>
     <Compile Include="FacebookAuth_Desktop.cs" />
     <Compile Include="FileManager_Desktop.cs" />
-    <Compile Include="GoolgleAuth_Desktop.cs" />
+    <Compile Include="GoogleAuth_Desktop.cs" />
     <Compile Include="HappinessDesktopGame.cs" />
     <Compile Include="../Shared/InputController_XNA.cs">
       <Link>Shared/InputController_XNA.cs</Link>

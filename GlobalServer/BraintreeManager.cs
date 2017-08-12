@@ -38,7 +38,7 @@ namespace GlobalServer
         {
             string btCustomer = UserIDToCustomerId(customerId);
             Customer c = null;
-            try { c = Gateway.Customer.Find(btCustomer); } catch (Exception ex) { }
+            try { c = Gateway.Customer.Find(btCustomer); } catch (Exception) { }
             string clientToken = (c == null) ? Gateway.ClientToken.generate() : Gateway.ClientToken.generate(new ClientTokenRequest { CustomerId = btCustomer });
             return clientToken;
         }

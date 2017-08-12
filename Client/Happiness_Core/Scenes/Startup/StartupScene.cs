@@ -10,6 +10,7 @@ namespace Happiness
     public class StartupScene : Scene
     {        
         SignInDialog m_SignInDialog;
+        SignInDialog.SignInType m_WaitingForSignIn;
 
         Rectangle m_LogoRectangle;
         string m_szCreditLine;
@@ -91,6 +92,9 @@ namespace Happiness
             {
                 case GameInfoValidator.LoadStatus.Idle:
                     m_szWaitText = null;
+                    break;
+                case GameInfoValidator.LoadStatus.OAuth:
+                    UpdateOAuth();
                     break;
                 case GameInfoValidator.LoadStatus.OAuthFailed:
                     ShowSignInDialog();
@@ -179,6 +183,21 @@ namespace Happiness
             m_SignInDialog = null;
         }
 
+        void UpdateOAuth()
+        {
+            switch (m_WaitingForSignIn)
+            {
+                case SignInDialog.SignInType.Google:
+                    string[] credentials = GoogleAuth.Instance.FinishAuth();
+                    if (credentials != null)
+                    {
+                        m_GIV.FinishOAuth(credentials[0], credentials[1], true);
+                        m_WaitingForSignIn = SignInDialog.SignInType.None;
+                    }
+                    break;
+            }
+        }
+
         void DoEmailSignIn()
         {
             bool createMode = m_SignInDialog.EmailCreate;
@@ -191,8 +210,8 @@ namespace Happiness
         void DoGoogleSignIn()
         {
             m_GIV.StartOAuth();
-            string[] credentials = GoogleAuth.Instance.DoAuth();
-            m_GIV.FinishOAuth(credentials[0], credentials[1], true);
+            m_WaitingForSignIn = SignInDialog.SignInType.Google;
+            GoogleAuth.Instance.BeginAuth();            
         }
 
         void DoFacebookSignIn()

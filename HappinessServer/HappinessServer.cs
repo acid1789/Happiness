@@ -19,7 +19,7 @@ namespace HappinessServer
             TaskProcessor = new HTaskProcessor(this);
         }
 
-        public override GameClient CreateClient(System.Net.Sockets.Socket s)
+        public override GameClient CreateClient(NetworkCore.Socket s)
         {
             HClient client = new HClient(s);
 
