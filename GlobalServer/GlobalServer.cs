@@ -20,9 +20,9 @@ namespace GlobalServer
             _server = new ServerBase(sargs.ListenPort, sargs.DBString);
             _server.TaskProcessor = new GlobalTaskProcessor();
             _server.DatabaseSetup();
-#if DEBUG
+//#if DEBUG
             LogThread.AlwaysPrintToConsole = true;
-#endif
+//#endif
             _webServer = new WebServer(null, "http://127.0.0.1:8080/purchase/", "http://127.0.0.1:8080/checkout/");
             _webServer.Run();
 

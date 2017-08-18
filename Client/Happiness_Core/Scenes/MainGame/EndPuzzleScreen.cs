@@ -61,6 +61,7 @@ namespace Happiness
 
         int m_iOriginalLevel;
         int m_iOriginalExp;
+        bool m_bLevelUpPlayed;
 
         public event EventHandler OnNextPuzzle;
         public event EventHandler OnMainMenu;
@@ -71,6 +72,7 @@ namespace Happiness
             m_bLevelUnlocked = false;
             m_bSuccess = success;
             m_Game = game;
+            m_bLevelUpPlayed = false;
 
             m_iCenterX = screenWidth >> 1;
             int width = (int)(Constants.EndScreen_Width * screenWidth);
@@ -318,14 +320,18 @@ namespace Happiness
             int expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);
             while (m_iOriginalExp >= expForNextLevel)
             {
-                m_Game.SoundManager.PlaySound(SoundManager.SEInst.Happiness);
+                if (!m_bLevelUpPlayed)
+                {
+                    m_Game.SoundManager.PlaySound(SoundManager.SEInst.Happiness);
+                    m_Level.PositionY -= 4;
+                    m_bLevelUpPlayed = true;
+                }
                 m_iOriginalExp -= expForNextLevel;
                 m_iOriginalLevel++;
                 expForNextLevel = Balance.ExpForNextLevel(m_iOriginalLevel);
                 m_Level.Text = m_iOriginalLevel.ToString();
                 m_Level.Color = Color.Yellow;
                 m_Level.Font = Assets.DialogFont;
-                m_Level.PositionY -= 4;
 
                 m_bLevelUnlocked = m_iTower < (m_Game.TheGameInfo.GameData.TowerFloors.Length - 1) && m_iOriginalLevel >= Balance.UnlockThreshold(m_iTower) && m_Game.TheGameInfo.GameData.TowerFloors[m_iTower + 1] == 0;
                 if( m_bLevelUnlocked )
