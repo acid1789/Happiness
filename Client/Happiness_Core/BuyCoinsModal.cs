@@ -181,6 +181,16 @@ namespace Happiness
                     m_ScrollPosition = m_ScrollMax;
             }
         }
+
+        public bool OnKeyDown(KeyArgs key)
+        {
+            if (key.Key == Keys.Escape)
+            {
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuCancel);
+                return false;
+            }
+            return true;
+        }
         #endregion
 
         public void Update(double deltaTime)

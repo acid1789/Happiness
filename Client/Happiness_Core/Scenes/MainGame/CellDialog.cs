@@ -180,6 +180,13 @@ namespace Happiness
             }
         }
 
+        public bool OnKeyUp(KeyArgs e)
+        {
+            if (e.Key == Keys.Escape)
+                return false;
+            return true;
+        }
+
         public bool Click(int x, int y)
         {
             foreach (UIButton btn in m_Buttons)

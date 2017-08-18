@@ -52,6 +52,12 @@ namespace Happiness_Shared
             UpdateMouse();
             UpdateTouch();
             UpdateKeyboard();
+
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
+                Invoke_OnKeyDown(this, new Happiness.KeyArgs(Happiness.Keys.Escape, false));
+                Invoke_OnKeyUp(this, new Happiness.KeyArgs(Happiness.Keys.Escape, false));
+            }
         }
 
         void UpdateTouch()

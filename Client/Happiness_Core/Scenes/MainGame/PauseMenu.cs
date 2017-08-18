@@ -61,6 +61,8 @@ namespace Happiness
             brect.Y += buttonHeight + buttonSpace;
             m_Buttons[5] = new UIButton(5, "Save & Exit", Assets.DialogFont, brect, Assets.ScrollBar);
 
+            m_Buttons[0].ClickSound = SoundManager.SEInst.MenuCancel;
+
             m_ButtonBackground = new Rectangle((int)(Constants.PauseMenu_ButtonAreaBGX * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGY * screenHeight), (int)(Constants.PauseMenu_ButtonAreaBGW * screenWidth), (int)(Constants.PauseMenu_ButtonAreaBGH * screenHeight));
 
 

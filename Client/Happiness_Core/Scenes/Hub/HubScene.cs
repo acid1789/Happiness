@@ -44,6 +44,7 @@ namespace Happiness
             InputController.IC.OnDragBegin += IC_OnDragBegin;
             InputController.IC.OnDrag += IC_OnDrag;
             InputController.IC.OnScroll += IC_OnScroll;
+            InputController.IC.OnKeyDown += IC_OnKeyDown;
             
             SoundManager.Inst.PlayMainMenuMusic();
 
@@ -112,6 +113,7 @@ namespace Happiness
             InputController.IC.OnClick -= IC_OnClick;
             InputController.IC.OnDrag -= IC_OnDrag;
             InputController.IC.OnDragBegin -= IC_OnDragBegin;
+            InputController.IC.OnKeyDown -= IC_OnKeyDown;
 
             Happiness.Game.OnCurrencyChange -= Game_OnCurrencyChange;
             Happiness.Game.OnVipDataChange -= Game_OnVipDataChange;
@@ -217,8 +219,8 @@ namespace Happiness
                 {
                     m_CoinsDialog = new BuyCoinsModal();
                 }
-                if ( m_Exit.Click(e.CurrentX, e.CurrentY) )
-                    m_MessageBox = new MessageBox("Are you sure you want to exit the game?", MessageBoxButtons.YesNo, (int)MessageBoxContext.ExitGame, Game.ScreenWidth, Game.ScreenHeight);                
+                if (m_Exit.Click(e.CurrentX, e.CurrentY))
+                    DoExit();                
                 if (m_SignOut.Click(e.CurrentX, e.CurrentY))
                     m_MessageBox = new MessageBox("Are you sure you want to sign out?", MessageBoxButtons.YesNo, (int)MessageBoxContext.SignOut, Game.ScreenWidth, Game.ScreenHeight);                
                 if (m_VIP.HandleClick(e.CurrentX, e.CurrentY))
@@ -255,7 +257,31 @@ namespace Happiness
             if( m_CoinsDialog != null )
                 m_CoinsDialog.Scroll(delta);
         }
+
+        private void IC_OnKeyDown(object sender, KeyArgs e)
+        {
+            if (m_FloorSelect != null)
+            {
+                if (!m_FloorSelect.OnKeyDown(e))
+                    m_FloorSelect = null;
+            }
+            else if (m_CoinsDialog != null)
+            {
+                if (!m_CoinsDialog.OnKeyDown(e))
+                    m_CoinsDialog = null;
+            }
+            else
+            {
+                if (e.Key == Keys.Escape)
+                    DoExit();
+            }
+        }
         #endregion
+
+        void DoExit()
+        {
+            m_MessageBox = new MessageBox("Are you sure you want to exit the game?", MessageBoxButtons.YesNo, (int)MessageBoxContext.ExitGame, Game.ScreenWidth, Game.ScreenHeight);
+        }
 
         void DoMessageBoxResult(MessageBoxResult result)
         {

@@ -797,8 +797,41 @@ namespace Happiness
 
         void M_Input_OnKeyUp(object sender, KeyArgs e)
         {
-            if (e.Key == Keys.Escape)
-                Pause();
+            if (m_MessageBox != null)
+            {
+            }
+            else if (m_CoinsDialog != null)
+            {
+                if (!m_CoinsDialog.OnKeyDown(e))
+                    m_CoinsDialog = null;
+            }
+            else if (m_EndScreen != null)
+            {
+            }
+            else if (m_PauseMenu != null)
+            {
+                if (e.Key == Keys.Escape)
+                {
+                    SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuCancel);
+                    UnPause();
+                }
+            }
+            else if (m_GamePanel.CellDialog != null)
+            {
+                if (!m_GamePanel.CellDialog.OnKeyUp(e))
+                {
+                    m_GamePanel.CloseCellDialog();
+                    SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuCancel);
+                }
+            }
+            else
+            {
+                if (e.Key == Keys.Escape)
+                {
+                    SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuAccept);
+                    Pause();
+                }
+            }
         }
 
         void DoMessageBoxResult(MessageBoxResult res)

@@ -60,13 +60,18 @@ namespace Happiness
                 m_SmallRects[topRowCount + i] = new Rectangle(botRowLeft + (i * iconSize), iconSize, iconSize, iconSize);
         }
 
+        public void CloseCellDialog()
+        {
+            m_CellDialog = null;
+        }
+
         #region Input
         public override void Click(int x, int y)
         {
             if (m_CellDialog != null)
             {
-                if( !m_CellDialog.Click(x, y) )
-                    m_CellDialog = null;
+                if (!m_CellDialog.Click(x, y))
+                    CloseCellDialog();
             }
             else
             {
@@ -244,6 +249,11 @@ namespace Happiness
         public int CellHeight
         {
             get { return m_iCellHeight; }
+        }
+
+        public CellDialog CellDialog
+        {
+            get { return m_CellDialog; }
         }
         #endregion
 

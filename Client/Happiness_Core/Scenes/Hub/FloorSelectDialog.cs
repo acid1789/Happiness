@@ -218,6 +218,16 @@ namespace Happiness
             if (m_FloorScrollPosition > 0)
                 m_FloorScrollPosition = 0;
         }
+
+        public bool OnKeyDown(KeyArgs key)
+        {
+            if (key.Key == Keys.Escape)
+            {
+                SoundManager.Inst.PlaySound(SoundManager.SEInst.MenuCancel);
+                return false;
+            }
+            return true;
+        }
         #endregion
 
         public void Update(double gt)
