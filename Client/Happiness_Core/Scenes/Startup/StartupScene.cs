@@ -185,13 +185,22 @@ namespace Happiness
 
         void UpdateOAuth()
         {
+            string[] credentials;
             switch (m_WaitingForSignIn)
             {
                 case SignInDialog.SignInType.Google:
-                    string[] credentials = GoogleAuth.Instance.FinishAuth();
+                    credentials = GoogleAuth.Instance.FinishAuth();
                     if (credentials != null)
                     {
                         m_GIV.FinishOAuth(credentials[0], credentials[1], true);
+                        m_WaitingForSignIn = SignInDialog.SignInType.None;
+                    }
+                    break;
+                case SignInDialog.SignInType.Facebook:
+                    credentials = FacebookAuth.Instance.FinishAuth();
+                    if (credentials != null)
+                    {
+                        m_GIV.FinishOAuth(credentials[0], credentials[1], false);
                         m_WaitingForSignIn = SignInDialog.SignInType.None;
                     }
                     break;
@@ -217,8 +226,8 @@ namespace Happiness
         void DoFacebookSignIn()
         {
             m_GIV.StartOAuth();
-            string[] credentials = FacebookAuth.Instance.DoAuth();
-            m_GIV.FinishOAuth(credentials[0], credentials[1], false);
+            m_WaitingForSignIn = SignInDialog.SignInType.Facebook;
+            FacebookAuth.Instance.BeginAuth();
         }
         #endregion
     }

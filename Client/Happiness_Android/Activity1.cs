@@ -6,6 +6,8 @@ using Android.Runtime;
 using Android.Views;
 
 using System.Collections.Generic;
+using Xamarin.Facebook;
+using Xamarin.Facebook.Login;
 
 namespace Happiness_Android
 {
@@ -21,6 +23,9 @@ namespace Happiness_Android
     {
         public const int RC_SIGN_IN = 1;
 
+
+        public ICallbackManager CallbackManager { get; private set; }
+
         public delegate void OnActivityResultDelegate(Result resultCode, Intent data);
         Dictionary<int, List<OnActivityResultDelegate>> m_ActivityResultHandlers;
 
@@ -29,6 +34,8 @@ namespace Happiness_Android
         {
             Instance = this;
             base.OnCreate(bundle);
+            FacebookSdk.SdkInitialize(this);
+            CallbackManager = CallbackManagerFactory.Create();
             var g = new HappinessAndroidGame();
             SetContentView((View)g.Services.GetService(typeof(View)));
             g.Run();
@@ -58,6 +65,7 @@ namespace Happiness_Android
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
+            CallbackManager.OnActivityResult(requestCode, (int)resultCode, data);
 
             if (m_ActivityResultHandlers != null && m_ActivityResultHandlers.ContainsKey(requestCode))
             {

@@ -10,192 +10,110 @@ using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
+using Org.Json;
 
-using Xamarin.Auth;
+using Xamarin.Facebook;
+using Xamarin.Facebook.Login;
+
 
 namespace Happiness_Android
 {
-    class FacebookAuth_Android : Happiness.FacebookAuth
+    public class GraphCBHandler : Java.Lang.Object, GraphRequest.IGraphJSONObjectCallback
+    {
+        FacebookAuth_Android _fba;
+        public GraphCBHandler(FacebookAuth_Android fba)
+        {
+            _fba = fba;
+        }
+        public void OnCompleted(JSONObject p0, GraphResponse p1)
+        {
+            try
+            {
+                _fba.OnFinished(true, p0.GetString("email"));
+            }
+            catch (JSONException e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
+    }
+
+    public class FBCallbackHandler : Java.Lang.Object, IFacebookCallback
+    {
+        FacebookAuth_Android _fba;
+        GraphCBHandler _graphCBHandler;
+        public FBCallbackHandler(FacebookAuth_Android fba)
+        {
+            _fba = fba;
+        }
+
+        public void OnCancel()
+        {
+            _fba.OnFinished(false, null);
+        }
+
+        public void OnError(FacebookException p0)
+        {
+            _fba.OnFinished(false, p0.ToString());
+        }
+
+        public void OnSuccess(Java.Lang.Object p0)
+        {
+            // Facebook Email address            
+            LoginResult loginResult = (LoginResult)p0;
+            _graphCBHandler = new GraphCBHandler(_fba);
+            _fba.SetAccessToken(loginResult.AccessToken.Token);
+            GraphRequest request = GraphRequest.NewMeRequest(loginResult.AccessToken, _graphCBHandler);
+
+            Bundle parameters = new Bundle();
+            parameters.PutString("fields", "email");
+            request.Parameters = (parameters);
+            request.ExecuteAsync();
+        }
+    }
+
+    public class FacebookAuth_Android : Happiness.FacebookAuth
     {
         string m_szEmail;
         string m_szId;
 
+        bool m_WaitingForAuth;
+        FBCallbackHandler m_FBCBH;
+
         public FacebookAuth_Android()
         {
             _instance = this;
-
-            //ButtonFacebook_Clicked(null, null);
-        }
-
-        public override string[] DoAuth()
-        {
-            m_szEmail = null;
-            try
-            {
-                ShowWebView().Wait();                
-            }
-            catch (AggregateException ex)
-            {
-                foreach (var e in ex.InnerExceptions)
-                {
-                    Console.WriteLine("ERROR: " + e.Message);
-                }
-            }
-            return new string[] { m_szEmail, m_szId };
-        }
-
-        private Task<bool> ShowWebView()
-        {
-            var tcs = new TaskCompletionSource<bool>();
-
-            var auth = new OAuth2Authenticator(
-                clientId: "286939585084672",
-                scope: "email",
-                authorizeUrl: new Uri("http://www.google.com"), // new Uri("https://www.facebook.com/v2.9/dialog/oauth"),
-                redirectUrl: new Uri("fb286939585084672://authorize"),
-                getUsernameAsync: null,
-                isUsingNativeUI: true)
-            { AllowCancel = true };
             
-            auth.Completed += (sender, eventArgs) =>
-            {
-                if (eventArgs.IsAuthenticated)
-                {                    
-                    //authenticationResponseValues = eventArgs.Account.Properties;                    
-                    tcs.SetResult(true);
-                }
-
-            };
-
-            auth.Error +=
-                (s, ea) =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("Error = ").AppendLine($"{ea.Message}");
-
-                    Console.WriteLine("Authentication Error: " + sb.ToString());
-                    return;
-                };
-
-            var intent = auth.GetUI(Application.Context);
-            intent.SetFlags(ActivityFlags.NewTask);
-
-            Application.Context.StartActivity(intent);
-
-            return tcs.Task;
+            m_FBCBH = new FBCallbackHandler(this);
+            LoginManager.Instance.RegisterCallback(Activity1.Instance.CallbackManager, m_FBCBH);
         }
 
-        #region sample
-        string fb_app_id = "1889013594699403";
-        OAuth2Authenticator authenticator;
-        bool native_ui = true;
-
-        protected void ButtonFacebook_Clicked(object sender, EventArgs e)
+        public override void BeginAuth()
         {
-            authenticator
-                 = new Xamarin.Auth.OAuth2Authenticator
-                 (
-                     clientId:
-                         new Func<string>
-                            (
-                                () =>
-                                {
-                                    string retval_client_id = "oops something is wrong!";
-
-                                    retval_client_id = fb_app_id;
-                                    return retval_client_id;
-                                }
-                            ).Invoke(),
-                     //clientSecret: null,   // null or ""
-                     authorizeUrl:
-                         new Func<Uri>
-                            (
-                                () =>
-                                {
-                                    string uri = null;
-                                    if (native_ui)
-                                    {
-                                        uri = "https://www.facebook.com/v2.9/dialog/oauth";
-                                    }
-                                    else
-                                    {
-                                        // old
-                                        uri = "https://m.facebook.com/dialog/oauth/";
-                                    }
-                                    return new Uri(uri);
-                                }
-                            ).Invoke(),
-                     //accessTokenUrl: new Uri("https://www.googleapis.com/oauth2/v4/token"),
-                     redirectUrl:
-                         new Func<Uri>
-                            (
-                                () =>
-                                {
-                                    string uri = null;
-                                    if (native_ui)
-                                    {
-                                        uri =
-                                            //"fb1889013594699403://localhost/path"
-                                            //"fb1889013594699403://xamarin.com"
-                                            $"fb{fb_app_id}://authorize"
-                                            ;
-                                    }
-                                    else
-                                    {
-                                        uri =
-                                            //"https://localhost/path"
-                                            $"fb{fb_app_id}://authorize"
-                                            ;
-                                    }
-                                    return new Uri(uri);
-                                }
-                            ).Invoke(),
-                     scope: "", // "basic", "email",
-                     getUsernameAsync: null,
-                     isUsingNativeUI: native_ui
-                 )
-                 {
-                     AllowCancel = true,
-                 };
-
-            authenticator.Completed +=
-                (s, ea) =>
-                {
-                    StringBuilder sb = new StringBuilder();
-
-                    if (ea.Account != null && ea.Account.Properties != null)
-                    {
-                        sb.Append("Token = ").AppendLine($"{ea.Account.Properties["access_token"]}");
-                    }
-                    else
-                    {
-                        sb.Append("Not authenticated ").AppendLine($"Account.Properties does not exist");
-                    }
-
-                    Console.WriteLine("Authentication Results: " + sb.ToString());
-
-                    return;
-                };
-
-            authenticator.Error +=
-                (s, ea) =>
-                {
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("Error = ").AppendLine($"{ea.Message}");
-
-                    Console.WriteLine("Authentication Error: " + sb.ToString());
-                    return;
-                };
-
-            // after initialization (creation and event subscribing) exposing local object 
-            var intent = authenticator.GetUI(Application.Context);
-            intent.SetFlags(ActivityFlags.NewTask);
-
-            Application.Context.StartActivity(intent);
-
-            return;
+            if (!m_WaitingForAuth)
+            {
+                m_WaitingForAuth = true;
+                LoginManager.Instance.LogInWithReadPermissions(Activity1.Instance, new string[] { "email" });
+            }
         }
 
-        #endregion
+        public override string[] FinishAuth()
+        {
+            return m_WaitingForAuth ? null : new string[] { m_szEmail, m_szId };
+        }
+
+        public void OnFinished(bool success, string s0)
+        {
+            if (success)
+            {
+                m_szEmail = s0;
+            }
+            m_WaitingForAuth = false;
+        }
+
+        public void SetAccessToken(string accessToken)
+        {
+            m_szId = accessToken;
+        }
     }
 }
