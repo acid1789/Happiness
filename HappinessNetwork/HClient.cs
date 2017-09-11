@@ -76,7 +76,9 @@ namespace HappinessNetwork
 
         public override void Connect(string address, int port)
         {
-            base.Connect("192.168.0.15", port);
+#if DEBUG
+            base.Connect("localhost", port);
+#endif
             if ( _socket != null && _socket.Connected )
                 return;
 

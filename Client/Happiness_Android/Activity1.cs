@@ -23,7 +23,7 @@ namespace Happiness_Android
     {
         public const int RC_SIGN_IN = 1;
 
-
+        public HappinessAndroidGame TheGame { get; private set; }
         public ICallbackManager CallbackManager { get; private set; }
 
         public delegate void OnActivityResultDelegate(Result resultCode, Intent data);
@@ -36,9 +36,9 @@ namespace Happiness_Android
             base.OnCreate(bundle);
             FacebookSdk.SdkInitialize(this);
             CallbackManager = CallbackManagerFactory.Create();
-            var g = new HappinessAndroidGame();
-            SetContentView((View)g.Services.GetService(typeof(View)));
-            g.Run();
+            TheGame = new HappinessAndroidGame();
+            SetContentView((View)TheGame.Services.GetService(typeof(View)));
+            TheGame.Run();
         }
 
         public void RegisterActivityResultHandler(int requestCode, OnActivityResultDelegate handler)
@@ -76,6 +76,23 @@ namespace Happiness_Android
                 }
             }
         }
+
+        public override bool DispatchKeyEvent(KeyEvent e)
+        {
+            VirtualKeyboard_Android.Instance.HandleEvent(e.Action, e.KeyCode, (e.Modifiers & MetaKeyStates.ShiftMask) != 0, e.Characters);
+            return base.DispatchKeyEvent(e);
+        }
+
+        public override bool OnKeyDown([GeneratedEnum] Keycode keyCode, KeyEvent e)
+        {
+            return base.OnKeyDown(keyCode, e);
+        }
+
+        public override bool OnKeyUp([GeneratedEnum] Keycode keyCode, KeyEvent e)
+        {
+            System.Console.WriteLine(keyCode.ToString());
+            return base.OnKeyUp(keyCode, e);
+        }        
     }
 }
 

@@ -11,6 +11,7 @@ namespace ServerCore
         public string DBString;
         public string HostAddress;
         public int HostPort;
+        public string FacebookSecretId;
 
         public ServerArgs(string[] args)
         {
@@ -28,6 +29,7 @@ namespace ServerCore
                         case "db": DBString = value; break;
                         case "host": HostAddress = value; break;
                         case "host_port": HostPort = int.Parse(value); break;
+                        case "fb_secret": FacebookSecretId = value; break;
                         default: Console.WriteLine("Unknown argument: " + arg); break;
                     }
                 }

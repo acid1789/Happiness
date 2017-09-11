@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
@@ -57,6 +58,22 @@ namespace Happiness_Shared
             {
                 Invoke_OnKeyDown(this, new Happiness.KeyArgs(Happiness.Keys.Escape, false));
                 Invoke_OnKeyUp(this, new Happiness.KeyArgs(Happiness.Keys.Escape, false));
+            }
+        }
+
+        public override void ProcessExternalKey(Happiness.KeyArgs key, InputType type)
+        {
+            switch (type)
+            {
+                case InputType.Down:
+                    Invoke_OnKeyDown(this, key);
+                    break;
+                case InputType.Repeat:
+                    Invoke_OnKeyRepeat(this, key);
+                    break;
+                case InputType.Up:
+                    Invoke_OnKeyUp(this, key);
+                    break;
             }
         }
 

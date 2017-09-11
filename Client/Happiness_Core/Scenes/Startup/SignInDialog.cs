@@ -169,14 +169,25 @@ namespace Happiness
                     m_Password.Focused = false;
                     m_Password2.Focused = false;
                     if (m_Email.Rect.Contains(x, y))
+                    {
                         m_Email.Focused = true;
+                        VirtualKeyboard.ShowKeyboard(m_Email);
+                    }
                     else if (m_Password.Rect.Contains(x, y))
+                    {
                         m_Password.Focused = true;
-                    else if( m_bEmailCreate && m_Password2.Rect.Contains(x, y) )
+                        VirtualKeyboard.ShowKeyboard(m_Password);
+                    }
+                    else if (m_bEmailCreate && m_Password2.Rect.Contains(x, y))
+                    {
                         m_Password2.Focused = true;
+                        VirtualKeyboard.ShowKeyboard(m_Password2);
+                    }
 
-                    if( m_Email.Focused || m_Password.Focused || m_Password2.Focused )
+                    if (m_Email.Focused || m_Password.Focused || m_Password2.Focused)
                         Happiness.Game.SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
+                    else
+                        VirtualKeyboard.Hide();
 
                     if (m_AccountStatusButton.Click(x, y))
                     {
@@ -212,6 +223,7 @@ namespace Happiness
                     break;
                 case 2: // Email
                     m_Mode = Mode.EmailInput;
+                    VirtualKeyboard.ShowKeyboard(m_Email);
                     SetupAccountStatusMode(m_bEmailCreate);
                     break;
                 case 3: // Exit
@@ -250,44 +262,55 @@ namespace Happiness
             {
                 if (key.Key == Keys.Enter)
                 {
-                    if (OnSignIn != null)
-                        OnSignIn(this, null);
+                    if (focused != m_Password2)
+                        NextFocus();
+                    else
+                    {
+                        VirtualKeyboard.Hide();
+                        if (OnSignIn != null)
+                            OnSignIn(this, null);
+                    }
                 }
                 else if (key.Key == Keys.Tab)
                 {
-                    if (m_Email.Focused)
-                    {
-                        m_Email.Focused = false;
-                        m_Password.Focused = true;
-                        m_Password2.Focused = false;
-                    }
-                    else if (m_Password.Focused)
-                    {
-                        if (m_bEmailCreate)
-                        {
-                            m_Email.Focused = false;
-                            m_Password.Focused = false;
-                            m_Password2.Focused = true;
-                        }
-                        else
-                        {
-                            m_Email.Focused = true;
-                            m_Password.Focused = false;
-                            m_Password2.Focused = false;
-                        }
-                    }
-                    else if (m_Password2.Focused)
-                    {
-                        m_Email.Focused = true;
-                        m_Password.Focused = false;
-                        m_Password2.Focused = false;
-                    }
+                    NextFocus();
                     Happiness.Game.SoundManager.PlaySound(SoundManager.SEInst.MenuNavigate);
                 }
                 else
                 {
                     focused.HandleKey(key);
                 }
+            }
+        }
+
+        void NextFocus()
+        {
+            if (m_Email.Focused)
+            {
+                m_Email.Focused = false;
+                m_Password.Focused = true;
+                m_Password2.Focused = false;
+            }
+            else if (m_Password.Focused)
+            {
+                if (m_bEmailCreate)
+                {
+                    m_Email.Focused = false;
+                    m_Password.Focused = false;
+                    m_Password2.Focused = true;
+                }
+                else
+                {
+                    m_Email.Focused = true;
+                    m_Password.Focused = false;
+                    m_Password2.Focused = false;
+                }
+            }
+            else if (m_Password2.Focused)
+            {
+                m_Email.Focused = true;
+                m_Password.Focused = false;
+                m_Password2.Focused = false;
             }
         }
         #endregion

@@ -263,10 +263,11 @@
   <PropertyGroup>
     <PostBuildEvent>copy $(SolutionDir)FacebookAuthenticator\bin\$(ConfigurationName)\FacebookAuthenticator.exe $(SolutionDir)$(OutDir)FacebookAuthenticator.exe
 copy $(SolutionDir)FacebookAuthenticator\bin\$(ConfigurationName)\Facebook.dll $(SolutionDir)$(OutDir)Facebook.dll
-if $(ConfigurationName) == Release $(SolutionDir)SecretsInjector\bin\Release\SecretsInjector.exe clear $(SolutionDir)</PostBuildEvent>
+</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>if $(ConfigurationName) == Release $(SolutionDir)SecretsInjector\bin\Release\SecretsInjector.exe set $(SolutionDir)</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <Import Project="packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

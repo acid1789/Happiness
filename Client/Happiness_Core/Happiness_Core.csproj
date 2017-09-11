@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="Abstract\FacebookAuth.cs" />
     <Compile Include="Abstract\GoogleAuth.cs" />
+    <Compile Include="Abstract\VirtualKeyboard.cs" />
     <Compile Include="Assets.cs" />
     <Compile Include="BuyCoinsModal.cs" />
     <Compile Include="Constants.cs" />

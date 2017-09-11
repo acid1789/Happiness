@@ -104,7 +104,7 @@ namespace GlobalServer
                         try
                         {
                             System.Net.WebClient wc = new System.Net.WebClient();
-                            string url = string.Format("https://graph.facebook.com/debug_token?input_token={0}&access_token={1}|{2}", pwIn, "286939585084672", "2f0a1c3d82161065d45ee34f6a675b1d");
+                            string url = string.Format("https://graph.facebook.com/debug_token?input_token={0}&access_token={1}|{2}", pwIn, "286939585084672", GlobalServer.SArgs.FacebookSecretId);
                             string json = wc.DownloadString(url);
                             return json.Contains("is_valid\":true");
                         }

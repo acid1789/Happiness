@@ -7,6 +7,13 @@ namespace Happiness
 {
     public abstract class InputController
     {
+        public enum InputType
+        {
+            Down,
+            Repeat,
+            Up
+        };
+
         public event EventHandler<DragArgs> OnDragBegin;
         public event EventHandler<DragArgs> OnDrag;
         public event EventHandler<DragArgs> OnDragEnd;
@@ -17,6 +24,7 @@ namespace Happiness
         public event Action<int> OnScroll;
 
         public abstract void Update(Happiness theGame, double time);
+        public abstract void ProcessExternalKey(KeyArgs key, InputType type);
 
         protected static InputController s_IC;
         public static InputController IC

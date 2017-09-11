@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Happiness
 {
-    class UIInputField
+    public class UIInputField
     {
         Rectangle m_InputRect;
         bool m_bFocused;
@@ -33,6 +33,12 @@ namespace Happiness
         }
 
         #region Input
+        public void AppendString(string str)
+        {
+            // For now just put this at the end, this really needs to get placed wherever the cursor is
+            Text = m_szInputText + str;
+        }
+
         public void HandleKey(KeyArgs key)
         {
             if (key.Key == Keys.Backspace)
@@ -57,23 +63,22 @@ namespace Happiness
         char KeyToAscii(KeyArgs key)
         {
             int keyInt = (int)key.Key;
-            if (keyInt >= '0' && keyInt <= '9')
+            if (key.Key >= Keys.Num0 && key.Key <= Keys.Num9)
             {
+                keyInt -= (int)Keys.Num0;
                 if (key.Shift)
-                    return Constants.Ascii0to9Shift[keyInt - '0'];
+                    return Constants.Ascii0to9Shift[keyInt];
                 else
-                    return (char)keyInt;
-            }
-            else if (keyInt >= 'A' && keyInt <= 'Z')
-            {
-                if (!key.Shift)
                 {
-                    keyInt -= 'A';
-                    keyInt += 'a';
+                    keyInt += '0';
                     return (char)keyInt;
                 }
-                else
-                    return (char)keyInt;
+            }
+            else if (key.Key >= Keys.A && key.Key <= Keys.Z)
+            {
+                keyInt -= (int)Keys.A;
+                keyInt += key.Shift ? 'A' : 'a';
+                return (char)keyInt;
             }
             else if (key.Key == Keys.OemPeriod)
             {
@@ -91,10 +96,20 @@ namespace Happiness
                 return key.Shift ? '{' : '[';
             else if (key.Key == Keys.OemPlus)
                 return key.Shift ? '+' : '=';
-            else if( key.Key == Keys.OemMinus)
+            else if (key.Key == Keys.OemMinus)
                 return key.Shift ? '_' : '-';
-            else if( key.Key == Keys.OemTilde)
+            else if (key.Key == Keys.OemTilde)
                 return key.Shift ? '~' : '`';
+            else if (key.Key == Keys.Slash)
+                return key.Shift ? '?' : '/';
+            else if (key.Key == Keys.Backslash)
+                return '\\';
+            else if (key.Key == Keys.Equals)
+                return key.Shift ? '+' : '=';
+            else if (key.Key == Keys.Apostrophe)
+                return key.Shift ? '\"' : '\'';
+            else if (key.Key == Keys.Semicolon)
+                return key.Shift ? ':' : ';';
             else
             {
                 System.Diagnostics.Debug.WriteLine("KeyToAscii: " + key.Key.ToString());

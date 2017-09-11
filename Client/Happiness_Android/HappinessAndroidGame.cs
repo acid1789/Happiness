@@ -23,6 +23,7 @@ namespace Happiness_Android
         InputController_XNA _input;
         MediaPlayer_XNA _mediaPlayer;
         Renderer_XNA _renderer;
+        VirtualKeyboard_Android _virtKeyboard;
         Happiness.Happiness _theGame;
 
         public HappinessAndroidGame()
@@ -31,7 +32,8 @@ namespace Happiness_Android
             Content.RootDirectory = "Content";
 
             Console.WriteLine("HappinessAndroidGame");
-            
+
+            _virtKeyboard = new VirtualKeyboard_Android();
             _google = new GoogleAuth_Android();
             _facebook = new FacebookAuth_Android();
             _purchase = new PurchaseSystem_Android();

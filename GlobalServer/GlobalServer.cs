@@ -12,12 +12,13 @@ namespace GlobalServer
     {
         static ServerBase _server;
         static WebServer _webServer;
+        static ServerArgs _sargs;
         
         static void Main(string[] args)
         {
-            ServerArgs sargs = new ServerArgs(args);
+            _sargs = new ServerArgs(args);
             
-            _server = new ServerBase(sargs.ListenPort, sargs.DBString);
+            _server = new ServerBase(_sargs.ListenPort, _sargs.DBString);
             _server.TaskProcessor = new GlobalTaskProcessor();
             _server.DatabaseSetup();
 //#if DEBUG
@@ -87,6 +88,11 @@ namespace GlobalServer
         public static ServerBase Server
         {
             get { return _server; }
+        }
+
+        public static ServerArgs SArgs
+        {
+            get { return _sargs; }
         }
 #endregion
     }
