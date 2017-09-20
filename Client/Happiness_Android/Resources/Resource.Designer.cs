@@ -4257,8 +4257,8 @@ namespace Happiness
 			// aapt resource value: 0x7f07012f
 			public const int Theme_AppCompat_NoActionBar = 2131165487;
 			
-			// aapt resource value: 0x7f070181
-			public const int Theme_Splash = 2131165569;
+			// aapt resource value: 0x7f07017f
+			public const int Theme_Splash = 2131165567;
 			
 			// aapt resource value: 0x7f070130
 			public const int ThemeOverlay_AppCompat = 2131165488;
@@ -4514,12 +4514,6 @@ namespace Happiness
 			
 			// aapt resource value: 0x7f07017e
 			public const int Widget_AppCompat_Toolbar_Button_Navigation = 2131165566;
-			
-			// aapt resource value: 0x7f07017f
-			public const int bt_no_activity_animation = 2131165567;
-			
-			// aapt resource value: 0x7f070180
-			public const int bt_transparent_activity = 2131165568;
 			
 			// aapt resource value: 0x7f070012
 			public const int com_facebook_activity_theme = 2131165202;

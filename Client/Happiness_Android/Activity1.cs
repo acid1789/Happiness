@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using Xamarin.Facebook;
 using Xamarin.Facebook.Login;
 
+using Plugin.InAppBilling;
+
 namespace Happiness_Android
 {
     [Activity(Label = "Happiness"
@@ -66,6 +68,7 @@ namespace Happiness_Android
         {
             base.OnActivityResult(requestCode, resultCode, data);
             CallbackManager.OnActivityResult(requestCode, (int)resultCode, data);
+            InAppBillingImplementation.HandleActivityResult(requestCode, resultCode, data);
 
             if (m_ActivityResultHandlers != null && m_ActivityResultHandlers.ContainsKey(requestCode))
             {

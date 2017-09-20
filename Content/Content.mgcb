@@ -1255,36 +1255,6 @@
 /processorParam:Quality=Best
 /build:Audio/jenkees/12_-_Ronald_Jenkees_-_Almost_Undamaged.mp3
 
-#begin Audio/cd_stack.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/cd_stack.wav
-
-#begin Audio/cherry_tray.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/cherry_tray.wav
-
-#begin Audio/crash.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/crash.wav
-
-#begin Audio/fireballs.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/fireballs.wav
-
-#begin Audio/floor_tom.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/floor_tom.wav
-
 #begin Audio/game_action1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -1333,18 +1303,6 @@
 /processorParam:Quality=Best
 /build:Audio/game_save.wav
 
-#begin Audio/glass_jar.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/glass_jar.wav
-
-#begin Audio/hi_hat.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/hi_hat.wav
-
 #begin Audio/menu_accept.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -1369,41 +1327,17 @@
 /processorParam:Quality=Best
 /build:Audio/puzzle_failed.wav
 
-#begin Audio/router.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/router.wav
-
-#begin Audio/sensy.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/sensy.wav
-
 #begin Audio/slider_move.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/slider_move.wav
 
-#begin Audio/soda_can.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/soda_can.wav
-
 #begin Audio/unhide_clues.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:Audio/unhide_clues.wav
-
-#begin Audio/usb_desk.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Audio/usb_desk.wav
 
 #begin Towers/Tower1.png
 /importer:TextureImporter

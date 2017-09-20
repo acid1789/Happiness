@@ -18,6 +18,17 @@ namespace Happiness_Desktop
             _instance = this;
         }
 
+        public override void BeginAuth()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string[] FinishAuth()
+        {
+            throw new NotImplementedException();
+        }
+
+        /*
         public override string[] DoAuth()
         {
             s_szEmail = null;
@@ -59,6 +70,6 @@ namespace Happiness_Desktop
                     s_szEmail = parts[2];
                 }
             }
-        }
+        }*/
     }
 }
